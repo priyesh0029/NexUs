@@ -11,6 +11,9 @@ import * as Yup from "yup";
 import { register } from "../../api/apiConnections/authConnections";
 import { useNavigate } from "react-router-dom";
 import loadash from "lodash"
+import { ToastContainer,toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const SignUpForm = () => {
 
@@ -20,7 +23,7 @@ const SignUpForm = () => {
     console.log("data of user register = ",userData);
     let response = await register(userData)
     if(response ==='success'){
-      navigate('/')
+      // navigate('/')
     }else{
       console.log("signUp failed");
       
@@ -51,16 +54,17 @@ const SignUpForm = () => {
           .required("*Email required"),
         password: Yup.string()
           .required("*Password required")
-          .min(8, "*Pasword must be 8 or more characters")
-          .matches(
-            /(?=.*[a-z])(?=.*[A-Z])\w+/,
-            "*Password should contain at least one uppercase and lowercase character"
-          )
-          .matches(/\d/, "*Password should contain at least one number")
-          .matches(
-            /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/,
-            "*Password should contain at least one special character"
-          ),
+          // .min(8, "*Pasword must be 8 or more characters")
+          // .matches(
+          //   /(?=.*[a-z])(?=.*[A-Z])\w+/,
+          //   "*Password should contain at least one uppercase and lowercase character"
+          // )
+          // .matches(/\d/, "*Password should contain at least one number")
+          // .matches(
+          //   /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/,
+          //   "*Password should contain at least one special character"
+          // )
+          ,
           confirmPassword: Yup.string().test(
             "passwords-match",
             "*Passwords do not match",
@@ -71,8 +75,8 @@ const SignUpForm = () => {
       })}
       onSubmit={(values, { setSubmitting }) => {
         // alert(JSON.stringify(values, null, 2));
-        values = loadash.omit(values,'confirmPassword')
-        submitHandler(values)
+        const data = loadash.omit(values,'confirmPassword')
+        submitHandler(data)
         setSubmitting(false);
         // setTimeout(() => {
         // }, 400);
@@ -84,6 +88,7 @@ const SignUpForm = () => {
           className="border-2 mt-16 lg:ms-100 sm:w-100 sm:ms-32 lg:w-90"
           shadow={false}
         >
+           <ToastContainer position="bottom-left" />
           <Typography variant="h4" color="blue-gray" className="mt-8 ">
             Sign up
           </Typography>

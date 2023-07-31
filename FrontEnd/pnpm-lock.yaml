@@ -37,6 +37,9 @@ dependencies:
     version: 1.2.0
 
 devDependencies:
+  '@types/lodash':
+    specifier: ^4.14.196
+    version: 4.14.196
   '@types/node':
     specifier: ^20.4.5
     version: 20.4.5
@@ -641,6 +644,10 @@ packages:
 
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
+    dev: true
+
+  /@types/lodash@4.14.196:
+    resolution: {integrity: sha512-22y3o88f4a94mKljsZcanlNWPzO0uBsBdzLAngf2tp533LzZcQzb6+eZPJ+vCTt+bqF2XnvT9gejTLsAcJAJyQ==}
     dev: true
 
   /@types/node@20.4.5:

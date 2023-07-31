@@ -13,13 +13,21 @@ export const authControllers = (
   userDbRepoImpl: userTypeRepositoryMongoDB
 ) => {
   const userRepoDb = userDbRepo(userDbRepoImpl());
-  const authServices  = authServiceInterfaceApp(authService())
+  const authServices = authServiceInterfaceApp(authService());
 
+  //user Register
   const userRegister = asyncHandler(async (req: Request, res: Response) => {
-      const user = req.body
-      console.log(user);
+    const user = req.body;
+    console.log(user);
 
-      const token = await registerUser(user, userRepoDb, authServices);
+    await registerUser(user, userRepoDb, authServices).then((token) => {
+      console.log("toeken agfter registartion : ", token);
+      res.json({
+        status: "success",
+        message: "User registered",
+        token,
+      });
+    });
   });
 
   return {
