@@ -16,6 +16,7 @@ const authRouter = (router: Router) => {
     )
 
     router.post('/register', controllers.userRegister)
+    router.post('/login', controllers.userLogin)
 
 
     return router

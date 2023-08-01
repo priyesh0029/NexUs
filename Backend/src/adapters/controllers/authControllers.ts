@@ -4,7 +4,7 @@ import { userTypeRepositoryMongoDB } from "../../framework/database/mongoDb/repo
 import { userTypeDbRepository } from "../../application/repositories/userDbRepositories";
 import { authServiceInterfaceType } from "../../application/services/authServiceInterface";
 import { authServiceType } from "../../framework/services/authServices";
-import { registerUser } from "../../application/useCases/addUser";
+import { loginUser, registerUser } from "../../application/useCases/auths/userAuths";
 
 export const authControllers = (
   authServiceInterfaceApp: authServiceInterfaceType,
@@ -21,7 +21,6 @@ export const authControllers = (
     console.log(user);
 
     await registerUser(user, userRepoDb, authServices).then((token) => {
-      console.log("toeken agfter registartion : ", token);
       res.json({
         status: "success",
         message: "User registered",
@@ -30,7 +29,23 @@ export const authControllers = (
     });
   });
 
+  const userLogin = asyncHandler(async(req:Request,res:Response)=>{
+    const user = req.body;
+    console.log(user);
+
+    await loginUser(user,userRepoDb,authServices).then((token)=>{
+      console.log("response",token);
+      res.json({
+        status: "success",
+        message: "User registered",
+        token: token
+      });
+    })
+
+  })
+
   return {
     userRegister,
+    userLogin
   };
 };

@@ -1,25 +1,28 @@
-import { authServiceType } from "../../framework/services/authServices"
+import { authServiceType } from "../../framework/services/authServices";
 
+export const authServiceInterface = (services: ReturnType<authServiceType>) => {
+  //password encryption
+  const encryptPassword = async (password: string) => {
+    return await services.encryptPassword(password);
+  };
 
-export const authServiceInterface = (services : ReturnType <authServiceType>)=>{
-    
-    //password encryption
-    const encryptPassword = async (password: string) => {
-        return await services.encryptPassword(password);
-    };
+  //generate token
 
-    //generate token
+  const generateToken = async (payload: string) => {
+    return await services.generateToken(payload);
+  };
 
-    const generateToken =  async(payload : string) =>{
-        return  await services.generateToken(payload)
-    }
+  //password compare
 
-    //password compare
+  const comparePassword = async (password: string, hashedPassword: string) => {
+    return await services.comparePassword(password, hashedPassword);
+  };
 
-    return{
-        encryptPassword,
-        generateToken
-    }
-}
+  return {
+    encryptPassword,
+    generateToken,
+    comparePassword,
+  };
+};
 
-export type authServiceInterfaceType = typeof authServiceInterface
+export type authServiceInterfaceType = typeof authServiceInterface;

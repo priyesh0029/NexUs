@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import configKeys from "../../config";
 
 export const authServices = () => {
@@ -13,9 +13,9 @@ export const authServices = () => {
 
   //generate token
 
-  const generateToken = async(payload: string) => {
+  const generateToken = async (payload: string) => {
     if (configKeys.JWT_SECRET) {
-      const token =  await jwt.sign({ payload }, configKeys.JWT_SECRET, {
+      const token = await jwt.sign({ payload }, configKeys.JWT_SECRET, {
         expiresIn: "5d",
       });
       return token;
@@ -25,9 +25,14 @@ export const authServices = () => {
   };
   //comparePassword
 
+  const comparePassword = async (password: string, hasedPassword: string) => {
+    return await bcrypt.compare(password, hasedPassword);
+  };
+
   return {
     encryptPassword,
-    generateToken
+    generateToken,
+    comparePassword,
   };
 };
 

@@ -1,8 +1,10 @@
-import { userTypeDbRepository } from "../repositories/userDbRepositories";
-import { authServiceInterfaceType } from "../services/authServiceInterface";
-import { user } from "../../entities/user";
-import AppError from "../../utilities/appError";
-import { HttpStatus } from "../../types/httpStatus";
+import { userTypeDbRepository } from "../../repositories/userDbRepositories";
+import { authServiceInterfaceType } from "../../services/authServiceInterface";
+import { user } from "../../../entities/user";
+import AppError from "../../../utilities/appError";
+import { HttpStatus } from "../../../types/httpStatus";
+
+//userRegister
 
 export const registerUser = async (
   userData: {
@@ -55,12 +57,42 @@ export const registerUser = async (
           HttpStatus.UNAUTHORIZED
         );
       }
-      return userRepository.RegisterUser(newUser).then(async(user) => {
+      return userRepository.RegisterUser(newUser).then(async (user) => {
         console.log("userdetailds after then :", user);
         const token = await authService.generateToken(user._id.toString());
-        console.log("tokrnn authservice.genrtatoken : ",token);
-        
-        return token
+
+        return token;
       });
     });
+};
+
+//userLogin
+
+export const loginUser = async (
+  userData: {
+    username: string;
+    password: string;
+  },
+  userRepository: ReturnType<userTypeDbRepository>,
+  authService: ReturnType<authServiceInterfaceType>
+) => {
+  const { username, password } = userData;
+
+  return await userRepository.findByProperty(username).then((user) => {
+    console.log("login details of user :", user[0].password);
+    if (user.length === 0) {
+      throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+    }
+    return authService
+      .comparePassword(password, user[0].password)
+      .then((status) => {
+        if (!status) {
+          throw new AppError(
+            `Incorrect password.try again!`,
+            HttpStatus.UNAUTHORIZED
+          );
+        }
+        return authService.generateToken(user[0]._id);
+      });
+  });
 };

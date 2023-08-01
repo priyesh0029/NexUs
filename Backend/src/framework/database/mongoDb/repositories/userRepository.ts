@@ -6,7 +6,7 @@ export const userRepositoryMongoDB = ()=>{
         console.log("user111111111 : ", params);
         const user: any = await User.find({
             $or: [{ userName: params }, { email: params }],
-          }).select('-password');
+          });
         console.log("user : ", user);
         return user
       };

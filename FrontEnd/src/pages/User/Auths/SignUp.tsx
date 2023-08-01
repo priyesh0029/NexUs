@@ -8,21 +8,28 @@ import {
 import { Link } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { register } from "../../api/apiConnections/authConnections";
+import { register } from "../../../api/apiConnections/User/authConnections";
 import { useNavigate } from "react-router-dom";
 import loadash from "lodash"
 import { ToastContainer,toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { setToken } from "../../../features/redux/slices/user/tokenSlice";
+import { useDispatch } from "react-redux";
 
 
 const SignUpForm = () => {
 
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const submitHandler = async(userData:any)=>{
     console.log("data of user register = ",userData);
     let response = await register(userData)
-    if(response ==='success'){
+    if(response.status ==='success'){
+      const token = response.token
+      console.log(token);
+      dispatch(setToken(token))
+      
       // navigate('/')
     }else{
       console.log("signUp failed");
@@ -184,24 +191,7 @@ const SignUpForm = () => {
                 ) : null}
               </div>
             </div>
-            {/* <Checkbox
-          label={
-            <Typography
-              variant="small"
-              color="gray"
-              className="flex items-center font-normal"
-            >
-              I agree the
-              <a
-                href="#"
-                className="font-medium transition-colors hover:text-blue-500"
-              >
-                &nbsp;Terms and Conditions
-              </a>
-            </Typography>
-          }
-          containerProps={{ className: "-ml-2.5" }}
-        /> */}
+           
             <Button type="submit" className="mt-6 w-28 mx-40" fullWidth>
               Signn up
             </Button>
