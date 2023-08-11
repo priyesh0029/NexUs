@@ -60,8 +60,7 @@ export const registerUser = async (
       return userRepository.RegisterUser(newUser).then(async (user) => {
         console.log("userdetailds after then :", user);
         const token = await authService.generateToken(user._id.toString());
-
-        return token;
+        return { token, user };
       });
     });
 };
@@ -78,21 +77,22 @@ export const loginUser = async (
 ) => {
   const { username, password } = userData;
 
-  return await userRepository.findByProperty(username).then((user) => {
-    console.log("login details of user :", user[0].password);
-    if (user.length === 0) {
-      throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
-    }
-    return authService
-      .comparePassword(password, user[0].password)
-      .then((status) => {
-        if (!status) {
-          throw new AppError(
-            `Incorrect password.try again!`,
-            HttpStatus.UNAUTHORIZED
-          );
-        }
-        return authService.generateToken(user[0]._id);
-      });
-  });
+  return await userRepository.findByProperty(username)
+    .then((user) => {
+      console.log("login details of user :", user[0].password);
+      if (user.length === 0) {
+        throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+      }
+      return authService
+        .comparePassword(password, user[0].password)
+        .then(async(status) => {
+          if (!status) {
+            throw new AppError(
+              `Incorrect password.try again!`,
+              HttpStatus.UNAUTHORIZED
+            );
+          }
+          return { token: await authService.generateToken(user[0]._id), user };
+        });
+    });
 };

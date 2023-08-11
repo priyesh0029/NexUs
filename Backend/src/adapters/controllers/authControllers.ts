@@ -29,6 +29,8 @@ export const authControllers = (
     });
   });
 
+  //userLogin
+
   const userLogin = asyncHandler(async(req:Request,res:Response)=>{
     const user = req.body;
     console.log(user);

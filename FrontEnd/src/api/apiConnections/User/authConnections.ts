@@ -4,7 +4,13 @@ import { toast } from "react-toastify";
 interface RegisterResponse {
   message?: any;
   status: string;
-  token?: string;
+  userInfo?: {
+    token: string;
+    user: {
+      name: string;
+      userName: string;
+    };
+  };
 }
 
 interface RegisterFormValues {
@@ -25,8 +31,14 @@ export const register = async (userData: RegisterFormValues): Promise<any> => {
     console.log("response first : ", response);
     if (response.data.status === "success") {
       let signupResponse: RegisterResponse = {
-        token: response.data.token,
         status: response.data.status,
+        userInfo: {
+          token: response.data.token.token,
+          user: {
+            name: response.data.token.user.name,
+            userName: response.data.token.user.userName,
+          },
+        },
       };
 
       toast.success("Registration successful");
@@ -54,8 +66,14 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
     console.log("response first : ", response);
     if (response.data.status === "success") {
       let loginResponse: RegisterResponse = {
-        token: response.data.token,
         status: response.data.status,
+        userInfo: {
+          token: response.data.token.token,
+          user: {
+            name: response.data.token.user[0].name,
+            userName: response.data.token.user[0].userName,
+          },
+        },
       };
 
       toast.success("Registration successful");
@@ -66,8 +84,8 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
     }
   } catch (error) {
     const errorMessage =
-    (error as any)?.response?.data?.message ||
-    "something went wrong! try again.";
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
     console.log("response error : ", errorMessage);
     toast.error(errorMessage);
     throw new Error(errorMessage); // Throw the error to be caught by the caller

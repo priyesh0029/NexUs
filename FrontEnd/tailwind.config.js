@@ -5,8 +5,13 @@ module.exports = withMT({
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Open Sans", "Roboto", "Arial", "sans-serif"],
+        serif: ["Merriweather", "serif"],
+      },
       spacing: {
         '100': '28rem', // You can adjust the value as needed.
+        '110' :'38rem'
       },
     },
   },
