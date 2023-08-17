@@ -2,54 +2,160 @@ import asyncHandler from "express-async-handler";
 import { postRepositoryInterfaceType } from "../../application/repositories/postDbrepository";
 import { postRepositoryMongoDbType } from "../../framework/database/mongoDb/repositories/postRepository";
 import { Request, Response } from "express";
-import { getAllPosts, postCreate } from "../../application/useCases/post/post";
+import {
+  addComment,
+  addReply,
+  commentLikeHandler,
+  getAllComment,
+  getAllPosts,
+  likeHandler,
+  postCreate,
+  replyLikeHandler,
+} from "../../application/useCases/post/post";
 
 export const postControllers = (
-    postRepository : postRepositoryInterfaceType,
-    postRepoMongoImp : postRepositoryMongoDbType
-    )=>{
-    const postRepo = postRepository(postRepoMongoImp())
+  postRepository: postRepositoryInterfaceType,
+  postRepoMongoImp: postRepositoryMongoDbType
+) => {
+  const postRepo = postRepository(postRepoMongoImp());
 
-    //createPost
-    const createPost = asyncHandler(async(req:Request,res:Response)=>{
-       
-
-            let media = req?.files
-            let filenames
-            if( media !==undefined && media.length !==0){
-
-                filenames = (media as Express.Multer.File[]).map(element=>element.filename)
-            }
-            const {caption,userName} = req.body
-            console.log("postvfrom frontend : ",req.files,filenames, caption,userName);
-            const postDetails = {filenames,caption,userName}
-            await postCreate(postDetails,postRepo).then((newPost)=>{
-                console.log("contollers new  post response : ", newPost);
-                
-                res.status(200).json({
-                    status: 'upload-success',
-                    newPost
-                })
-            })
-        
-    })
-
-    //getAllPosts
-
-    const getAllPost = asyncHandler(async(req:Request,res:Response)=>{
-        await getAllPosts(postRepo).then((allPosts)=>{
-            console.log("contollers all post response : ", allPosts);
-
-            res.status(200).json({
-                status: "success",
-                allPosts
-            })
-        })
-    })
-
-    return{
-        createPost,
-        getAllPost
+  //createPost
+  const createPost = asyncHandler(async (req: Request, res: Response) => {
+    let media = req?.files;
+    let filenames;
+    if (media !== undefined && media.length !== 0) {
+      filenames = (media as Express.Multer.File[]).map(
+        (element) => element.filename
+      );
     }
-}
+    const { caption, userName } = req.body;
+    console.log(
+      "postvfrom frontend : ",
+      req.files,
+      filenames,
+      caption,
+      userName
+    );
+    const postDetails = { filenames, caption, userName };
+    await postCreate(postDetails, postRepo).then((newPost) => {
+      console.log("contollers new  post response : ", newPost);
 
+      res.status(200).json({
+        status: "success",
+        newPost,
+      });
+    });
+  });
+
+  //getAllPosts
+
+  const getAllPost = asyncHandler(async (req: Request, res: Response) => {
+    await getAllPosts(postRepo).then((allPosts) => {
+      console.log(
+        "contollers all post response : ",
+        allPosts,
+        req.query.userId
+      );
+
+      res.status(200).json({
+        status: "success",
+        allPosts,
+      });
+    });
+  });
+
+  //to handle like
+
+  const handleLike = asyncHandler(async (req: Request, res: Response) => {
+    const postDetail = req.body;
+    console.log("contollers like postDetails : ", postDetail);
+    await likeHandler(postDetail, postRepo).then((response) => {
+      console.log("contollers like response : ", response);
+
+      res.status(200).json({
+        status: "success",
+        response,
+      });
+    });
+  });
+
+  const postComment = asyncHandler(async (req: Request, res: Response) => {
+    const commentDeatils = req.body;
+    console.log("contollers like commentDeatils : ", commentDeatils);
+    await addComment(commentDeatils, postRepo).then((newComment) => {
+      console.log("contollers like response : ", newComment);
+
+      res.status(200).json({
+        status: "success",
+        newComment,
+      });
+    });
+  });
+
+  const getComments = asyncHandler(async (req: Request, res: Response) => {
+    const postId = req.query.param;
+    console.log("contollers like comment postiD : ", typeof postId);
+    if (typeof postId === 'string')
+      await getAllComment(postId, postRepo).then((comments) => {
+        console.log("contollers like response : ", comments);
+
+        res.status(200).json({
+          status: "success",
+          comments,
+        });
+      });
+  });
+
+  const commentLike =  asyncHandler(async (req: Request, res: Response) => {
+    const commentDetail = req.body;
+    console.log("contollers like postDetails : ", commentDetail);
+    await commentLikeHandler(commentDetail, postRepo).then((response) => {
+      console.log("contollers like response : ", response);
+
+      res.status(200).json({
+        status: "success",
+        response,
+      });
+    });
+  });
+
+  const replycomment = asyncHandler(async (req: Request, res: Response) => {
+    const commentDeatils = req.body;
+    console.log("contollers like commentDeatils : ", commentDeatils);
+    await addReply(commentDeatils, postRepo).then((newComment) => {
+      console.log("contollers like response : ", newComment);
+
+      res.status(200).json({
+        status: "success",
+        newComment,
+      });
+    });
+  });
+
+  //manage like to a reply
+
+  const replylike =  asyncHandler(async (req: Request, res: Response) => {
+    const replyLikeDetail = req.body;
+    console.log("contollers like postDetails : ", replyLikeDetail);
+    await replyLikeHandler(replyLikeDetail, postRepo).then((state) => {
+      console.log("contollers like response : ", state);
+
+      res.status(200).json({
+        status: "success",
+        state,
+      });
+    });
+  });
+
+
+  return {
+    createPost,
+    getAllPost,
+    handleLike,
+    postComment,
+    getComments,
+    commentLike,
+    replycomment,
+    replylike
+  };
+};

@@ -15,7 +15,7 @@ export default defineConfig({
   },
   define: {
     'process.env.BASE_URL': JSON.stringify(process.env.BASE_URL),
-    'process.env.SERVER_URL': JSON.stringify(process.env.SERVER_URL),
+    'process.env.SERVER_URL': JSON.stringify(process.env.SERVER_URL)
   },
 })
 

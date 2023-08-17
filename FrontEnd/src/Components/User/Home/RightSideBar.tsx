@@ -1,5 +1,5 @@
 import { Card, Typography, List } from "@material-tailwind/react";
-import { ShoppingBagIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
 
 
@@ -23,14 +23,14 @@ const RightSideBar = () => {
         </div>
       </div>
       <List className="w-80">
-        <div className="flex justify-between my-5">
+        <div className="flex justify-between my-2">
           <div className="text-sm">suggested for you</div>
-          <div className="text-sm">see all</div>
+          <div className="text-sm text-blue-900">see all</div>
         </div>
 
-        <div className="flex justify-between my-5">
+        <div className="flex justify-between my-2">
           <div className="text-md flex flex-row gap-2">
-            <ShoppingBagIcon className="h-10 w-10" />
+            <UserCircleIcon className="h-12 w-12" />
             <div>
               <div className="flex flex-col  font-semibold text-gray-900">
                 Sterin paul
@@ -41,9 +41,9 @@ const RightSideBar = () => {
           <div className="text-sm text-blue-900 mt-1">Follow</div>
         </div>
 
-        <div className="flex justify-between my-5">
+        <div className="flex justify-between my-2">
           <div className="text-md flex flex-row gap-2">
-            <ShoppingBagIcon className="h-10 w-10" />
+            <UserCircleIcon className="h-12 w-12" />
             <div>
               <div className="flex flex-col  font-semibold text-gray-900">
                 Sagar Sam
@@ -53,9 +53,9 @@ const RightSideBar = () => {
           </div>
           <div className="text-sm text-blue-900 mt-1">Follow</div>
         </div>
-        <div className="flex justify-between my-5">
+        <div className="flex justify-between my-2">
           <div className="text-md flex flex-row gap-2">
-            <ShoppingBagIcon className="h-10 w-10" />
+            <UserCircleIcon className="h-12 w-12"/>
             <div>
               <div className="flex flex-col  font-semibold text-gray-900">
                 Adal adwait vikas
@@ -66,9 +66,9 @@ const RightSideBar = () => {
           <div className="text-sm text-blue-900 mt-1">Follow</div>
         </div>
 
-        <div className="flex justify-between my-5">
+        <div className="flex justify-between my-2">
           <div className="text-md flex flex-row gap-2">
-            <ShoppingBagIcon className="h-10 w-10" />
+            <UserCircleIcon className="h-12 w-12" />
             <div>
               <div className="flex flex-col  font-semibold text-gray-900">
                 Abhilash

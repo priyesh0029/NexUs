@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
 import { Carousel } from "@material-tailwind/react";
 import { PhotoIcon, ArrowLongLeftIcon } from "@heroicons/react/24/solid";
@@ -8,6 +8,7 @@ import {
   clearMedia,
   setCaption,
   setMedia,
+  setNewPost,
 } from "../../../features/redux/slices/user/createPostSlice";
 import { createPost } from "../../../api/apiConnections/User/postConnections";
 
@@ -130,30 +131,39 @@ const CreatePost: React.FC<CreatePostProps> = (props) => {
   //   setOpen(open);
   // }, [open]);
 
-  console.log("value of prop :", open);
+  console.log("value of prop :", open); 
 
   const submitHandler = async () => {
-    console.log("post in front end mediaPost1 : ", mediaPost);
+    try {
+      console.log("post in front end mediaPost1 : ", mediaPost);
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    mediaPost.forEach((file) => {
-      formData.append(`image`, file);
-    });
-    formData.append(`caption`, captionPost);
-    formData.append(`userName`, user.userName);
-    console.log("post in front end mediaPost2 : ", mediaPost);
-    // let post :{
-    //   formData: FormData;
-    //   captionPost: string;
-    // } = { formData,captionPost}
+      mediaPost.forEach((file) => {
+        formData.append(`image`, file);
+      });
+      formData.append(`caption`, captionPost);
+      formData.append(`userName`, user.userName);
+      console.log("post in front end mediaPost2 : ", mediaPost);
+      // let post :{
+      //   formData: FormData;
+      //   captionPost: string;
+      // } = { formData,captionPost}
 
-    formData.forEach((key, value) => {
-      console.log(key, value);
-    });
-    console.log("post in front end : ", formData);
+      formData.forEach((key, value) => {
+        console.log(key, value);
+      });
+      console.log("post in front end : ", formData);
 
-    let response = await createPost(formData);
+      let response = await createPost(formData);
+      if (response.status === "success") {
+        dispatch(clearMedia());
+        dispatch(clearCaption())
+        dispatch(setNewPost(response.post))
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

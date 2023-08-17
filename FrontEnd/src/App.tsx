@@ -21,7 +21,7 @@ const App = () => {
           <Route path="/signup" element={<SignUpForm/>} />
         </Routes>
         <Routes>
-          <Route path="/home" element={<Home/>} />
+          <Route path="/home" element={token ? <Home/> :<LoginForm />} />
         </Routes>
       </ThemeProvider>
     </Router>

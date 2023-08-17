@@ -11,6 +11,21 @@
   margin: 0;
   
 }
+@keyframes heartBeat {
+  60%,100% {
+    transform: scale(1.1);
+  }
+  /* 20%, 40%, 60%, 80% {
+    transform: scale(1.1);
+  } */
+  0%,100%{
+    transform: scale(0.6);
+  }
+}
+
+.heart-icon-path {
+  animation: heartBeat 0.4s ease ; /* Apply the animation to the heart icon path */
+}
 
   /* color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);

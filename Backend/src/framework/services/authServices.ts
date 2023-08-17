@@ -29,10 +29,18 @@ export const authServices = () => {
     return await bcrypt.compare(password, hasedPassword);
   };
 
+  const verifyToken = (token:string) => {
+    if (configKeys.JWT_SECRET) {
+        
+        const isVerify =  jwt.verify(token, configKeys.JWT_SECRET)
+        return isVerify;
+    }
+};
   return {
     encryptPassword,
     generateToken,
     comparePassword,
+    verifyToken
   };
 };
 
