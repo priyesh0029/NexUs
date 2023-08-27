@@ -11,7 +11,10 @@ import {
   likeHandler,
   postCreate,
   replyLikeHandler,
+  userPosts,
 } from "../../application/useCases/post/post";
+import AppError from "../../utilities/appError";
+import { HttpStatus } from "../../types/httpStatus";
 
 export const postControllers = (
   postRepository: postRepositoryInterfaceType,
@@ -147,6 +150,31 @@ export const postControllers = (
     });
   });
 
+  //to get all posts by user
+
+  const getUserPosts = asyncHandler(async(req:Request,res:Response)=>{
+    const user = req.query.param;
+    if(typeof user === "string"){
+
+      await userPosts(user,postRepo).then((posts) => {
+        console.log(
+          "contollers all post response : ",
+          posts,
+        );
+  
+        res.status(200).json({
+          status: "success",
+          posts,
+        });
+      });
+    }else{
+      throw new AppError(
+       ` Error occured fetching posts of ${user}.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  })
+
 
   return {
     createPost,
@@ -156,6 +184,7 @@ export const postControllers = (
     getComments,
     commentLike,
     replycomment,
-    replylike
+    replylike,
+    getUserPosts
   };
 };

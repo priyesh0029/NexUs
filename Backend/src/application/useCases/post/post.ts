@@ -67,14 +67,14 @@ export const getAllComment = async (
   postId: string,
   repository: ReturnType<postRepositoryInterfaceType>
 ) => {
-    return await repository.getAllComments(postId).then((response) => {
-      console.log("response of get all commmets usecase : ", response);
-      return response;
-    });
+  return await repository.getAllComments(postId).then((response) => {
+    console.log("response of get all commmets usecase : ", response);
+    return response;
+  });
 };
 
 //manage likes of a comment
-export const commentLikeHandler  = async (
+export const commentLikeHandler = async (
   commentDetails: {
     user: string;
     commentId: string;
@@ -119,7 +119,7 @@ export const addReply = async (
 export const replyLikeHandler = async (
   replyLikeDetail: {
     user: string;
-    replyId :string
+    replyId: string;
     commentId: string;
   },
   repository: ReturnType<postRepositoryInterfaceType>
@@ -128,6 +128,22 @@ export const replyLikeHandler = async (
     if (!response) {
       throw new AppError(
         "Error occured while liking posts.try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+export const userPosts = async (
+  user: string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.getUserPosts(user).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured fetching posts of ${user}.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     } else {

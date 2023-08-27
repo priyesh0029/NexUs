@@ -151,7 +151,7 @@ const CreatePost: React.FC<CreatePostProps> = (props) => {
       // } = { formData,captionPost}
 
       formData.forEach((key, value) => {
-        console.log(key, value);
+        console.log("post in front end formdata key and value  : ",key, value);
       });
       console.log("post in front end : ", formData);
 

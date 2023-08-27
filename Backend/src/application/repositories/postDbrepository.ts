@@ -38,6 +38,10 @@ export const postRepositoryInterface = (
     commentId: string;
   }) => await repository.handleReplyLike(replyLikeDetails);
 
+  //to get all  posts of user
+
+  const getUserPosts = async(user:string)=>await repository.getUserPosts(user)
+
   return {
     uploadPost,
     getAllPosts,
@@ -46,7 +50,8 @@ export const postRepositoryInterface = (
     getAllComments,
     handleCommentLike,
     postReply,
-    handleReplyLike
+    handleReplyLike,
+    getUserPosts
   };
 };
 

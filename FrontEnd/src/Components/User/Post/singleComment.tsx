@@ -30,7 +30,7 @@ const SingleComment: React.FC<SingleComment> = (props) => {
     setOpen(!open);
   };
 
-  const handleClick = (user:string,commentId:string) => {
+  const handleClick = (user: string, commentId: string) => {
     focusInput(user, commentId);
   };
 
@@ -54,11 +54,19 @@ const SingleComment: React.FC<SingleComment> = (props) => {
   return (
     <div className="flex pt-3 justify-between items-start" key={_id}>
       <div className="flex">
-        <UserCircleIcon className="h-14 w-14 text-gray-700" />
-        <div className="flex flex-col">
-          <div className="flex items-start gap-3 ">
-            <p className="text-md font-bold">{userName}</p>
-            <p className="text-sm pt-1">{comment}</p>
+        <div>
+          <UserCircleIcon className="h-14 w-14 text-gray-700 " />
+        </div>
+        <div className="flex flex-col ">
+          <div className="flex items-start  ">
+            <div className="w-[320px] break-all flex">
+              <p className="text-md font-bold">
+                {userName}{" "}
+                <span className="comment-style text-md font-normal" aria-hidden="true">
+                  {comment}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="flex items-start  text-sm gap-5">
             <p>{moment(createdAt).startOf("minutes").fromNow()}</p>
@@ -80,8 +88,12 @@ const SingleComment: React.FC<SingleComment> = (props) => {
               </div>
               {viewReply &&
                 reply.map((eachReply) => (
-                  <div className="flex flex-col"  key={eachReply._id}>
-                    <ReplyComment commentReply={eachReply} handleClick={handleClick} commentId ={_id}  />
+                  <div className="flex flex-col" key={eachReply._id}>
+                    <ReplyComment
+                      commentReply={eachReply}
+                      handleClick={handleClick}
+                      commentId={_id}
+                    />
                   </div>
                 ))}
             </>

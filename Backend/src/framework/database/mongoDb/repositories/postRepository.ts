@@ -202,6 +202,15 @@ return false;
    
 };
 
+const getUserPosts = async(user:string)=>{
+      const posts = await Post.find({postedUser:user}).sort({ createdAt: -1 });
+      if(posts.length !==0){
+        return posts
+      }else{
+        return false
+      }
+}
+
   return {
     createPost,
     getAllposts,
@@ -210,7 +219,8 @@ return false;
     getAllComments,
     handleCommentLike,
     postReply,
-    handleReplyLike
+    handleReplyLike,
+    getUserPosts
   };
 };
 

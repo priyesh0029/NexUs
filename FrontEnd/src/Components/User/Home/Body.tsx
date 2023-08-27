@@ -36,7 +36,7 @@ const HomeBody = () => {
       <div className="flex justify-center ">
         <Stories />
       </div>
-      <div className="flex px-32 items-center flex-col ">
+      <div className="flex lg:px-32 items-center flex-col  ">
         {allPost.map((post) => (
           <div key={post._id}>
             <SinglePost {...post} />

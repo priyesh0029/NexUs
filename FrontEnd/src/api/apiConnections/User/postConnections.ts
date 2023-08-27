@@ -169,3 +169,21 @@ export const handleReplyLike = async(user:string,replyId:string,commentId:string
     
   }
 }
+
+//get all post of user
+
+export const getUserPost = async(user:string):Promise<any>=>{
+
+  try{
+    const response:any = await baseURL.get(`/post/userposts?param=${user}`)
+    console.log("response of user Post 222 : ",response);
+    if(response.data.status === 'success'){
+      const posts = response.data.posts
+      return posts
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}

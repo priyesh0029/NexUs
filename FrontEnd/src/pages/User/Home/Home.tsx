@@ -7,10 +7,10 @@ const Home = () => {
       <div className="flex justify-center">
         <DefaultSidebar />
       </div>
-      <div className="flex justify-center w-[calc(100vw-38rem)] -ml-24 bg-white">
+      <div className="flex justify-center xl:w-[calc(100vw-38rem)] xl:-ml-24 w-full ml-0 bg-white">
         <HomeBody />
       </div>
-      <div className="flex justify-center">
+      <div className="xl:flex xl:justify-center hidden ">
         <RightSideBar />
       </div>
     </div>

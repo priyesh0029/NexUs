@@ -6,6 +6,7 @@ import SignUpForm from "./pages/User/Auths/SignUp";
 import LoginForm from "./pages/User/Auths/Login";
 import Home from "./pages/User/Home/Home";
 import { useSelector } from "react-redux";
+import Profile from "./pages/User/Profile/Profile";
 
 const App = () => {
   const token = useSelector((store:{token:{token:string}}) => store.token.token)
@@ -22,6 +23,9 @@ const App = () => {
         </Routes>
         <Routes>
           <Route path="/home" element={token ? <Home/> :<LoginForm />} />
+        </Routes>
+        <Routes>
+          <Route path="/profile" element={token ? <Profile/> :<LoginForm />} />
         </Routes>
       </ThemeProvider>
     </Router>

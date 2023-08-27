@@ -30,9 +30,9 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
     setOpen(!open);
   };
 
-  const replyLikeHandler = async() => {
+  const replyLikeHandler = async () => {
     setLike(!like);
-    const response = await handleReplyLike(user.userName, _id,commentId);
+    const response = await handleReplyLike(user.userName, _id, commentId);
     if (response.status) {
       if (response.state === "removed") {
         const updatedLikedArr = replyLikedArr.filter(
@@ -48,11 +48,22 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
   return (
     <div className="flex pt-3 justify-between items-start">
       <div className="flex">
-        <UserCircleIcon className="h-14 w-14 text-gray-700" />
+        <div>
+          <UserCircleIcon className="h-14 w-14 text-gray-700" />
+        </div>
         <div className="flex flex-col">
-          <div className="flex items-start gap-3 ">
-            <p className="text-md font-bold">{userName}</p>
-            <p className="text-sm pt-1">{comment}</p>
+          <div className="flex items-start  ">
+            <div className="w-[220px] break-all flex">
+              <p className="text-md font-bold">
+                {userName}{" "}
+                <span
+                  className="comment-style text-md font-normal"
+                  aria-hidden="true"
+                >
+                  {comment}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="flex items-start  text-sm gap-5">
             <p>{moment(createdAt).startOf("minutes").fromNow()}</p>
@@ -67,7 +78,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           </div>
         </div>
       </div>
-      <div className="pt-4 pe-6">
+      <div className="pt-4 ">
         <button onClick={replyLikeHandler}>
           {!like ? (
             <HeartIcon className="h-4 w-4" />

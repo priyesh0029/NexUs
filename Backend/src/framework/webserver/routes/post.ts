@@ -27,6 +27,8 @@ const postRouter = (router:Router)=>{
 
         router.post('/replylike',controllers.replylike)
 
+        router.get('/userposts',controllers.getUserPosts)
+
 
 
     return router

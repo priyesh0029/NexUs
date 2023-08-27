@@ -1,6 +1,8 @@
 import { Card, Typography, List } from "@material-tailwind/react";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getusersList } from "../../../api/apiConnections/User/rightSidebarConnctions";
 
 
 
@@ -9,6 +11,14 @@ const RightSideBar = () => {
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
   console.log("userSlice : ", user.name);
+
+  useEffect(()=>{
+    getuserList
+  },[])
+
+  const getuserList = async()=>{
+    const response = await getusersList()
+  }
 
   return (
     // <Card className="h-full flex fixed right-0 max-w-[24rem] p-4 rounded-none border-1 border-black">

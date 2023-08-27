@@ -17,7 +17,7 @@ interface UserInfo {
 
   interface Comment{
     _id :string
-    postId:string
+    postId :string
     userName:string
     comment:string
     liked:string[],
