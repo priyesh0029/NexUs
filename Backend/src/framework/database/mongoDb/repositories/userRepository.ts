@@ -35,10 +35,27 @@ export const userRepositoryMongoDB = () => {
     return user;
   };
 
+  //upload dp of user
+
+  const uploadDp = async (user: string, filename: string) => {
+    const newDp = await User.findOneAndUpdate(
+      { userName: user },
+      { $set: { dp: filename } },
+      { new: true }
+    );
+
+    if (newDp !== null) {
+      console.log("user postedReply complete :", newDp);
+      return newDp.dp;
+    } else {
+      return false;
+    }
+  };
   return {
     findByProperty,
     findByNumber,
     addUser,
+    uploadDp
   };
 };
 

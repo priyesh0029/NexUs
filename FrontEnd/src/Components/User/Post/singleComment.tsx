@@ -6,15 +6,18 @@ import { useSelector } from "react-redux";
 import { handleCommentLike } from "../../../api/apiConnections/User/postConnections";
 import LikeModal from "./likeModal";
 import ReplyComment from "./replyComment";
+import { Link } from "react-router-dom";
 
 interface SingleComment {
   postedComment: Comment;
   focusInput: (username: string, _id: string) => void;
   setComment: React.Dispatch<React.SetStateAction<string>>;
+  openComment: boolean;
+  setOpencomment: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SingleComment: React.FC<SingleComment> = (props) => {
-  const { postedComment, focusInput } = props;
+  const { postedComment, focusInput, openComment, setOpencomment } = props;
   const { _id, userName, comment, createdAt, reply, liked } = postedComment;
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
@@ -51,6 +54,9 @@ const SingleComment: React.FC<SingleComment> = (props) => {
   const viewCommentReply = () => {
     setViewReply(!viewReply);
   };
+  const handleOpen = () => {
+    setOpencomment(!openComment);
+  };
   return (
     <div className="flex pt-3 justify-between items-start" key={_id}>
       <div className="flex">
@@ -61,8 +67,13 @@ const SingleComment: React.FC<SingleComment> = (props) => {
           <div className="flex items-start  ">
             <div className="w-[320px] break-all flex">
               <p className="text-md font-bold">
-                {userName}{" "}
-                <span className="comment-style text-md font-normal" aria-hidden="true">
+                <Link to={`/profile/${userName}`} onClick={handleOpen}>
+                  {userName}{" "}
+                </Link>
+                <span
+                  className="comment-style text-md font-normal"
+                  aria-hidden="true"
+                >
                   {comment}
                 </span>
               </p>
@@ -93,6 +104,8 @@ const SingleComment: React.FC<SingleComment> = (props) => {
                       commentReply={eachReply}
                       handleClick={handleClick}
                       commentId={_id}
+                      openComment={openComment}
+                      setOpencomment={setOpencomment}
                     />
                   </div>
                 ))}

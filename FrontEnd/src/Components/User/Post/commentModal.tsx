@@ -16,8 +16,8 @@ import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
 import SingleComment from "./singleComment";
 
 interface CommentModalProps {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  openComment: boolean;
+  setOpencomment: React.Dispatch<React.SetStateAction<boolean>>;
   imageArr: string[];
   createdAt: string;
   postedUser: string;
@@ -32,8 +32,8 @@ interface CommentModalProps {
 
 const CommentModal: React.FC<CommentModalProps> = (props) => {
   const {
-    open,
-    setOpen,
+    openComment,
+    setOpencomment,
     imageArr,
     createdAt,
     postedUser,
@@ -50,7 +50,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
 
-  const handleOpen = () => setOpen(!open);
+  const handleOpen = () => setOpencomment(!openComment);
   const [openLike, setOpenLike] = useState(false);
   const [comment, setComment] = useState("");
   const [commentId, setCommentId] = useState("");
@@ -112,7 +112,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
   return (
     <>
       <Dialog
-        open={open}
+        open={openComment}
         handler={handleOpen}
         animate={{
           mount: { scale: 1, y: 0 },
@@ -155,6 +155,8 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                     focusInput={focusInput}
                     setComment={setComment}
                     key={index}
+                    openComment ={openComment}
+                    setOpencomment ={setOpencomment}
                   />
                 ))}
               </div>

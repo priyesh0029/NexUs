@@ -25,7 +25,7 @@ const App = () => {
           <Route path="/home" element={token ? <Home/> :<LoginForm />} />
         </Routes>
         <Routes>
-          <Route path="/profile" element={token ? <Profile/> :<LoginForm />} />
+          <Route path="/profile/:proId" element={token ? <Profile/> :<LoginForm />} />
         </Routes>
       </ThemeProvider>
     </Router>

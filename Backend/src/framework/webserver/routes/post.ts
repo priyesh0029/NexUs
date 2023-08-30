@@ -2,7 +2,7 @@ import { Router } from "express";
 import { postControllers } from "../../../adapters/controllers/postControllers";
 import { postRepositoryInterface } from "../../../application/repositories/postDbrepository";
 import { postRepositoryMongoDb } from "../../database/mongoDb/repositories/postRepository";
-import uploadsMulter from "../middleware/multer";
+import {uploadsMulter} from "../middleware/multer";
 
 const postRouter = (router:Router)=>{
 

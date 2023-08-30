@@ -5,15 +5,18 @@ import LikeModal from "./likeModal";
 import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
 import { useSelector } from "react-redux";
 import { handleReplyLike } from "../../../api/apiConnections/User/postConnections";
+import { Link } from "react-router-dom";
 
 interface ReplyCommentProps {
   commentReply: Reply;
   handleClick: (username: string, _id: string) => void;
   commentId: string;
+  openComment: boolean;
+  setOpencomment: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
-  const { commentReply, handleClick, commentId } = props;
+  const { commentReply, handleClick, commentId,openComment,setOpencomment } = props;
   const { _id, userName, comment, liked, createdAt } = commentReply;
 
   const user = useSelector(
@@ -24,10 +27,10 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
 
   const [like, setLike] = useState(replyLikedStatus);
   const [replyLikedArr, setReplyLikedArr] = useState<string[]>(liked);
-  const [open, setOpen] = useState(false);
+  const [openReplyLike, setOpenReplyLike] = useState(false);
 
   const handleLikeModalClick = () => {
-    setOpen(!open);
+    setOpenReplyLike(!openReplyLike);
   };
 
   const replyLikeHandler = async () => {
@@ -45,6 +48,10 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
     }
   };
 
+  const handleOpen = () => {
+    setOpencomment(!openComment);
+  };
+
   return (
     <div className="flex pt-3 justify-between items-start">
       <div className="flex">
@@ -55,7 +62,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           <div className="flex items-start  ">
             <div className="w-[220px] break-all flex">
               <p className="text-md font-bold">
-                {userName}{" "}
+              <Link to={`/profile/${userName}`} onClick={handleOpen}>{userName}{" "}</Link>
                 <span
                   className="comment-style text-md font-normal"
                   aria-hidden="true"
@@ -87,7 +94,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           )}
         </button>
       </div>
-      {open && <LikeModal open={open} setOpen={setOpen} user={replyLikedArr} />}
+      {openReplyLike && <LikeModal open={openReplyLike} setOpen={setOpenReplyLike} user={replyLikedArr} />}
     </div>
   );
 };

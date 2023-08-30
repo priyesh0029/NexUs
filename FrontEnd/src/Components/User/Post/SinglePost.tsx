@@ -1,6 +1,6 @@
 import { Card, CardHeader, Carousel } from "@material-tailwind/react";
 
-import {  ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
 
 import {
   // HeartIcon as SolidHeartIcon,
@@ -17,6 +17,7 @@ import {
 import LikeModal from "./likeModal";
 import CommentModal from "./commentModal";
 import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
+import { Link } from "react-router-dom";
 
 const SinglePost = ({
   _id,
@@ -81,7 +82,9 @@ const SinglePost = ({
           <div className="flex items-start">
             <UserCircleIcon className="h-10 w-10 text-gray-700" />
             <div className="flex items-center">
-              <p className="text-md font-bold">{postedUser}</p>
+              <Link to={`/profile/${postedUser}`}>
+                <p className="text-md font-bold">{postedUser}</p>
+              </Link>
               <p className="text-sm ml-1">
                 .{moment(createdAt).startOf("minutes").fromNow()}
               </p>
@@ -131,8 +134,8 @@ const SinglePost = ({
           </p>
           {openComment && (
             <CommentModal
-              open={openComment}
-              setOpen={setOpencomment}
+              openComment={openComment}
+              setOpencomment={setOpencomment}
               imageArr={imgNames}
               createdAt={createdAt}
               postedUser={postedUser}

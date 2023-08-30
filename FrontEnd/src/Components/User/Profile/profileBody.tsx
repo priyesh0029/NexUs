@@ -9,13 +9,10 @@ import CommentModal from "../Post/commentModal";
 
 interface ProfileAreaProps {
   posts: Post[];
+  proId: string;
 }
 
-const ProfileBody: React.FC<ProfileAreaProps> = ({ posts }) => {
-  const user = useSelector(
-    (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
-  );
-
+const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
   const [like, setLike] = useState(false);
   const [likedArr, setLikedArr] = useState<string[]>([]);
   const [openComment, setOpencomment] = useState(false);
@@ -34,7 +31,7 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts }) => {
     createdAt,
     liked,
   }: Post) => {
-    const likeStatus = liked.some((person) => person === user.userName);
+    const likeStatus = liked.some((person) => person === proId);
     setLike(likeStatus);
     setLikedArr(liked);
     setPostId(_id);
@@ -42,7 +39,7 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts }) => {
     setImgNames(imgNames);
     setDescription(description);
     setCreatedAt(createdAt);
-    setCommentArr([])
+    setCommentArr([]);
     getComments(_id);
     setOpencomment(!openComment);
   };
@@ -73,8 +70,8 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts }) => {
       ))}
       {openComment && (
         <CommentModal
-          open={openComment}
-          setOpen={setOpencomment}
+          openComment={openComment}
+          setOpencomment={setOpencomment}
           imageArr={imgNames}
           createdAt={createdAt}
           postedUser={postedUser}
