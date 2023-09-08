@@ -11,6 +11,15 @@ const user = (router: Router) => {
 
   router.get('/user/:user',controllers.getUser)
 
+  router.get('/search',controllers.searchUser)
+
+  router.get('/usersList',controllers.getUsersList)
+
+  router.post('/followhandle',controllers.handleFollows)
+
+  router.post('/savepost',controllers.savePost)
+
+
   return router;
 };
 

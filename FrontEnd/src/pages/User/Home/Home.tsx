@@ -1,3 +1,4 @@
+
 import HomeBody from "../../../Components/User/Home/Body";
 import RightSideBar from "../../../Components/User/Home/RightSideBar";
 import DefaultSidebar from "../../../Components/User/Home/sideBar";
@@ -8,7 +9,7 @@ const Home = () => {
         <DefaultSidebar />
       </div>
       <div className="flex justify-center xl:w-[calc(100vw-38rem)] xl:-ml-24 w-full ml-0 bg-white">
-        <HomeBody />
+        <HomeBody/>
       </div>
       <div className="xl:flex xl:justify-center hidden ">
         <RightSideBar />

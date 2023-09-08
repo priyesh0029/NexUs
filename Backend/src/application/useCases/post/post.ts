@@ -63,15 +63,26 @@ export const addComment = async (
   });
 };
 
+//to get all comments of a post
 export const getAllComment = async (
   postId: string,
   repository: ReturnType<postRepositoryInterfaceType>
 ) => {
   return await repository.getAllComments(postId).then((response) => {
-    console.log("response of get all commmets usecase : ", response);
     return response;
   });
 };
+
+//to get all replies of a comment
+export const allCommentReplies = async (
+  commentId: string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.getAllCommentReplies(commentId).then((response) => {
+    return response;
+  });
+};
+
 
 //manage likes of a comment
 export const commentLikeHandler = async (
@@ -144,6 +155,24 @@ export const userPosts = async (
     if (!response) {
       throw new AppError(
         ` Error occured fetching posts of ${user}.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+export const editPost =  async (
+  postId: string,
+  description:string,
+  userId :string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.editUserPost(postId,description,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while editing post.please try again..!`,
         HttpStatus.BAD_REQUEST
       );
     } else {

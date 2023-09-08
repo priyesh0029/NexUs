@@ -15,8 +15,13 @@ export const postRepositoryInterface = (
     postId: string;
   }) => await repository.postComment(commentDeatils);
 
+  //to get all comments of a post
   const getAllComments = async (postId: string) =>
     await repository.getAllComments(postId);
+
+  //to get all comments of a post
+  const getAllCommentReplies = async (commentId: string) =>
+    await repository.getAllCommentReplies(commentId);
 
   //manage like of a comment
   const handleCommentLike = async (commentDetails: {
@@ -40,7 +45,17 @@ export const postRepositoryInterface = (
 
   //to get all  posts of user
 
-  const getUserPosts = async(user:string)=>await repository.getUserPosts(user)
+  const getUserPosts = async (user: string) =>
+    await repository.getUserPosts(user);
+
+  //to edit users post
+
+  const editUserPost = async (
+    postId: string,
+    description: string,
+    userId: string
+  ) => await repository.editUserPost(postId, description, userId);
+
 
   return {
     uploadPost,
@@ -51,7 +66,9 @@ export const postRepositoryInterface = (
     handleCommentLike,
     postReply,
     handleReplyLike,
-    getUserPosts
+    getUserPosts,
+    getAllCommentReplies,
+    editUserPost
   };
 };
 

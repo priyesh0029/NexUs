@@ -19,10 +19,11 @@ const createPostSlice = createSlice({
       liked: [],
       reports: [],
       _id: "",
+      dp: "",
       updatedAt: "",
       createdAt: "",
     },
-  } as CreatePostState,
+  } as unknown as CreatePostState,
   reducers: {
     setMedia: (state, action: PayloadAction<File[]>) => {
       state.media = action.payload;
@@ -45,9 +46,13 @@ const createPostSlice = createSlice({
         description: "",
         imgNames: [],
         isBlocked: false,
-        liked: [],
+        liked: [{
+          userName:"",
+          dp:""
+        }],
         reports: [],
         _id: "",
+        dp:"",
         updatedAt: "",
         createdAt: "",
       };

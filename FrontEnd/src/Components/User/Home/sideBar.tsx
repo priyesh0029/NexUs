@@ -6,6 +6,7 @@ import {
   ListItemPrefix,
   ListItemSuffix,
   Chip,
+  Avatar,
 } from "@material-tailwind/react";
 import {
   HomeIcon,
@@ -23,12 +24,13 @@ import { useState } from "react";
 import { clearUserInfo } from "../../../features/redux/slices/user/homeSlice";
 import { Link } from "react-router-dom";
 import SearchTab from "./SearchTab";
+import { POST_URL } from "../../../constants/constants";
 
 const DefaultSidebar = () => {
   const dispatch = useDispatch();
   // const [showCreatePost, setShowCreatePost] = useState(false);
   const [open, setOpen] = useState(false);
-  const [searchTabOpen,setSearchTabOpen] = useState(false)
+  const [searchTabOpen, setSearchTabOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(clearToken());
@@ -41,9 +43,9 @@ const DefaultSidebar = () => {
     setOpen(!open);
   };
 
-  const handleSearchTab = () =>{
-    setSearchTabOpen(!searchTabOpen)
-  }
+  const handleSearchTab = () => {
+    setSearchTabOpen(!searchTabOpen);
+  };
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
@@ -65,14 +67,19 @@ const DefaultSidebar = () => {
               Home
             </ListItem>
           </Link>
-          <ListItem  onClick={handleSearchTab}>
+          <ListItem onClick={handleSearchTab}>
             <ListItemPrefix>
               <MagnifyingGlassIcon className="h-5 w-5" />
             </ListItemPrefix>
             Search
           </ListItem>
           <ListItem>
-          {searchTabOpen && <SearchTab openSearchTab = {searchTabOpen} setOpenSearchTab={setSearchTabOpen}/>}
+            {searchTabOpen && (
+              <SearchTab
+                openSearchTab={searchTabOpen}
+                setOpenSearchTab={setSearchTabOpen}
+              />
+            )}
             <ListItemPrefix>
               <EnvelopeIcon className="h-5 w-5" />
             </ListItemPrefix>
@@ -97,7 +104,15 @@ const DefaultSidebar = () => {
           <Link to={`/profile/${user.userName}`}>
             <ListItem>
               <ListItemPrefix>
-                <UserCircleIcon className="h-5 w-5" />
+                {user.dp ? (
+                  <Avatar
+                    src={POST_URL + `${user.dp}.jpg`}
+                    alt="avatar"
+                    className="h-8 w-8 "
+                  />
+                ) : (
+                  <UserCircleIcon className="h-5 w-5 text-gray-700" />
+                )}
               </ListItemPrefix>
               Profile
             </ListItem>
@@ -121,13 +136,19 @@ const DefaultSidebar = () => {
           <Link to={"/home"}>
             <HomeIcon className="h-6 w-6 text-gray-700" />
           </Link>
-          <Link to={"/search"}>
-            <MagnifyingGlassIcon className="h-6 w-6 text-gray-700" />
-          </Link>
+
+          <MagnifyingGlassIcon
+            className="h-6 w-6 text-gray-700"
+            onClick={handleSearchTab}
+          />
+          {/* {searchTabOpen && <SearchTab openSearchTab = {searchTabOpen} setOpenSearchTab={setSearchTabOpen}/>} */}
           <Link to={"/messages"}>
             <EnvelopeIcon className="h-6 w-6 text-gray-700" />
           </Link>
-            <SquaresPlusIcon className="h-6 w-6 text-gray-700" onClick={handleListItemClick}/>
+          <SquaresPlusIcon
+            className="h-6 w-6 text-gray-700"
+            onClick={handleListItemClick}
+          />
           <Link to={`/profile/${user.userName}`}>
             <UserCircleIcon className="h-6 w-6 text-gray-700" />
           </Link>

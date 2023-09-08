@@ -6,6 +6,9 @@ import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
 import { useSelector } from "react-redux";
 import { handleReplyLike } from "../../../api/apiConnections/User/postConnections";
 import { Link } from "react-router-dom";
+import { Avatar } from "@material-tailwind/react";
+import { POST_URL } from "../../../constants/constants";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 interface ReplyCommentProps {
   commentReply: Reply;
@@ -17,16 +20,18 @@ interface ReplyCommentProps {
 
 const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
   const { commentReply, handleClick, commentId,openComment,setOpencomment } = props;
-  const { _id, userName, comment, liked, createdAt } = commentReply;
+  
+    const { _id, userName, comment, liked,dp,createdAt } = commentReply;
+  
 
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
 
-  const replyLikedStatus = liked.some((person) => person === user.userName);
+  const replyLikedStatus = liked.some((person) =>person.userName === user.userName);
 
   const [like, setLike] = useState(replyLikedStatus);
-  const [replyLikedArr, setReplyLikedArr] = useState<string[]>(liked);
+  const [replyLikedArr, setReplyLikedArr] =  useState<{ userName: string; dp: string; }[]>(liked);
   const [openReplyLike, setOpenReplyLike] = useState(false);
 
   const handleLikeModalClick = () => {
@@ -39,11 +44,12 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
     if (response.status) {
       if (response.state === "removed") {
         const updatedLikedArr = replyLikedArr.filter(
-          (person) => person !== user.userName
+          (person) => person.userName !== user.userName && person.dp !== user.dp
         );
         setReplyLikedArr(updatedLikedArr);
       } else if (response.state === "added") {
-        setReplyLikedArr((prevLikedArr) => [user.userName, ...prevLikedArr]);
+        const newUser = { userName:user.userName, dp: user.dp };
+        setReplyLikedArr((prevLikedArr) => [...prevLikedArr, newUser]);
       }
     }
   };
@@ -56,7 +62,15 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
     <div className="flex pt-3 justify-between items-start">
       <div className="flex">
         <div>
-          <UserCircleIcon className="h-14 w-14 text-gray-700" />
+        {dp ? (
+            <Avatar
+              src={POST_URL + `${dp}.jpg`}
+              alt="avatar"
+              className="h-14 w-14 p-1 "
+            />
+          ) : (
+            <UserCircleIcon className="h-14 w-14 text-gray-700" />
+          )}
         </div>
         <div className="flex flex-col">
           <div className="flex items-start  ">
@@ -70,6 +84,9 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
                   {comment}
                 </span>
               </p>
+            </div>
+            <div className=" px-2 opacity-0 hover:opacity-100 transition-opacity duration-300">
+              <EllipsisHorizontalIcon className="h-6 w-6 text-gray-500" />
             </div>
           </div>
           <div className="flex items-start  text-sm gap-5">
@@ -96,7 +113,9 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
       </div>
       {openReplyLike && <LikeModal open={openReplyLike} setOpen={setOpenReplyLike} user={replyLikedArr} />}
     </div>
+  
   );
+  
 };
 
 export default ReplyComment;

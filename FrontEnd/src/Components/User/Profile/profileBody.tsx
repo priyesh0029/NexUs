@@ -14,14 +14,19 @@ interface ProfileAreaProps {
 
 const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
   const [like, setLike] = useState(false);
-  const [likedArr, setLikedArr] = useState<string[]>([]);
+  const [likedArr, setLikedArr] = useState<{ userName: string; dp: string; }[]>([]);
   const [openComment, setOpencomment] = useState(false);
   const [commentArr, setCommentArr] = useState<Comment[]>([]);
   const [postId, setPostId] = useState<string>("");
   const [postedUser, setPostedUser] = useState<string>("");
   const [imgNames, setImgNames] = useState<string[]>([]);
-  const [description, setDescription] = useState<string>("");
+  const [postdescription, setPostDescription] = useState<string>("");
   const [createdAt, setCreatedAt] = useState<string>("");
+  const [dpPost,setDpPost] = useState<string>("");
+
+  const user = useSelector(
+    (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
+  );
 
   const handleCommentModalClick = ({
     _id,
@@ -30,18 +35,20 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
     description,
     createdAt,
     liked,
+    dp
   }: Post) => {
-    const likeStatus = liked.some((person) => person === proId);
+    const likeStatus = liked.some((person) =>  person.userName === user.userName);
     setLike(likeStatus);
     setLikedArr(liked);
     setPostId(_id);
     setPostedUser(postedUser);
     setImgNames(imgNames);
-    setDescription(description);
+    setPostDescription(description);
     setCreatedAt(createdAt);
     setCommentArr([]);
     getComments(_id);
     setOpencomment(!openComment);
+    setDpPost(dp)
   };
 
   const getComments = async (_id: string) => {
@@ -75,13 +82,15 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
           imageArr={imgNames}
           createdAt={createdAt}
           postedUser={postedUser}
+          description={postdescription}
           likesArr={likedArr}
-          setLikes={setLikedArr}
+          setLikesArr={setLikedArr}
           postId={postId}
           like={like}
           setLike={setLike}
           commentArr={commentArr}
           setCommentArr={setCommentArr}
+          postDp ={dpPost}
         />
       )}
     </div>

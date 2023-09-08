@@ -1,8 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Dialog, Carousel } from "@material-tailwind/react";
+import { Dialog, Carousel, Avatar } from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
-import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ChatBubbleOvalLeftIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/outline";
 
 import moment from "moment";
 import LikeModal from "./likeModal";
@@ -14,6 +17,9 @@ import {
 } from "../../../api/apiConnections/User/postConnections";
 import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
 import SingleComment from "./singleComment";
+import { Link } from "react-router-dom";
+import ManagePost from "./ManagePost";
+import EditPost from "./EditPost";
 
 interface CommentModalProps {
   openComment: boolean;
@@ -21,13 +27,26 @@ interface CommentModalProps {
   imageArr: string[];
   createdAt: string;
   postedUser: string;
-  likesArr: string[];
-  setLikes: React.Dispatch<React.SetStateAction<string[]>>;
+  description: string;
+  setDescription : React.Dispatch<React.SetStateAction<string>>;
+  likesArr: {
+    userName: string;
+    dp: string;
+  }[];
+  setLikesArr: React.Dispatch<
+    React.SetStateAction<
+      {
+        userName: string;
+        dp: string;
+      }[]
+    >
+  >;
   postId: string;
   like: boolean;
   setLike: React.Dispatch<React.SetStateAction<boolean>>;
   commentArr: Comment[];
   setCommentArr: React.Dispatch<React.SetStateAction<Comment[]>>;
+  postDp: string;
 }
 
 const CommentModal: React.FC<CommentModalProps> = (props) => {
@@ -37,13 +56,16 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
     imageArr,
     createdAt,
     postedUser,
+    description,
+    setDescription,
     likesArr,
-    setLikes,
+    setLikesArr,
     postId,
     like,
     setLike,
     commentArr,
     setCommentArr,
+    postDp,
   } = props;
 
   const user = useSelector(
@@ -55,6 +77,8 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
   const [comment, setComment] = useState("");
   const [commentId, setCommentId] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [managePost, setManagePost] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const likeHandler = async () => {
     setLike(!like);
@@ -62,11 +86,12 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
     if (response.status) {
       if (response.state === "removed") {
         const updatedLikedArr = likesArr.filter(
-          (person) => person !== user.userName
+          (person) => person.userName !== user.userName && person.dp !== user.dp
         );
-        setLikes(updatedLikedArr);
+        setLikesArr(updatedLikedArr);
       } else if (response.state === "added") {
-        setLikes((prevLikedArr) => [user.userName, ...prevLikedArr]);
+        const newUser = { userName: user.userName, dp: user.dp };
+        setLikesArr((prevLikedArr) => [...prevLikedArr, newUser]);
       }
     }
   };
@@ -77,8 +102,9 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
 
   const postCommentHandler = async () => {
     const newComment = await handleComment(user.userName, comment, postId);
+    newComment.dp = user.dp;
     setComment("");
-    setCommentArr((preCommentArr) => [...preCommentArr, newComment]);
+    setCommentArr((preCommentArr) => [newComment, ...preCommentArr]);
   };
 
   //ref function
@@ -105,8 +131,12 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
       )
     );
     setComment("");
-    setCommentId("")
+    setCommentId("");
+  };
 
+  //manage post
+  const handleManagePost = () => {
+    setManagePost(!managePost);
   };
 
   return (
@@ -118,7 +148,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
         }}
-        size="lg"
+        size="xl"
         // style={{minHeight:"50%" , minWidth :"50%"}}
         // style={{display:"flex" }}
         className="flex flex-wrap"
@@ -138,14 +168,53 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
           </div>
           <div className="w-1/2 p-2 overflow-auto flex flex-col justify-between">
             <div className="flex flex-col overflow-y-auto max-h-full">
-              <div className="flex items-start">
-                <UserCircleIcon className="h-10 w-10 text-gray-700" />
-                <div className="flex items-center">
-                  <p className="text-md font-bold">{postedUser}</p>
-                  <p className="text-sm ml-1">
-                    .{moment(createdAt).startOf("minutes").fromNow()}
-                  </p>
+              <div className="flex justify-between">
+                <div className="flex items-start">
+                  {postDp ? (
+                    <Avatar
+                      src={POST_URL + `${postDp}.jpg`}
+                      alt="avatar"
+                      className="h-14 w-14 p-1 "
+                    />
+                  ) : (
+                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                  )}
+                  <div className="flex items-center">
+                    <Link to={`/profile/${postedUser}`}>
+                      <p className="text-md font-bold">{postedUser}</p>
+                    </Link>
+                    <p className="text-sm ml-1">
+                      .{moment(createdAt).startOf("minutes").fromNow()}
+                    </p>
+                  </div>
                 </div>
+                <div className="flex mr-5">
+                  <EllipsisHorizontalIcon
+                    className="h-6 w-6 text-gray-500"
+                    onClick={handleManagePost}
+                  />
+                </div>
+                {managePost && (
+                  <ManagePost
+                    open={managePost}
+                    setOpen={setManagePost}
+                    openEdit={editOpen}
+                    setOpenEdit={setEditOpen}
+                    postedUser ={postedUser}
+                    postId={postId}
+                  />
+                )}
+                {editOpen && (
+                  <EditPost
+                    openEdit={editOpen}
+                    setOpenEdit={setEditOpen}
+                    imageArr={imageArr}
+                    createdAt={createdAt}
+                    descEdit={description}
+                    setDescEdit={setDescription}
+                    postId={postId}
+                  />
+                )}
               </div>
               <hr />
               <div className="flex flex-col overflow-y-auto max-h-96">
@@ -155,15 +224,15 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                     focusInput={focusInput}
                     setComment={setComment}
                     key={index}
-                    openComment ={openComment}
-                    setOpencomment ={setOpencomment}
+                    openComment={openComment}
+                    setOpencomment={setOpencomment}
                   />
                 ))}
               </div>
             </div>
 
             <hr />
-            <div className="flex py-6 gap-2 w-full flex-col">
+            <div className="flex gap-2 w-full flex-col">
               <div className="flex pl-4">
                 <button onClick={likeHandler}>
                   {!like ? (
@@ -190,6 +259,12 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                   user={likesArr}
                 />
               )}
+              <div className="flex gap-2 px-5">
+                <Link to={`/profile/${postedUser}`}>
+                  <p className="font-semibold">{postedUser}</p>
+                </Link>
+                <p>{description}</p>
+              </div>
               <div className="flex gap-1">
                 <input
                   className="w-48 border-gray-200 rounded-xl px-2 overflow-hidden"

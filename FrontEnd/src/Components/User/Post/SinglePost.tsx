@@ -1,15 +1,19 @@
-import { Card, CardHeader, Carousel } from "@material-tailwind/react";
-
-import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import { Avatar, Card, CardHeader, Carousel } from "@material-tailwind/react";
 
 import {
-  // HeartIcon as SolidHeartIcon,
+  BookmarkIcon,
+  ChatBubbleOvalLeftIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/outline";
+
+import {
+  BookmarkIcon as SolidBookmarkIcon,
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { POST_URL } from "../../../constants/constants";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getallPostComments,
   handleLike,
@@ -18,6 +22,10 @@ import LikeModal from "./likeModal";
 import CommentModal from "./commentModal";
 import { HeartIcon, SolidHeartIcon } from "../assetComponents/postAssets";
 import { Link } from "react-router-dom";
+import ManagePost from "./ManagePost";
+import EditPost from "./EditPost";
+import { handleSavePost } from "../../../api/apiConnections/User/userConnections";
+import { SetSavePost } from "../../../features/redux/slices/user/homeSlice";
 
 const SinglePost = ({
   _id,
@@ -26,16 +34,19 @@ const SinglePost = ({
   description,
   createdAt,
   liked,
+  dp,
 }: Post) => {
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
-  const likeStatus = liked.some((person) => person === user.userName);
+  const likeStatus = liked.some((person) => person.userName === user.userName);
   const [like, setLike] = useState(likeStatus);
-  const [likedArr, setLikedArr] = useState<string[]>(liked);
+  const [likedArr, setLikedArr] =
+    useState<{ userName: string; dp: string }[]>(liked);
   const [open, setOpen] = useState(false);
   const [openComment, setOpencomment] = useState(false);
   const [commentArr, setCommentArr] = useState<Comment[]>([]);
+  const [desc, setDesc] = useState<string>(description);
 
   const handleLikeModalClick = () => {
     setOpen(!open);
@@ -63,12 +74,30 @@ const SinglePost = ({
     if (response.status) {
       if (response.state === "removed") {
         const updatedLikedArr = likedArr.filter(
-          (person) => person !== user.userName
+          (person) => person.userName !== user.userName && person.dp !== user.dp
         );
         setLikedArr(updatedLikedArr);
       } else if (response.state === "added") {
-        setLikedArr((prevLikedArr) => [user.userName, ...prevLikedArr]);
+        const newUser = { userName: user.userName, dp: user.dp };
+        setLikedArr((prevLikedArr) => [...prevLikedArr, newUser]);
       }
+    }
+  };
+
+  //managepost
+  const [managePost, setManagePost] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleManagePost = () => {
+    setManagePost(!managePost);
+  };
+
+  const handlePostSave = async () => {
+    const response = await handleSavePost(_id);
+    console.log("response of saving post : ", response);
+    if (response.status) {
+      dispatch(SetSavePost(response.postId));
     }
   };
 
@@ -79,16 +108,54 @@ const SinglePost = ({
         key={_id}
       >
         <CardHeader className="relative rounded-sm h-full">
-          <div className="flex items-start">
-            <UserCircleIcon className="h-10 w-10 text-gray-700" />
-            <div className="flex items-center">
-              <Link to={`/profile/${postedUser}`}>
-                <p className="text-md font-bold">{postedUser}</p>
-              </Link>
-              <p className="text-sm ml-1">
-                .{moment(createdAt).startOf("minutes").fromNow()}
-              </p>
+          <div className="flex items-start justify-between">
+            <div className="flex">
+              {dp ? (
+                <Avatar
+                  src={POST_URL + `${dp}.jpg`}
+                  alt="avatar"
+                  className="h-14 w-14 p-1 "
+                />
+              ) : (
+                <UserCircleIcon className="h-10 w-10 text-gray-700" />
+              )}
+
+              <div className="flex items-start">
+                <Link to={`/profile/${postedUser}`}>
+                  <p className="text-md font-bold">{postedUser} .</p>
+                </Link>
+                <p className="text-sm p-1">
+                  {moment(createdAt).startOf("minutes").fromNow()}
+                </p>
+              </div>
             </div>
+            <div className="flex mr-5">
+              <EllipsisHorizontalIcon
+                className="h-6 w-6 text-gray-500"
+                onClick={handleManagePost}
+              />
+            </div>
+            {managePost && (
+              <ManagePost
+                open={managePost}
+                setOpen={setManagePost}
+                openEdit={editOpen}
+                setOpenEdit={setEditOpen}
+                postedUser={postedUser}
+                postId={_id}
+              />
+            )}
+            {editOpen && (
+              <EditPost
+                openEdit={editOpen}
+                setOpenEdit={setEditOpen}
+                imageArr={imgNames}
+                createdAt={createdAt}
+                descEdit={desc}
+                setDescEdit={setDesc}
+                postId={_id}
+              />
+            )}
           </div>
           <Carousel className="rounded-sm items-center">
             {imgNames.map((pic) => (
@@ -102,17 +169,26 @@ const SinglePost = ({
           </Carousel>
         </CardHeader>
 
-        <div className="px-4 py-1">
-          <button onClick={likeHandler}>
-            {likedArr.length === 0 || !like ? (
-              <HeartIcon className="h-10 w-8 me-5" />
+        <div className="px-4 py-1 pt-1 flex justify-between">
+          <div>
+            <button onClick={likeHandler}>
+              {likedArr.length === 0 || !like ? (
+                <HeartIcon className="h-10 w-8 me-5" />
+              ) : (
+                <SolidHeartIcon className="h-10 w-8 me-5" />
+              )}
+            </button>
+            <button onClick={handleCommentModalClick}>
+              <ChatBubbleOvalLeftIcon className="h-10 w-8 " />
+            </button>
+          </div>
+          <div className="pt-2" onClick={handlePostSave}>
+            {!user.savedPost || !user.savedPost.includes(_id) ? (
+              <BookmarkIcon className="h-8 w-8 text-gray-700" />
             ) : (
-              <SolidHeartIcon className="h-10 w-8 me-5" />
+              <SolidBookmarkIcon className="h-8 w-8 text-gray-900" />
             )}
-          </button>
-          <button onClick={handleCommentModalClick}>
-            <ChatBubbleOvalLeftIcon className="h-10 w-8 " />
-          </button>
+          </div>
         </div>
         <div className="pb-5 px-5 flex flex-col ">
           <p className="contents" onClick={handleLikeModalClick}>
@@ -123,8 +199,10 @@ const SinglePost = ({
               : ""}
           </p>
           <div className="flex gap-2">
-            <p className="font-semibold">{postedUser}</p>
-            <p>{description}</p>
+            <Link to={`/profile/${postedUser}`}>
+              <p className="font-semibold">{postedUser}</p>
+            </Link>
+            <p>{desc}</p>
           </div>
           {open && <LikeModal open={open} setOpen={setOpen} user={likedArr} />}
           <p className="text-gray-500" onClick={handleCommentModalClick}>
@@ -139,13 +217,16 @@ const SinglePost = ({
               imageArr={imgNames}
               createdAt={createdAt}
               postedUser={postedUser}
+              description={desc}
+              setDescription={setDesc}
               likesArr={likedArr}
-              setLikes={setLikedArr}
+              setLikesArr={setLikedArr}
               postId={_id}
               like={like}
               setLike={setLike}
               commentArr={commentArr}
               setCommentArr={setCommentArr}
+              postDp={dp}
             />
           )}
         </div>

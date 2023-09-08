@@ -17,11 +17,11 @@ const userSchema = new Schema(
       required: true,
     },
     phoneNumber: {
-        type: Number,
+      type: Number,
     },
     password: {
       type: String,
-      minlength:3
+      minlength: 3,
     },
     dp: {
       type: String,
@@ -30,22 +30,22 @@ const userSchema = new Schema(
       type: String,
     },
     gender: {
-      type: String
+      type: String,
     },
-    city:{
-      type: String
+    city: {
+      type: String,
     },
     isBlock: {
       type: Boolean,
       default: false,
     },
-    blockedUsers:[],
-    blockingUsers:[],
-    followers: [],
-    following: [],
-    requests:[],
-    requested:[]
-
+    blockedUsers: [String],
+    blockingUsers: [String],
+    savedPost: [String],
+    followers: [String],
+    following: [String],
+    requests: [String],
+    requested: [String],
   },
   { timestamps: true }
 );

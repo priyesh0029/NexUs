@@ -5,7 +5,9 @@ import { Request, Response } from "express";
 import {
   addComment,
   addReply,
+  allCommentReplies,
   commentLikeHandler,
+  editPost,
   getAllComment,
   getAllPosts,
   likeHandler,
@@ -31,23 +33,26 @@ export const postControllers = (
         (element) => element.filename
       );
     }
-    const { caption, userName } = req.body;
+    const userId = req.query.userId;
+    const { caption } = req.body;
     console.log(
       "postvfrom frontend : ",
       req.files,
       filenames,
       caption,
-      userName
+      userId
     );
-    const postDetails = { filenames, caption, userName };
-    await postCreate(postDetails, postRepo).then((newPost) => {
-      console.log("contollers new  post response : ", newPost);
+    if (typeof userId === "string") {
+      const postDetails = { filenames, caption, userId };
+      await postCreate(postDetails, postRepo).then((newPost) => {
+        console.log("contollers new  post response : ", newPost);
 
-      res.status(200).json({
-        status: "success",
-        newPost,
+        res.status(200).json({
+          status: "success",
+          newPost,
+        });
       });
-    });
+    }
   });
 
   //getAllPosts
@@ -95,12 +100,17 @@ export const postControllers = (
     });
   });
 
+  //to get all comments of a ppost
+
   const getComments = asyncHandler(async (req: Request, res: Response) => {
     const postId = req.query.param;
     console.log("contollers like comment postiD : ", typeof postId);
-    if (typeof postId === 'string')
+    if (typeof postId === "string")
       await getAllComment(postId, postRepo).then((comments) => {
-        console.log("contollers like response : ", comments);
+        console.log(
+          "contollers get all comments  response 1111111111111111: ",
+          comments
+        );
 
         res.status(200).json({
           status: "success",
@@ -109,7 +119,28 @@ export const postControllers = (
       });
   });
 
-  const commentLike =  asyncHandler(async (req: Request, res: Response) => {
+  //to get all replies of a comment
+
+  const getAllCommentReplies = asyncHandler(
+    async (req: Request, res: Response) => {
+      const commentId = req.query.commentId;
+      console.log("contollers like comment postiD : ", typeof commentId);
+      if (typeof commentId === "string")
+        await allCommentReplies(commentId, postRepo).then((replies) => {
+          console.log(
+            "contollers get all replies of a comment  response : ",
+            replies
+          );
+
+          res.status(200).json({
+            status: "success",
+            replies,
+          });
+        });
+    }
+  );
+
+  const commentLike = asyncHandler(async (req: Request, res: Response) => {
     const commentDetail = req.body;
     console.log("contollers like postDetails : ", commentDetail);
     await commentLikeHandler(commentDetail, postRepo).then((response) => {
@@ -137,7 +168,7 @@ export const postControllers = (
 
   //manage like to a reply
 
-  const replylike =  asyncHandler(async (req: Request, res: Response) => {
+  const replylike = asyncHandler(async (req: Request, res: Response) => {
     const replyLikeDetail = req.body;
     console.log("contollers like postDetails : ", replyLikeDetail);
     await replyLikeHandler(replyLikeDetail, postRepo).then((state) => {
@@ -152,29 +183,49 @@ export const postControllers = (
 
   //to get all posts by user
 
-  const getUserPosts = asyncHandler(async(req:Request,res:Response)=>{
+  const getUserPosts = asyncHandler(async (req: Request, res: Response) => {
     const user = req.query.param;
-    if(typeof user === "string"){
+    if (typeof user === "string") {
+      await userPosts(user, postRepo).then((posts) => {
+        console.log("contollers all post response : ", posts);
 
-      await userPosts(user,postRepo).then((posts) => {
-        console.log(
-          "contollers all post response : ",
-          posts,
-        );
-  
         res.status(200).json({
           status: "success",
           posts,
         });
       });
-    }else{
+    } else {
       throw new AppError(
-       ` Error occured fetching posts of ${user}.try again..!`,
+        ` Error occured fetching posts of ${user}.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+  //to edit post 
+
+  const updatePost = asyncHandler(async(req :Request,res : Response)=>{
+    const {postId,description} = req.body
+    const userId = req.query.userId
+    if (typeof postId === "string"  && typeof description === 'string' && typeof userId === 'string') {
+      console.log("contollers edit post postDetails : ", postId,description,userId);
+      await editPost(postId,description,userId,postRepo).then((post) => {
+        console.log("contollers all post response : ", post);
+
+        res.status(200).json({
+          status: "success",
+          post,
+        });
+      });
+    }else {
+      throw new AppError(
+        ` Error while updating post.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
   })
 
+  
 
   return {
     createPost,
@@ -185,6 +236,8 @@ export const postControllers = (
     commentLike,
     replycomment,
     replylike,
-    getUserPosts
+    getUserPosts,
+    getAllCommentReplies,
+    updatePost,
   };
 };

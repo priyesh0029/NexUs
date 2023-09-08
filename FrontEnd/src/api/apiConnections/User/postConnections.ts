@@ -80,7 +80,7 @@ export const handleComment = async(user:string,comment:string,postId:string):Pro
   try{
     const commentDetails = { user,comment,postId}
     const response:any = await baseURL.post("/post/comment",commentDetails)
-    console.log("response of comment 222 : ",response);
+    console.log("response of add a comment 111 : ",response);
     if(response.data.status === 'success'){
       const newComment = response.data.newComment
       return newComment
@@ -116,7 +116,7 @@ export const handleCommentLike = async(user:string, commentId : string):Promise<
 
       const commentDetails = {user,commentId}
         const response :any = await baseURL.post("/post/commentlike",commentDetails)
-        console.log("response of like : ",response);
+        console.log("response of comment like : ",response);
         if(response.data.status === 'success'){
           const commentLikeResponse = {
             status: response.data.response.status,
@@ -158,7 +158,7 @@ export const handleReplyLike = async(user:string,replyId:string,commentId:string
   try{
     const likeReplyDetails = { user,replyId,commentId}
     const response:any = await baseURL.post("/post/replylike",likeReplyDetails)
-    console.log("response of comment 222 : ",response);
+    console.log("response of like reply 222 : ",response);
     if(response.data.status === 'success'){
       const newReplyComment = response.data.state
       return newReplyComment
@@ -187,3 +187,40 @@ export const getUserPost = async(user:string):Promise<any>=>{
     
   }
 }
+
+//to get all replies of a comment
+
+export const getAllReplies = async(commentId:string):Promise<any>=>{
+  try{
+    const response:any = await baseURL.get(`/post/allcommentReplies?commentId=${commentId}`)
+    console.log("response of comment reply 222 : ",response);
+    if(response.data.status === 'success'){
+      const replies = response.data.replies
+      return replies
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+//to update a users post
+
+export const updatePost = async(postId:string,description:string):Promise<any>=>{
+  try{
+    const editpostInfo = {postId,description}
+    const response:any = await baseURL.post("/post/updatepost",editpostInfo)
+    console.log("response edited post : ",response);
+    if(response.data.status === 'success'){
+      const post = response.data.post
+      return post
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+

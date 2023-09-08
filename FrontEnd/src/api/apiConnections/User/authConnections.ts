@@ -9,6 +9,8 @@ interface RegisterResponse {
     user: {
       name: string;
       userName: string;
+      dp : string;
+      savedPost : string[]
     };
   };
 }
@@ -37,6 +39,8 @@ export const register = async (userData: RegisterFormValues): Promise<any> => {
           user: {
             name: response.data.token.user.name,
             userName: response.data.token.user.userName,
+            dp :  response.data.token.user.dp,
+            savedPost:response.data.token.user.savedPost
           },
         },
       };
@@ -72,6 +76,8 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
           user: {
             name: response.data.token.user[0].name,
             userName: response.data.token.user[0].userName,
+            dp :  response.data.token.user[0].dp,
+            savedPost:response.data.token.user[0].savedPost
           },
         },
       };

@@ -13,7 +13,8 @@ const homeRouter = (router:Router)=>{
 
 
         router.get('/',controllers.getAllPost)
-
+        
+        
 
 
 

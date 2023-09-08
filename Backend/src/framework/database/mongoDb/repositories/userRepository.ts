@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../models/userModel";
 
 export const userRepositoryMongoDB = () => {
@@ -51,11 +52,140 @@ export const userRepositoryMongoDB = () => {
       return false;
     }
   };
+
+  //search user by char
+
+  const searchUserbyChar = async (user: string) => {
+    const users = await User.find({
+      userName: { $regex: user, $options: "i" },
+    });
+    console.log("users search using regex : ", users);
+
+    return users;
+  };
+
+  //to get usersList
+  const getUsersList = async (user: string) => {
+    const userDetails = await User.findOne(
+      { userName: user },
+      { _id: 0, following: 1 }
+    );
+    if (userDetails !== null) {
+      userDetails.following.push(user);
+    
+    console.log("00000000000000000000000000000000000000000000000", userDetails.following);
+
+    const users = await User.find(
+      {
+        userName: { $exists: true, $nin : userDetails.following },
+      },
+      { userName: 1, dp: 1 }
+    ).limit(5);
+    console.log("getUsersList from database : ", users);
+
+    return users;
+    }
+  };
+
+  //handle follow unfollow requests
+
+  const handleFollowUnfollow = async (
+    searchedUser: string,
+    loginedUser: string
+  ) => {
+    const followerList = await User.findOne({
+      userName: searchedUser,
+      followers: { $elemMatch: { $eq: loginedUser } },
+    });
+
+    console.log("followers :", followerList);
+
+    if (followerList) {
+      const [unfollow, unfollowing] = await Promise.all([
+        User.updateOne(
+          { userName: searchedUser },
+          { $pull: { followers: loginedUser } }
+        ),
+        User.updateOne(
+          { userName: loginedUser },
+          { $pull: { following: searchedUser } }
+        ),
+      ]);
+
+      console.log("unfollow 1:", unfollow, "unfollowing : ", unfollowing);
+
+      if (unfollow.modifiedCount === 1 && unfollowing.modifiedCount === 1) {
+        return { status: true, user: loginedUser, state: "removed" };
+      }
+    } else {
+      const [follow, following] = await Promise.all([
+        User.updateOne(
+          { userName: searchedUser },
+          { $push: { followers: loginedUser } }
+        ),
+        User.updateOne(
+          { userName: loginedUser },
+          { $push: { following: searchedUser } }
+        ),
+      ]);
+
+      console.log("follow 2 :", follow, "following : ", following);
+
+      if (follow.modifiedCount === 1) {
+        return { status: true, user: loginedUser, state: "added" };
+      }
+    }
+
+    return false; // Return false if the update operation didn't succeed
+  };
+
+  //to handle save post
+
+  const handlePostSave = async (
+    postId: string, userId: string
+  ) => {
+    const userID = new mongoose.Types.ObjectId(userId);
+
+    const saved = await User.findOne({
+      _id: userID,
+      savedPost: { $elemMatch: { $eq: postId } },
+    });
+    console.log("liked :", saved);
+
+    if (saved) {
+      const unSave = await User.findOneAndUpdate(
+        { _id: userID },
+        { $pull: { savedPost: postId } },
+        { new: true,projection: { savedPost: 1, _id: 0 } }
+      );
+      console.log("unSave 1:", unSave);
+      if (unSave !==null) {
+        return { status: true, postId: unSave.savedPost };
+      }
+    } else {
+      const save = await User.findOneAndUpdate(
+        { _id: userID },
+        { $push: { savedPost: postId } },
+        { new: true,projection: { savedPost: 1, _id: 0 } }
+      );
+      console.log("save 2 :", save);
+      if (save !== null) {
+        return { status: true, postId: save.savedPost };
+      }
+    }
+
+    return false; // Return false if the update operation didn't succeed
+  };
+
   return {
     findByProperty,
     findByNumber,
     addUser,
-    uploadDp
+    uploadDp,
+    searchUserbyChar,
+    getUsersList,
+    handleFollowUnfollow,
+    handlePostSave
   };
 };
 

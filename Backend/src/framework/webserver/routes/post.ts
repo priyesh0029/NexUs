@@ -21,6 +21,8 @@ const postRouter = (router:Router)=>{
 
         router.get('/allcomments',controllers.getComments)
 
+        router.get('/allcommentReplies',controllers.getAllCommentReplies)
+
         router.post('/commentlike',controllers.commentLike)
 
         router.post('/replycomment',controllers.replycomment)
@@ -28,6 +30,11 @@ const postRouter = (router:Router)=>{
         router.post('/replylike',controllers.replylike)
 
         router.get('/userposts',controllers.getUserPosts)
+
+        router.post('/updatepost',controllers.updatePost)
+
+
+
 
 
 

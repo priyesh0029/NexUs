@@ -50,15 +50,20 @@ const BuildPost = () => {
 };
 
 const CarouselDefault = () => {
-  const [captionInput, setcaptionInput] = useState("");
   const dispatch = useDispatch();
   const images = useSelector(
     (store: { createPost: { media: [] } }) => store.createPost.media
   );
 
+  const user = useSelector(
+    (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
+  );
+
   const captionHandle = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setcaptionInput(event.target.value);
-    dispatch(setCaption(captionInput));
+    const updatedCaptionInput = event.target.value;
+    console.log("caption input before dispatch : ", updatedCaptionInput);
+
+    dispatch(setCaption(updatedCaptionInput));
   };
 
   return (
@@ -76,7 +81,7 @@ const CarouselDefault = () => {
         })}
       </Carousel>
       <div className="flex flex-col p-5 shadow-2xl shadow-gray-600">
-        <div>username</div>
+        <div>{user.userName}</div>
         <textarea
           className="p-2  h-28"
           placeholder="write your caption here.."
@@ -94,8 +99,8 @@ interface CreatePostProps {
 
 const CreatePost: React.FC<CreatePostProps> = (props) => {
   const { open, setOpen } = props;
-
   const dispatch = useDispatch();
+
   const mediaPost = useSelector(
     (store: { createPost: { media: [] } }) => store.createPost.media
   );
@@ -127,12 +132,6 @@ const CreatePost: React.FC<CreatePostProps> = (props) => {
   const selectPostHandler = () => setselectPost(!selectPost);
   const showPostHandler = () => setshowPost(!showPost);
 
-  // useEffect(() => {
-  //   setOpen(open);
-  // }, [open]);
-
-  console.log("value of prop :", open); 
-
   const submitHandler = async () => {
     try {
       console.log("post in front end mediaPost1 : ", mediaPost);
@@ -143,12 +142,8 @@ const CreatePost: React.FC<CreatePostProps> = (props) => {
         formData.append(`image`, file);
       });
       formData.append(`caption`, captionPost);
-      formData.append(`userName`, user.userName);
       console.log("post in front end mediaPost2 : ", mediaPost);
-      // let post :{
-      //   formData: FormData;
-      //   captionPost: string;
-      // } = { formData,captionPost}
+      console.log("caption input after dispatch using useselector : ", captionPost);
 
       formData.forEach((key, value) => {
         console.log("post in front end formdata key and value  : ",key, value);
@@ -159,6 +154,7 @@ const CreatePost: React.FC<CreatePostProps> = (props) => {
       if (response.status === "success") {
         dispatch(clearMedia());
         dispatch(clearCaption())
+        response.post.dp = user.dp
         dispatch(setNewPost(response.post))
       }
     } catch (error) {
