@@ -147,6 +147,8 @@ export const replyLikeHandler = async (
   });
 };
 
+//to get users post
+
 export const userPosts = async (
   user: string,
   repository: ReturnType<postRepositoryInterfaceType>
@@ -163,6 +165,8 @@ export const userPosts = async (
   });
 };
 
+//t edit post
+
 export const editPost =  async (
   postId: string,
   description:string,
@@ -173,6 +177,62 @@ export const editPost =  async (
     if (!response) {
       throw new AppError(
         ` Error occured while editing post.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+//to delete comment
+
+export const handleCommentDelete =  async (
+  commentId: string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.commentDelete(commentId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured whiledeleting comment.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+//to delete Reply
+
+export const handleDeleteReply =  async (
+  commentId: string,
+  ReplyId:string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.ReplytDelete(commentId,ReplyId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while deleting reply.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+
+//to delete Post
+
+export const handleDeletePost =  async (
+  postId: string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.postDelete(postId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while deleting post.please try again..!`,
         HttpStatus.BAD_REQUEST
       );
     } else {

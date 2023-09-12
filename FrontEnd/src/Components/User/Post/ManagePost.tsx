@@ -3,6 +3,7 @@ import { Dialog } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { handleSavePost } from "../../../api/apiConnections/User/userConnections";
 import { SetSavePost } from "../../../features/redux/slices/user/homeSlice";
+import { deletePost } from "../../../api/apiConnections/User/postConnections";
 
 interface ImanagePostProps {
   open: boolean;
@@ -33,6 +34,14 @@ const ManagePost: React.FC<ImanagePostProps> = (props) => {
     
   }
 
+  const handleDeletePost = async()=>{
+    const response = await deletePost(postId)
+    if(response){
+      console.log("post Deleted");
+      
+    }
+  }
+
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
@@ -57,7 +66,7 @@ const ManagePost: React.FC<ImanagePostProps> = (props) => {
           <div className="text-md text-gray-800 font-semibold w-full text-center  border-b border-gray-400" onClick={handlePostSave}>
             {!user.savedPost || !user.savedPost.includes(postId) ? "Save":"unsave"}
           </div>
-          {user.userName === postedUser ?<div className="text-md text-gray-800 font-semibold w-full text-center   border-b border-gray-400">
+          {user.userName === postedUser ?<div className="text-md text-gray-800 font-semibold w-full text-center   border-b border-gray-400 " onClick={handleDeletePost}>
             Delete
           </div>:""}
         </div>

@@ -10,6 +10,9 @@ import {
   editPost,
   getAllComment,
   getAllPosts,
+  handleCommentDelete,
+  handleDeletePost,
+  handleDeleteReply,
   likeHandler,
   postCreate,
   replyLikeHandler,
@@ -225,7 +228,71 @@ export const postControllers = (
     }
   })
 
-  
+  //to delete comment 
+
+  const deleteComment = asyncHandler(async(req :Request,res : Response)=>{
+    const {commentId} = req.body
+    if (typeof commentId === "string") {
+      console.log("contollers delete comment : ", commentId);
+      await handleCommentDelete(commentId,postRepo).then((comment) => {
+        console.log("contollers all post response : ", comment);
+
+        res.status(200).json({
+          status: "success",
+          comment,
+        });
+      });
+    }else {
+      throw new AppError(
+        ` Error while deleting comment.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  })
+
+  //to delete Reply
+
+  const deleteReply = asyncHandler(async(req :Request,res : Response)=>{
+    const {commentId,ReplyId} = req.body
+    console.log("contollers delete reply : ", commentId,ReplyId);
+    if (typeof commentId === "string" && typeof ReplyId === "string" ) {
+      await handleDeleteReply(commentId,ReplyId,postRepo).then((reply) => {
+        console.log("contollers all post response : ", reply);
+
+        res.status(200).json({
+          status: "success",
+          reply,
+        });
+      });
+    }else {
+      throw new AppError(
+        ` Error while deleting reply.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  })
+
+  //to delete Post
+
+  const deletePost = asyncHandler(async(req :Request,res : Response)=>{
+    const {postId} = req.body
+    console.log("contollers delete post : ", postId);
+    if (typeof postId === "string") {
+      await handleDeletePost(postId,postRepo).then((post) => {
+        console.log("contollers all post response : ", post);
+
+        res.status(200).json({
+          status: "success",
+          post,
+        });
+      });
+    }else {
+      throw new AppError(
+        ` Error while deleting post.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  })
 
   return {
     createPost,
@@ -239,5 +306,8 @@ export const postControllers = (
     getUserPosts,
     getAllCommentReplies,
     updatePost,
+    deleteComment,
+    deleteReply,
+    deletePost
   };
 };

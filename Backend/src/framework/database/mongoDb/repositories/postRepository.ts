@@ -221,6 +221,7 @@ export const postRepositoryMongoDb = () => {
       {
         $match: {
           postId: postID,
+          delete:false
         },
       },
       {
@@ -343,6 +344,7 @@ export const postRepositoryMongoDb = () => {
       {
         $match: {
           _id: commentID,
+          delete: false,
         },
       },
       {
@@ -350,6 +352,12 @@ export const postRepositoryMongoDb = () => {
           path: "$reply",
           preserveNullAndEmptyArrays: true,
         },
+      },
+      {
+        $match:
+          {
+            "reply.delete": false,
+          },
       },
       {
         $lookup: {
@@ -736,7 +744,73 @@ export const postRepositoryMongoDb = () => {
     }
   }
 
+  //to delete comment
+
+  const deleteComment = async(commentId:string)=>{
+    const commentID = new mongoose.Types.ObjectId(commentId);
+    const CommentDetails = await Comment.findOneAndUpdate(
+      { _id: commentID },
+      { $set: { delete: true } },
+      { new: true,projection: { comment: 1 } }
+    );
+    console.log("user beforre edit post : ",CommentDetails);
+    
+    if (CommentDetails !== null) {
+      console.log("updated post after query : ",CommentDetails.comment);
+      return CommentDetails
+    }else{
+      return false
+    }
+  }
   
+  // to delete reply 
+
+  const deleteReply = async(commentId:string,replyId:string)=>{
+    const commentID = new mongoose.Types.ObjectId(commentId);
+    const replyID = new mongoose.Types.ObjectId(replyId);
+    const replyDetails = await Comment.findOneAndUpdate(
+      { _id: commentID},
+      { $set: {"reply.$.delete": true } },  
+      { new: true }
+    );
+    console.log("user beforre edit post : ",replyDetails);
+    
+    if (replyDetails !== null) {
+      const filteredReplies = replyDetails.reply.filter(reply => reply.delete);
+      const projectedReplies = filteredReplies.map(reply => ({
+        reply: reply.comment,
+        _id: reply._id
+      }));
+      return projectedReplies
+    }else{
+      return false
+    }
+  }
+
+    // to delete Post 
+
+    const deletePost = async(postId : string)=>{
+      const postID = new mongoose.Types.ObjectId(postId);
+      console.log("delete post db repositiry : ",postID);
+      
+      const [post, comment] = await Promise.all([
+        Post.updateOne(
+          { _id: postID },
+          { $set: {postDeleted: true } }
+        ),
+        Comment.updateMany(
+          { postId: postID },
+          { $set: { delete: true,"reply.$[].delete": true } }
+        ),
+      ])
+      if (post.modifiedCount === 1 && comment.modifiedCount === comment.matchedCount) {
+        return true
+      }else{
+        return false
+      }
+
+    }
+
 
   return {
     createPost,
@@ -750,6 +824,9 @@ export const postRepositoryMongoDb = () => {
     getUserPosts,
     getAllCommentReplies,
     editUserPost,
+    deleteComment,
+    deleteReply,
+    deletePost
   };
 };
 

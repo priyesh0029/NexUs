@@ -1,5 +1,4 @@
 import {Schema,model} from 'mongoose';
-import Post from './postModel'; 
 
 const replySchema = new Schema({
     userName: {
@@ -9,6 +8,11 @@ const replySchema = new Schema({
     comment: {
       type: String,
       required: true,
+    },
+    delete:{
+      type: Boolean,
+      default: false,
+      required:true
     },
     liked: [String], // Specify the type as an array of strings
   }, { timestamps: true });
@@ -26,6 +30,11 @@ const replySchema = new Schema({
     comment: {
       type: String,
       required: true,
+    },
+    delete:{
+      type: Boolean,
+      default: false,
+      required:true
     },
     liked: [String], // Specify the type as an array of strings
     reply: [replySchema],

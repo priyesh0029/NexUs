@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { Avatar } from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import ManageComment from "./ManageComment";
 
 interface SingleComment {
   postedComment: Comment;
@@ -20,10 +21,21 @@ interface SingleComment {
   setComment: React.Dispatch<React.SetStateAction<string>>;
   openComment: boolean;
   setOpencomment: React.Dispatch<React.SetStateAction<boolean>>;
+  postedUser: string;
+  commentArr: Comment[];
+  setCommentArr: React.Dispatch<React.SetStateAction<Comment[]>>;
 }
 
 const SingleComment: React.FC<SingleComment> = (props) => {
-  const { postedComment, focusInput, openComment, setOpencomment } = props;
+  const {
+    postedComment,
+    focusInput,
+    openComment,
+    setOpencomment,
+    postedUser,
+    commentArr,
+    setCommentArr,
+  } = props;
   const { _id, userName, comment, createdAt, reply, liked, dp } = postedComment;
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
@@ -81,13 +93,13 @@ const SingleComment: React.FC<SingleComment> = (props) => {
   };
 
   //manage comment of post
-  const [manageCommentOpen,setManageCommentOpen] = useState(false)
+  const [manageCommentOpen, setManageCommentOpen] = useState(false);
 
-  const handleManageComment = async ()=>{
-    setManageCommentOpen(!manageCommentOpen)
-  }
+  const handleManageComment = async () => {
+    setManageCommentOpen(!manageCommentOpen);
+  };
   return (
-    <div className="flex pt-3 justify-between items-start" key={_id}>
+    <div className="flex pt-3 justify-between items-start group" key={_id}>
       <div className="flex">
         <div>
           {dp ? (
@@ -115,9 +127,6 @@ const SingleComment: React.FC<SingleComment> = (props) => {
                 </span>
               </p>
             </div>
-            <div className=" px-2 opacity-0 hover:opacity-100 transition-opacity duration-300">
-              <EllipsisHorizontalIcon className="h-6 w-6 text-gray-500" onClick={handleManageComment} />
-            </div>
           </div>
           <div className="flex items-start  text-sm gap-5">
             <p>{moment(createdAt).startOf("minutes").fromNow()}</p>
@@ -129,13 +138,30 @@ const SingleComment: React.FC<SingleComment> = (props) => {
                 : "Like"}
             </p>
             <p onClick={() => handleClick(userName, _id)}>Reply</p>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <EllipsisHorizontalIcon
+                className="h-6 w-6 text-gray-500"
+                onClick={handleManageComment}
+              />
+            </div>
+            {manageCommentOpen && (
+              <ManageComment
+                open={manageCommentOpen}
+                setOpen={setManageCommentOpen}
+                commentId={_id}
+                commentedUser={userName}
+                postedUser={postedUser}
+                commentArr={commentArr}
+                setCommentArr={setCommentArr}
+              />
+            )}
           </div>
-          {reply.length === 0 ? (
+          {replyArr.length === 0 ? (
             ""
           ) : (
             <>
               <div className="p-4" onClick={viewCommentReply}>
-                ---view replies({reply.length})
+                ---view replies({replyArr.length})
               </div>
               {viewReply &&
                 replyArr.map((eachReply) => (
@@ -144,8 +170,12 @@ const SingleComment: React.FC<SingleComment> = (props) => {
                       commentReply={eachReply}
                       handleClick={handleClick}
                       commentId={_id}
+                      commentedUser={userName}
                       openComment={openComment}
                       setOpencomment={setOpencomment}
+                      postedUser={postedUser}
+                      replyArr={replyArr}
+                      setReplyArr={setReplyArr}
                     />
                   </div>
                 ))}

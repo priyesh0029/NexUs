@@ -12,11 +12,15 @@ const SearchTab: React.FC<ISearchTab> = (props) => {
 
   const handleInput = (e: any) => {
     setSearchText(e.target.value);
-    getSearchData();
+    if (e.target.value === "") {
+      setSearchResults([])
+    } else {
+      getSearchData(e.target.value);
+    }
   };
 
-  const getSearchData = async () => {
-    const data: UserInfo[] = await searchUser(searchText);
+  const getSearchData = async (search: string) => {
+    const data: UserInfo[] = await searchUser(search);
     setSearchResults(data);
   };
 
@@ -53,7 +57,9 @@ const SearchTab: React.FC<ISearchTab> = (props) => {
                       <UserCircleIcon className="h-14 w-14 text-gray-500" />
                     )}
                     <div>
-                      <p className="text-lg font-normal pt-3">{user.userName}</p>
+                      <p className="text-lg font-normal pt-3">
+                        {user.userName}
+                      </p>
                     </div>
                   </div>
                 </Link>

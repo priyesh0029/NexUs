@@ -81,6 +81,7 @@ interface UserInfo {
 }
 
 interface Reply {
+  [x: string]: any;
   _id:string
   userName: string;
   comment: string;

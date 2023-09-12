@@ -33,8 +33,11 @@ const postRouter = (router:Router)=>{
 
         router.post('/updatepost',controllers.updatePost)
 
+        router.patch('/deletecomment',controllers.deleteComment)
 
+        router.patch('/deleteReply',controllers.deleteReply)
 
+        router.patch('/deletePost',controllers.deletePost)
 
 
 

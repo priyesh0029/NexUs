@@ -154,7 +154,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
         className="flex flex-wrap"
       >
         <div className="flex h-full ">
-          <div className="w-1/2 flex-shrink-0 overflow-hidden ">
+          <div className="w-[56%] flex-shrink-0 overflow-hidden ">
             <Carousel className="">
               {imageArr.map((pic) => (
                 <img
@@ -166,7 +166,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
               ))}
             </Carousel>
           </div>
-          <div className="w-1/2 p-2 overflow-auto flex flex-col justify-between">
+          <div className="w-[46%] p-2 overflow-auto flex flex-col justify-between">
             <div className="flex flex-col overflow-y-auto max-h-full">
               <div className="flex justify-between">
                 <div className="flex items-start">
@@ -221,11 +221,14 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                 {commentArr.map((comment, index) => (
                   <SingleComment
                     postedComment={comment}
+                    postedUser ={postedUser}
                     focusInput={focusInput}
                     setComment={setComment}
                     key={index}
                     openComment={openComment}
                     setOpencomment={setOpencomment}
+                    commentArr ={commentArr}
+                    setCommentArr = {setCommentArr}
                   />
                 ))}
               </div>

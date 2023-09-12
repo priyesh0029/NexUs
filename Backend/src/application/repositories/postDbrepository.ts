@@ -56,6 +56,24 @@ export const postRepositoryInterface = (
     userId: string
   ) => await repository.editUserPost(postId, description, userId);
 
+//to delete comment
+
+const commentDelete = async (
+  commentId: string
+) => await repository.deleteComment(commentId);
+
+//to delete reply
+
+const ReplytDelete = async (
+  commentId: string,
+  ReplyId :string
+) => await repository.deleteReply(commentId,ReplyId);
+
+//to delete post
+
+const postDelete = async (
+  postId: string,
+) => await repository.deletePost(postId);
 
   return {
     uploadPost,
@@ -68,7 +86,10 @@ export const postRepositoryInterface = (
     handleReplyLike,
     getUserPosts,
     getAllCommentReplies,
-    editUserPost
+    editUserPost,
+    commentDelete,
+    ReplytDelete,
+    postDelete
   };
 };
 

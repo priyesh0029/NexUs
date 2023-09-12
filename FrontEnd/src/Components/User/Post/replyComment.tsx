@@ -9,29 +9,46 @@ import { Link } from "react-router-dom";
 import { Avatar } from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import ManageComment from "./ManageComment";
 
 interface ReplyCommentProps {
   commentReply: Reply;
   handleClick: (username: string, _id: string) => void;
   commentId: string;
+  commentedUser: string;
   openComment: boolean;
   setOpencomment: React.Dispatch<React.SetStateAction<boolean>>;
+  postedUser: string;
+  replyArr: Reply[];
+  setReplyArr: React.Dispatch<React.SetStateAction<Reply[]>>;
 }
 
 const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
-  const { commentReply, handleClick, commentId,openComment,setOpencomment } = props;
-  
-    const { _id, userName, comment, liked,dp,createdAt } = commentReply;
-  
+  const {
+    commentReply,
+    handleClick,
+    commentId,
+    commentedUser,
+    openComment,
+    setOpencomment,
+    postedUser,
+    replyArr,
+    setReplyArr,
+  } = props;
+
+  const { _id, userName, comment, liked, dp, createdAt } = commentReply;
 
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
 
-  const replyLikedStatus = liked.some((person) =>person.userName === user.userName);
+  const replyLikedStatus = liked.some(
+    (person) => person.userName === user.userName
+  );
 
   const [like, setLike] = useState(replyLikedStatus);
-  const [replyLikedArr, setReplyLikedArr] =  useState<{ userName: string; dp: string; }[]>(liked);
+  const [replyLikedArr, setReplyLikedArr] =
+    useState<{ userName: string; dp: string }[]>(liked);
   const [openReplyLike, setOpenReplyLike] = useState(false);
 
   const handleLikeModalClick = () => {
@@ -48,7 +65,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
         );
         setReplyLikedArr(updatedLikedArr);
       } else if (response.state === "added") {
-        const newUser = { userName:user.userName, dp: user.dp };
+        const newUser = { userName: user.userName, dp: user.dp };
         setReplyLikedArr((prevLikedArr) => [...prevLikedArr, newUser]);
       }
     }
@@ -58,11 +75,18 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
     setOpencomment(!openComment);
   };
 
+  //manage reply
+  const [manageCommentOpen, setManageCommentOpen] = useState(false);
+
+  const handleManageComment = async () => {
+    setManageCommentOpen(!manageCommentOpen);
+  };
+
   return (
     <div className="flex pt-3 justify-between items-start">
-      <div className="flex">
+      <div className="flex group">
         <div>
-        {dp ? (
+          {dp ? (
             <Avatar
               src={POST_URL + `${dp}.jpg`}
               alt="avatar"
@@ -76,7 +100,9 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           <div className="flex items-start  ">
             <div className="w-[220px] break-all flex">
               <p className="text-md font-bold">
-              <Link to={`/profile/${userName}`} onClick={handleOpen}>{userName}{" "}</Link>
+                <Link to={`/profile/${userName}`} onClick={handleOpen}>
+                  {userName}{" "}
+                </Link>
                 <span
                   className="comment-style text-md font-normal"
                   aria-hidden="true"
@@ -99,6 +125,24 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
                 : "Like"}
             </p>
             <p onClick={() => handleClick(userName, commentId)}>Reply</p>
+            <div className=" px- opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <EllipsisHorizontalIcon
+                className="h-6 w-6 text-gray-500"
+                onClick={handleManageComment}
+              />
+            </div>
+            {manageCommentOpen && (
+              <ManageComment
+                open={manageCommentOpen}
+                setOpen={setManageCommentOpen}
+                commentId={commentId}
+                commentedUser={commentedUser}
+                postedUser={postedUser}
+                replyArr={replyArr}
+                setReplyArr={setReplyArr}
+                replyId={_id}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -111,11 +155,15 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           )}
         </button>
       </div>
-      {openReplyLike && <LikeModal open={openReplyLike} setOpen={setOpenReplyLike} user={replyLikedArr} />}
+      {openReplyLike && (
+        <LikeModal
+          open={openReplyLike}
+          setOpen={setOpenReplyLike}
+          user={replyLikedArr}
+        />
+      )}
     </div>
-  
   );
-  
 };
 
 export default ReplyComment;

@@ -224,3 +224,54 @@ export const updatePost = async(postId:string,description:string):Promise<any>=>
 }
 
 
+//delete comment 
+
+export const deleteComment = async(commentId:string):Promise<any>=>{
+  try{
+    const response:any = await baseURL.patch("/post/deletecomment",{commentId})
+    console.log("response delete comment : ",response);
+    if(response.data.status === 'success'){
+      const comment = response.data.comment
+      return comment
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+//delete Reply
+
+export const deleteReply = async(commentId:string,ReplyId:string):Promise<any>=>{
+  try{
+    const ReplyDetails ={commentId,ReplyId}
+    const response:any = await baseURL.patch("/post/deleteReply",ReplyDetails)
+    console.log("response reply comment : ",response);
+    if(response.data.status === 'success'){
+      const reply = response.data.reply
+      return reply
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+//delete a Post
+
+export const deletePost = async(postId:string):Promise<any>=>{
+  try{
+    const response:any = await baseURL.patch("/post/deletePost",{postId})
+    console.log("response delete post : ",response);
+    if(response.data.status === 'success'){
+      const post = response.data.post
+      return post
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}

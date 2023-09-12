@@ -56,6 +56,8 @@ export const userRepositoryMongoDB = () => {
   //search user by char
 
   const searchUserbyChar = async (user: string) => {
+    console.log("search cahr : ",user);
+    
     const users = await User.find({
       userName: { $regex: user, $options: "i" },
     });
