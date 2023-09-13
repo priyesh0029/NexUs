@@ -9,12 +9,19 @@ import CommentModal from "../Post/commentModal";
 
 interface ProfileAreaProps {
   posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   proId: string;
 }
 
-const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
+const ProfileBody: React.FC<ProfileAreaProps> = ({
+  posts,
+  proId,
+  setPosts,
+}) => {
   const [like, setLike] = useState(false);
-  const [likedArr, setLikedArr] = useState<{ userName: string; dp: string; }[]>([]);
+  const [likedArr, setLikedArr] = useState<{ userName: string; dp: string }[]>(
+    []
+  );
   const [openComment, setOpencomment] = useState(false);
   const [commentArr, setCommentArr] = useState<Comment[]>([]);
   const [postId, setPostId] = useState<string>("");
@@ -22,7 +29,7 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
   const [imgNames, setImgNames] = useState<string[]>([]);
   const [postdescription, setPostDescription] = useState<string>("");
   const [createdAt, setCreatedAt] = useState<string>("");
-  const [dpPost,setDpPost] = useState<string>("");
+  const [dpPost, setDpPost] = useState<string>("");
 
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
@@ -35,9 +42,11 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
     description,
     createdAt,
     liked,
-    dp
+    dp,
   }: Post) => {
-    const likeStatus = liked.some((person) =>  person.userName === user.userName);
+    const likeStatus = liked.some(
+      (person) => person.userName === user.userName
+    );
     setLike(likeStatus);
     setLikedArr(liked);
     setPostId(_id);
@@ -48,7 +57,7 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
     setCommentArr([]);
     getComments(_id);
     setOpencomment(!openComment);
-    setDpPost(dp)
+    setDpPost(dp);
   };
 
   const getComments = async (_id: string) => {
@@ -83,6 +92,7 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
           createdAt={createdAt}
           postedUser={postedUser}
           description={postdescription}
+          setDescription={setPostDescription}
           likesArr={likedArr}
           setLikesArr={setLikedArr}
           postId={postId}
@@ -90,7 +100,9 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({ posts, proId }) => {
           setLike={setLike}
           commentArr={commentArr}
           setCommentArr={setCommentArr}
-          postDp ={dpPost}
+          postDp={dpPost}
+          allPost={posts}
+          setAllPost={setPosts}
         />
       )}
     </div>

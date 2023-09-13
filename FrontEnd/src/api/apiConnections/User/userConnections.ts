@@ -22,7 +22,7 @@ export const getUserDetails = async (user: string) => {
   try {
     const response: any = await baseURL.get(`/user/user/${user}`);
     if (response.data.status === "success") {
-      console.log("response of getUserDetails : ", response.data.user);
+      console.log("response of getUserDetails api : ", response.data.user);
       return response.data.user[0];
     }
   } catch (error) {

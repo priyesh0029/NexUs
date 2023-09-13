@@ -7,11 +7,10 @@ import {
   handleFollows,
 } from "../../../api/apiConnections/User/userConnections";
 import { useRef, useState } from "react";
-import { SetUserDp } from "../../../features/redux/slices/user/homeSlice";
+import { SetHandlefollows, SetUserDp } from "../../../features/redux/slices/user/homeSlice";
 interface ProfileHeaderProps {
   totalPosts: number;
   userInfo: UserInfo;
-  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -64,11 +63,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     if (response.status) {
       if (response.state === "added") {
         setFollower((prevFollower) => [response.user, ...prevFollower]);
+        dispatch(SetHandlefollows(userInfo.userName))
       } else if (response.state === "removed") {
         const updatedFollowedArr = follower.filter(
           (person) => person !== user.userName
         );
         setFollower(updatedFollowedArr);
+        dispatch(SetHandlefollows(userInfo.userName))
       }
     }
   };

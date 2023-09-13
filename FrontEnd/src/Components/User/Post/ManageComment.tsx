@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   deleteComment,
   deleteReply,
 } from "../../../api/apiConnections/User/postConnections";
+import ConfirmDialouge from "../assetComponents/ConfirmModal";
 
 interface ImanagePostProps {
   open: boolean;
@@ -30,12 +31,15 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
     setCommentArr,
     replyId,
     replyArr,
-    setReplyArr
+    setReplyArr,
   } = props;
 
-  const dispatch = useDispatch();
+  const [confirmModal, setConfirmModal] = useState(false);
 
   const handleOpen = () => setOpen(!open);
+  const handleConfirmModal = () => {
+    setConfirmModal(!confirmModal);
+  };
 
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
@@ -44,8 +48,7 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
   const handleDeleteComment = async () => {
     const response = await deleteComment(commentId);
     handleOpen();
-    if(commentArr !== undefined && setCommentArr !== undefined){
-
+    if (commentArr !== undefined && setCommentArr !== undefined) {
       const updatedCommentdArr = commentArr.filter(
         (comment) => comment._id !== response._id
       );
@@ -58,12 +61,12 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
       const response = await deleteReply(commentId, replyId);
       handleOpen();
       console.log("log response of delete reply : ", response);
-      
-      if(replyArr !== undefined && setReplyArr !== undefined){
-        console.log("replyarray : ",replyArr);
-        
+
+      if (replyArr !== undefined && setReplyArr !== undefined) {
+        console.log("replyarray : ", replyArr);
+
         const updatedReplyArr = replyArr.filter(
-          (reply) => reply._id !== response[0]._id
+          (reply) => reply._id !== response
         );
         setReplyArr(updatedReplyArr);
       }
@@ -85,14 +88,22 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
           {user.userName === postedUser ? (
             <div
               className="text-md text-gray-800 font-semibold w-full text-center  border-b border-gray-400"
-              onClick={
-                replyId !== undefined ? handleDeleteReply : handleDeleteComment
-              }
+              onClick={handleConfirmModal}
             >
               Delete
             </div>
           ) : (
             ""
+          )}
+          {confirmModal && (
+            <ConfirmDialouge
+              open={confirmModal}
+              setOpen={setConfirmModal}
+              item={replyId !== undefined ? "Delete this Reply" : "Delete this Comment"}
+              handleDelete={
+                replyId !== undefined ? handleDeleteReply : handleDeleteComment
+              }
+            />
           )}
           <div
             className="text-md text-blue-800 font-semibold w-full text-center  border-b border-gray-400"

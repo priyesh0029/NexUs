@@ -10,7 +10,9 @@ interface RegisterResponse {
       name: string;
       userName: string;
       dp : string;
-      savedPost : string[]
+      savedPost : string[];
+      following : string[];
+      followers : string[];
     };
   };
 }
@@ -40,7 +42,9 @@ export const register = async (userData: RegisterFormValues): Promise<any> => {
             name: response.data.token.user.name,
             userName: response.data.token.user.userName,
             dp :  response.data.token.user.dp,
-            savedPost:response.data.token.user.savedPost
+            savedPost:response.data.token.user.savedPost,
+            following:response.data.token.user.following,
+            followers:response.data.token.user.followers
           },
         },
       };
@@ -77,7 +81,9 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
             name: response.data.token.user[0].name,
             userName: response.data.token.user[0].userName,
             dp :  response.data.token.user[0].dp,
-            savedPost:response.data.token.user[0].savedPost
+            savedPost:response.data.token.user[0].savedPost,
+            following:response.data.token.user[0].following,
+            followers:response.data.token.user[0].followers
           },
         },
       };

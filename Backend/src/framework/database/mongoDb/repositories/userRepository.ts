@@ -133,7 +133,7 @@ export const userRepositoryMongoDB = () => {
 
       console.log("follow 2 :", follow, "following : ", following);
 
-      if (follow.modifiedCount === 1) {
+      if (follow.modifiedCount === 1 && following.modifiedCount === 1) {
         return { status: true, user: loginedUser, state: "added" };
       }
     }

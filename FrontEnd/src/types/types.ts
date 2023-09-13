@@ -24,7 +24,9 @@ interface UserInfo {
     name: string;
     userName: string;
     dp: string
-    savedPost : string[]
+    savedPost : string[];
+    followers : string[];
+    following : string[];
   }
   interface Post{
       postedUser:string,

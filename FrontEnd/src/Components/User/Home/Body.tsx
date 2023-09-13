@@ -39,7 +39,7 @@ const HomeBody = () => {
       <div className="flex lg:px-32 items-center flex-col  ">
         {allPost.map((post) => (
           <div key={post._id}>
-            <SinglePost {...post} />
+            <SinglePost {...post} allPost={allPost} setAllPost={setAllPost} />
           </div>
         ))}
       </div>

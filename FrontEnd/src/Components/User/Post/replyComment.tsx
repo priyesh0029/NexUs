@@ -111,9 +111,6 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
                 </span>
               </p>
             </div>
-            <div className=" px-2 opacity-0 hover:opacity-100 transition-opacity duration-300">
-              <EllipsisHorizontalIcon className="h-6 w-6 text-gray-500" />
-            </div>
           </div>
           <div className="flex items-start  text-sm gap-5">
             <p>{moment(createdAt).startOf("minutes").fromNow()}</p>
@@ -125,7 +122,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
                 : "Like"}
             </p>
             <p onClick={() => handleClick(userName, commentId)}>Reply</p>
-            <div className=" px- opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className=" px-2 opacity-0 hover:opacity-100 transition-opacity duration-300">
               <EllipsisHorizontalIcon
                 className="h-6 w-6 text-gray-500"
                 onClick={handleManageComment}

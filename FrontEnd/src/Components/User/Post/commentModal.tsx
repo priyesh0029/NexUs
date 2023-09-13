@@ -28,7 +28,7 @@ interface CommentModalProps {
   createdAt: string;
   postedUser: string;
   description: string;
-  setDescription : React.Dispatch<React.SetStateAction<string>>;
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
   likesArr: {
     userName: string;
     dp: string;
@@ -47,6 +47,8 @@ interface CommentModalProps {
   commentArr: Comment[];
   setCommentArr: React.Dispatch<React.SetStateAction<Comment[]>>;
   postDp: string;
+  allPost: Post[];
+  setAllPost: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 
 const CommentModal: React.FC<CommentModalProps> = (props) => {
@@ -66,6 +68,8 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
     commentArr,
     setCommentArr,
     postDp,
+    allPost,
+    setAllPost,
   } = props;
 
   const user = useSelector(
@@ -200,8 +204,12 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                     setOpen={setManagePost}
                     openEdit={editOpen}
                     setOpenEdit={setEditOpen}
-                    postedUser ={postedUser}
+                    postedUser={postedUser}
                     postId={postId}
+                    allPost={allPost}
+                    setAllPost={setAllPost}
+                    openComment={openComment}
+                    setOpencomment={setOpencomment}
                   />
                 )}
                 {editOpen && (
@@ -221,14 +229,14 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                 {commentArr.map((comment, index) => (
                   <SingleComment
                     postedComment={comment}
-                    postedUser ={postedUser}
+                    postedUser={postedUser}
                     focusInput={focusInput}
                     setComment={setComment}
                     key={index}
                     openComment={openComment}
                     setOpencomment={setOpencomment}
-                    commentArr ={commentArr}
-                    setCommentArr = {setCommentArr}
+                    commentArr={commentArr}
+                    setCommentArr={setCommentArr}
                   />
                 ))}
               </div>

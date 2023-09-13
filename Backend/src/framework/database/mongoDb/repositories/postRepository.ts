@@ -29,6 +29,12 @@ export const postRepositoryMongoDb = () => {
     // return await Post.find().sort({ createdAt: -1 });
     const posts = await Post.aggregate([
       {
+        $match:
+          {
+            postDeleted: false,
+          },
+      },
+      {
         $lookup: {
           from: "users",
           localField: "postedUser",
@@ -581,6 +587,7 @@ export const postRepositoryMongoDb = () => {
     return false;
   };
 
+  //to get users post profile
   const getUserPosts = async (user: string) => {
     // const posts = await Post.find({ postedUser: user }).sort({ createdAt: -1 });
     const posts = await Post.aggregate([
@@ -588,6 +595,12 @@ export const postRepositoryMongoDb = () => {
         $match: {
           postedUser: user,
         },
+      },
+      {
+        $match:
+          {
+            postDeleted: false,
+          },
       },
       {
         $lookup: {
@@ -769,19 +782,14 @@ export const postRepositoryMongoDb = () => {
     const commentID = new mongoose.Types.ObjectId(commentId);
     const replyID = new mongoose.Types.ObjectId(replyId);
     const replyDetails = await Comment.findOneAndUpdate(
-      { _id: commentID},
+      { _id: commentID, "reply._id" : replyID },
       { $set: {"reply.$.delete": true } },  
       { new: true }
     );
-    console.log("user beforre edit post : ",replyDetails);
+    console.log("user after delete reply : ",replyDetails);
     
     if (replyDetails !== null) {
-      const filteredReplies = replyDetails.reply.filter(reply => reply.delete);
-      const projectedReplies = filteredReplies.map(reply => ({
-        reply: reply.comment,
-        _id: reply._id
-      }));
-      return projectedReplies
+      return replyId
     }else{
       return false
     }

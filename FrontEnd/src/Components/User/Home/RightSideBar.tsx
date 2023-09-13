@@ -34,17 +34,10 @@ const RightSideBar = () => {
     const response = await handleFollows(searchedUser, user.userName);
     if(response.status){
       if(response.state === 'added'){
-        // setUsersList((prevFollower)=> [response.user,...prevFollower])
-        // SetFollowButton(!followButton)
         const newFollowStates = [...followStates];
         newFollowStates[index] = true;
         setFollowStates(newFollowStates)
       }else if (response.state === 'removed'){
-        // const updatedFollowedArr = usersList.filter(
-        //   (person) => person.userName !== response.user
-        // );
-        // setUsersList(updatedFollowedArr);
-        // SetFollowButton(!followButton)
         const newFollowStates = [...followStates];
         newFollowStates[index] = false;
         setFollowStates(newFollowStates)

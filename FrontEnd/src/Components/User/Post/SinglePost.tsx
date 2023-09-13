@@ -27,15 +27,38 @@ import EditPost from "./EditPost";
 import { handleSavePost } from "../../../api/apiConnections/User/userConnections";
 import { SetSavePost } from "../../../features/redux/slices/user/homeSlice";
 
-const SinglePost = ({
-  _id,
-  postedUser,
-  imgNames,
-  description,
-  createdAt,
-  liked,
-  dp,
-}: Post) => {
+interface IsinglePost {
+  postedUser: string;
+  description: string;
+  imgNames: string[];
+  isBlocked: boolean;
+  liked: [
+    {
+      userName: string;
+      dp: string;
+    }
+  ];
+  reports: [];
+  _id: string;
+  updatedAt: string;
+  createdAt: string;
+  dp: string;
+  allPost: Post[];
+  setAllPost: React.Dispatch<React.SetStateAction<Post[]>>;
+}
+
+const SinglePost: React.FC<IsinglePost> = (props) => {
+  const {
+    _id,
+    postedUser,
+    imgNames,
+    description,
+    createdAt,
+    liked,
+    dp,
+    allPost,
+    setAllPost,
+  } = props;
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
@@ -143,6 +166,10 @@ const SinglePost = ({
                 setOpenEdit={setEditOpen}
                 postedUser={postedUser}
                 postId={_id}
+                allPost={allPost}
+                setAllPost={setAllPost}
+                openComment={openComment}
+                setOpencomment={setOpencomment}
               />
             )}
             {editOpen && (
@@ -227,6 +254,8 @@ const SinglePost = ({
               commentArr={commentArr}
               setCommentArr={setCommentArr}
               postDp={dp}
+              allPost={allPost}
+              setAllPost={setAllPost}
             />
           )}
         </div>

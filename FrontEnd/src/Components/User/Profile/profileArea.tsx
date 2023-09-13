@@ -27,17 +27,17 @@ const ProfileArea = () => {
     };
 
     const getProfileDetails = async (proId: string) => {
-      const response = await getUserDetails(proId);
+      const response:UserInfo = await getUserDetails(proId);
       console.log("response getProfileDetails : ", response);
         setUser(response);
     };
     return (
       <div className="flex flex-col">
         <div className="flex flex-col w-full">
-          {user !==undefined && <ProfileHeader totalPosts={posts.length} userInfo={user} setUserInfo = {setUser}/>}
+          {user !==undefined && <ProfileHeader totalPosts={posts.length} userInfo={user}/>}
         </div>
         <div>
-          <ProfileBody posts={posts} proId={proId} />
+          <ProfileBody posts={posts} setPosts={setPosts} proId={proId} />
         </div>
       </div>
     );
