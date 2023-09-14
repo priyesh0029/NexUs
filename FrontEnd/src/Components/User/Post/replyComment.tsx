@@ -138,6 +138,7 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
                 replyArr={replyArr}
                 setReplyArr={setReplyArr}
                 replyId={_id}
+                repliedUser ={userName}
               />
             )}
           </div>

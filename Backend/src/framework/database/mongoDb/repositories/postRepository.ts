@@ -8,10 +8,8 @@ export const postRepositoryMongoDb = () => {
   //to create a post
 
   const createPost = async (post: post) => {
-    const user = await User.findOne(
-      { _id: post.userId },
-      { _id: 0, userName: 1 }
-    );
+    const userID = new mongoose.Types.ObjectId(post.userId);
+    const user = await User.findOne({ _id: userID }, { _id: 0, userName: 1 });
     if (user !== null) {
       const postDetails = {
         postedUser: user.userName,
@@ -29,10 +27,9 @@ export const postRepositoryMongoDb = () => {
     // return await Post.find().sort({ createdAt: -1 });
     const posts = await Post.aggregate([
       {
-        $match:
-          {
-            postDeleted: false,
-          },
+        $match: {
+          postDeleted: false,
+        },
       },
       {
         $lookup: {
@@ -227,7 +224,7 @@ export const postRepositoryMongoDb = () => {
       {
         $match: {
           postId: postID,
-          delete:false
+          delete: false,
         },
       },
       {
@@ -360,10 +357,9 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
-        $match:
-          {
-            "reply.delete": false,
-          },
+        $match: {
+          "reply.delete": false,
+        },
       },
       {
         $lookup: {
@@ -597,10 +593,9 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
-        $match:
-          {
-            postDeleted: false,
-          },
+        $match: {
+          postDeleted: false,
+        },
       },
       {
         $lookup: {
@@ -734,91 +729,133 @@ export const postRepositoryMongoDb = () => {
 
   //to edit users post
 
-  const editUserPost = async(postId:string,description:string,userId:string)=>{
+  const editUserPost = async (
+    postId: string,
+    description: string,
+    userId: string
+  ) => {
     const userID = new mongoose.Types.ObjectId(userId);
-    const user = await User.findOne(
-      { _id: userID },
-      { _id: 0, userName: 1 }
-    );
-    console.log("user beforre edit post : ",user);
-    
+    const user = await User.findOne({ _id: userID }, { _id: 0, userName: 1 });
+    console.log("user beforre edit post : ", user);
+
     if (user !== null) {
       const postID = new mongoose.Types.ObjectId(postId);
       const updatedPost = await Post.findOneAndUpdate(
-        { _id: postID ,postedUser : user.userName},
+        { _id: postID, postedUser: user.userName },
         { $set: { description: description } },
-        { new: true,projection: { description: 1, _id: 0 } }
+        { new: true, projection: { description: 1, _id: 0 } }
       );
-      console.log("updated post after query : ",updatedPost);
-      return updatedPost
-    }else{
-
-      return false
+      console.log("updated post after query : ", updatedPost);
+      return updatedPost;
+    } else {
+      return false;
     }
-  }
+  };
 
   //to delete comment
 
-  const deleteComment = async(commentId:string)=>{
+  const deleteComment = async (commentId: string) => {
     const commentID = new mongoose.Types.ObjectId(commentId);
     const CommentDetails = await Comment.findOneAndUpdate(
       { _id: commentID },
       { $set: { delete: true } },
-      { new: true,projection: { comment: 1 } }
+      { new: true, projection: { comment: 1 } }
     );
-    console.log("user beforre edit post : ",CommentDetails);
-    
-    if (CommentDetails !== null) {
-      console.log("updated post after query : ",CommentDetails.comment);
-      return CommentDetails
-    }else{
-      return false
-    }
-  }
-  
-  // to delete reply 
+    console.log("user beforre edit post : ", CommentDetails);
 
-  const deleteReply = async(commentId:string,replyId:string)=>{
+    if (CommentDetails !== null) {
+      console.log("updated post after query : ", CommentDetails.comment);
+      return CommentDetails;
+    } else {
+      return false;
+    }
+  };
+
+  // to delete reply
+
+  const deleteReply = async (commentId: string, replyId: string) => {
     const commentID = new mongoose.Types.ObjectId(commentId);
     const replyID = new mongoose.Types.ObjectId(replyId);
     const replyDetails = await Comment.findOneAndUpdate(
-      { _id: commentID, "reply._id" : replyID },
-      { $set: {"reply.$.delete": true } },  
+      { _id: commentID, "reply._id": replyID },
+      { $set: { "reply.$.delete": true } },
       { new: true }
     );
-    console.log("user after delete reply : ",replyDetails);
-    
+    console.log("user after delete reply : ", replyDetails);
+
     if (replyDetails !== null) {
-      return replyId
-    }else{
-      return false
+      return replyId;
+    } else {
+      return false;
     }
-  }
+  };
 
-    // to delete Post 
+  // to delete Post
 
-    const deletePost = async(postId : string)=>{
-      const postID = new mongoose.Types.ObjectId(postId);
-      console.log("delete post db repositiry : ",postID);
-      
-      const [post, comment] = await Promise.all([
-        Post.updateOne(
+  const deletePost = async (postId: string) => {
+    const postID = new mongoose.Types.ObjectId(postId);
+    console.log("delete post db repositiry : ", postID);
+
+    const [post, comment] = await Promise.all([
+      Post.updateOne({ _id: postID }, { $set: { postDeleted: true } }),
+      Comment.updateMany(
+        { postId: postID },
+        { $set: { delete: true, "reply.$[].delete": true } }
+      ),
+    ]);
+    if (
+      post.modifiedCount === 1 &&
+      comment.modifiedCount === comment.matchedCount
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  //to report a post
+
+  const postReport = async (
+    postId: string,
+    reportComment: string,
+    userId: string
+  ) => {
+    const postID = new mongoose.Types.ObjectId(postId);
+    const userID = new mongoose.Types.ObjectId(userId);
+    const user = await User.findOne({ _id: userID }, { _id: 0, userName: 1 });
+    if (user !== null) {
+      const reportObj = {
+        reportedUser: user.userName,
+        report: reportComment,
+      };
+      const checkReport = await Post.findOne({
+        _id: postID,
+        reports: {
+          $elemMatch: {
+            reportedUser: user.userName,
+            report: reportComment,
+          },
+        },
+      });
+
+      if(checkReport === null){
+
+        const updatedReport = await Post.updateOne(
           { _id: postID },
-          { $set: {postDeleted: true } }
-        ),
-        Comment.updateMany(
-          { postId: postID },
-          { $set: { delete: true,"reply.$[].delete": true } }
-        ),
-      ])
-      if (post.modifiedCount === 1 && comment.modifiedCount === comment.matchedCount) {
-        return true
+          { $push: { reports: reportObj } }
+        );
+        if (updatedReport.modifiedCount === 1) {
+          return true;
+        } else {
+          return false;
+        }
       }else{
-        return false
+        return true
       }
-
+    } else {
+      return false;
     }
-
+  };
 
   return {
     createPost,
@@ -834,7 +871,8 @@ export const postRepositoryMongoDb = () => {
     editUserPost,
     deleteComment,
     deleteReply,
-    deletePost
+    deletePost,
+    postReport,
   };
 };
 

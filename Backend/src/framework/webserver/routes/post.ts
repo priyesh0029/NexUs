@@ -39,6 +39,11 @@ const postRouter = (router:Router)=>{
 
         router.patch('/deletePost',controllers.deletePost)
 
+        router.patch('/reportPost',controllers.reportPost)
+
+
+        
+
 
 
     return router

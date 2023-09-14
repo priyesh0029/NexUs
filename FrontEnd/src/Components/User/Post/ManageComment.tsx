@@ -18,6 +18,7 @@ interface ImanagePostProps {
   replyId?: string;
   replyArr?: Reply[];
   setReplyArr?: React.Dispatch<React.SetStateAction<Reply[]>>;
+  repliedUser?: string;
 }
 
 const ManageComment: React.FC<ImanagePostProps> = (props) => {
@@ -32,6 +33,7 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
     replyId,
     replyArr,
     setReplyArr,
+    repliedUser,
   } = props;
 
   const [confirmModal, setConfirmModal] = useState(false);
@@ -82,25 +84,73 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
         className="border-none"
       >
         <div className="flex items-center flex-col ">
-          <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400">
-            Report
-          </div>
-          {user.userName === postedUser ? (
+          {(user.userName === postedUser &&
+            user.userName === commentedUser &&
+            repliedUser !== undefined &&
+            user.userName !== repliedUser) ||
+          (user.userName === postedUser &&
+            user.userName !== commentedUser &&
+            repliedUser === undefined) ? (
+            <>
+              <div
+                className="text-md text-gray-800 font-semibold w-full text-center  border-b border-gray-400"
+                onClick={handleConfirmModal}
+              >
+                Delete
+              </div>
+              <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400">
+                Report
+              </div>
+            </>
+          ) : (user.userName !== postedUser &&
+              user.userName === commentedUser &&
+              repliedUser === undefined) ||
+            (user.userName !== postedUser &&
+              user.userName !== commentedUser &&
+              repliedUser !== undefined &&
+              user.userName === repliedUser) ||
+            (user.userName !== postedUser &&
+              user.userName === commentedUser &&
+              repliedUser !== undefined &&
+              user.userName === repliedUser) ? (
             <div
               className="text-md text-gray-800 font-semibold w-full text-center  border-b border-gray-400"
               onClick={handleConfirmModal}
             >
               Delete
             </div>
+          ) : (user.userName !== postedUser &&
+              user.userName !== commentedUser &&
+              repliedUser === undefined) ||
+            (user.userName !== postedUser &&
+              user.userName !== commentedUser &&
+              repliedUser !== undefined &&
+              user.userName !== repliedUser) ||
+            (user.userName !== postedUser &&
+              user.userName === commentedUser &&
+              repliedUser !== undefined &&
+              user.userName !== repliedUser) ? (
+            <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400">
+              Report
+            </div>
           ) : (
-            ""
+            <div
+              className="text-md text-gray-800 font-semibold w-full text-center  border-b border-gray-400"
+              onClick={handleConfirmModal}
+            >
+              Delete
+            </div>
           )}
           {confirmModal && (
             <ConfirmDialouge
               open={confirmModal}
               setOpen={setConfirmModal}
-              item={replyId !== undefined ? "Delete this Reply" : "Delete this Comment"}
-              handleDelete={
+              item={
+                replyId !== undefined
+                  ? "Delete this Reply"
+                  : "Delete this Comment"
+              }
+              handleConfirmFunction={
                 replyId !== undefined ? handleDeleteReply : handleDeleteComment
               }
             />

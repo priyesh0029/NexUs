@@ -275,3 +275,22 @@ export const deletePost = async(postId:string):Promise<any>=>{
     
   }
 }
+
+//report a post 
+
+export const reportPost = async(postId: string,report:string):Promise<any>=>{
+  try{
+    const reportDetails = {postId,report}
+    console.log("response report post reportDetails : ",reportDetails);
+    const response:any = await baseURL.patch("/post/reportPost",reportDetails)
+    console.log("response report post : ",response);
+    if(response.data.status === 'success'){
+      const reported = response.data.reported
+      return reported
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}

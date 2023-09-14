@@ -9,7 +9,10 @@ import {
   SetHandlefollows,
   SetSavePost,
 } from "../../../features/redux/slices/user/homeSlice";
-import { deletePost } from "../../../api/apiConnections/User/postConnections";
+import {
+  deletePost,
+  reportPost,
+} from "../../../api/apiConnections/User/postConnections";
 import ConfirmDialouge from "../assetComponents/ConfirmModal";
 import ReportModal from "./ReportModal";
 
@@ -93,10 +96,19 @@ const ManagePost: React.FC<ImanagePostProps> = (props) => {
     }
   };
 
-  //report page
+  //report post
   const [reportPageOpen, setReportPageOpen] = useState(false);
   const handleReportPage = () => {
     setReportPageOpen(!reportPageOpen);
+  };
+
+  const handleReportPost = async (report: string) => {
+    const response = await reportPost(postId, report);
+    console.log("response f reported post : ", response);
+    if(response){
+      handleOpen()
+    }
+    
   };
 
   return (
@@ -164,11 +176,16 @@ const ManagePost: React.FC<ImanagePostProps> = (props) => {
             open={confirmModal}
             setOpen={setConfirmModal}
             item={"Delete this Post"}
-            handleDelete={handleDeletePost}
+            handleConfirmFunction={handleDeletePost}
           />
         )}
         {reportPageOpen && (
-          <ReportModal open={reportPageOpen} setOpen={setReportPageOpen} item ={"Post"}/>
+          <ReportModal
+            open={reportPageOpen}
+            setOpen={setReportPageOpen}
+            item={"Post"}
+            handleReport={handleReportPost}
+          />
         )}
       </Dialog>
     </>

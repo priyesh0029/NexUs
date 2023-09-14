@@ -75,6 +75,14 @@ const postDelete = async (
   postId: string,
 ) => await repository.deletePost(postId);
 
+//to report a post
+
+const reportPost = async (
+  postId: string,
+  report:string,
+  userId :string
+) => await repository.postReport(postId,report,userId);
+
   return {
     uploadPost,
     getAllPosts,
@@ -89,7 +97,8 @@ const postDelete = async (
     editUserPost,
     commentDelete,
     ReplytDelete,
-    postDelete
+    postDelete,
+    reportPost
   };
 };
 

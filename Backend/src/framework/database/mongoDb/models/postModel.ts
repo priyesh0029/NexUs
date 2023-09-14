@@ -21,7 +21,16 @@ const postSchema = new Schema(
       required: true,
     },
     liked: [],
-    reports: [],
+    reports: [{
+      reportedUser : {
+        type: String,
+        required: true,
+      },
+      report : {
+        type: String,
+        required: true,
+      }
+    }],
   },
   { timestamps: true }
 );

@@ -5,24 +5,26 @@ interface IconfirmModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   item: string;
-  handleDelete: () => void;
+  handleConfirmFunction: () => void;
+  reportReason?: string;
 }
 
 const ConfirmDialouge: React.FC<IconfirmModal> = ({
   open,
   setOpen,
   item,
-  handleDelete,
+  handleConfirmFunction,
+  reportReason,
 }) => {
   const handleOpen = () => setOpen(!open);
 
   const handleConfirm = () => {
-    handleDelete();
+    handleConfirmFunction();
     handleOpen();
   };
 
   let items = item.split(" ");
-  console.log("items of confirm modal ", items);
+  console.log("items of confirm modal: ", items);
 
   return (
     <>
@@ -42,8 +44,15 @@ const ConfirmDialouge: React.FC<IconfirmModal> = ({
           <div className="flex flex-col items-center py-4">
             <p>Are you sure you want to </p>
             <p>{item} ?</p>
-            {items[0] === "Report" ? <p>Report reason : {}</p>:""}
           </div>
+            {items[0] === "Report" ? (
+              <div className="flex py-4 gap-3 w-full">
+                <p className="flex text-red-800 w-[40%] justify-end">Report reason : </p>
+                <p className="text-black w-[60%]"> {reportReason}</p>
+              </div>
+            ) : (
+              ""
+            )}
           <div className="flex flex-col items-center pb-4">
             {items[0] === "Delete" ? (
               <button

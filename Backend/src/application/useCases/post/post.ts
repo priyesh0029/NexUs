@@ -240,3 +240,23 @@ export const handleDeletePost =  async (
     }
   });
 };
+
+//to report a post 
+
+export const handleReportPost =  async (
+  postId: string,
+  report:string,
+  userId:string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.reportPost(postId,report,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while deleting post.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};

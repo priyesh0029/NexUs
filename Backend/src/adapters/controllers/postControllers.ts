@@ -13,6 +13,7 @@ import {
   handleCommentDelete,
   handleDeletePost,
   handleDeleteReply,
+  handleReportPost,
   likeHandler,
   postCreate,
   replyLikeHandler,
@@ -294,6 +295,30 @@ export const postControllers = (
     }
   })
 
+  //to report post
+
+  const reportPost = asyncHandler(async(req :Request,res : Response)=>{
+    const {postId,report} = req.body
+    const userId = req.query.userId;
+    console.log("contollers report post : ", postId,report,userId);
+    if (typeof postId === "string" && typeof report ==='string' && typeof userId ==='string' ) {
+      await handleReportPost(postId,report,userId,postRepo).then((reported) => {
+        console.log("contollers all post response : ", reported);
+
+        res.status(200).json({
+          status: "success",
+          reported,
+        });
+      });
+    }else {
+      throw new AppError(
+        ` Error while deleting post.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  })
+
+
   return {
     createPost,
     getAllPost,
@@ -308,6 +333,7 @@ export const postControllers = (
     updatePost,
     deleteComment,
     deleteReply,
-    deletePost
+    deletePost,
+    reportPost
   };
 };

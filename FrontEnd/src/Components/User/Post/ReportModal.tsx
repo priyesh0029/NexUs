@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
+import ConfirmDialouge from "../assetComponents/ConfirmModal";
 
 interface IReportModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   item: string;
+  handleReport : (report: string) => void;
 }
 
 const postReportOptions = [
@@ -20,14 +22,22 @@ const postReportOptions = [
 ];
 
 const ReportModal: React.FC<IReportModal> = (props) => {
-  const { open, setOpen, item } = props;
-  const [clickedItem, setClickedItem] = useState<string | null>(null);
+  const { open, setOpen, item,handleReport} = props;
+  const [clickedItem, setClickedItem] = useState<string>('');
+  const [confirmModal, setConfirmModal] = useState(false);
+
 
   const handleOpen = () => setOpen(!open);
 
   const handleClick = (reportReason: string) => {
     setClickedItem(reportReason);
+    setConfirmModal(true)
   };
+
+  const handleReportModal = ()=>{
+    handleReport(clickedItem)
+    handleOpen()
+  }
 
   return (
     <>
@@ -59,12 +69,21 @@ const ReportModal: React.FC<IReportModal> = (props) => {
                 {option}
               </p>
             ))}
-            {clickedItem && (
+            {/* {clickedItem && (
               <p className="border-b border-gray-400 p-2 w-full">
                 Clicked: {clickedItem}
               </p>
-            )}
+            )} */}
           </div>
+          {confirmModal && (
+          <ConfirmDialouge
+            open={confirmModal}
+            setOpen={setConfirmModal}
+            item={"Report this Post"}
+            handleConfirmFunction={handleReportModal}
+            reportReason ={clickedItem}
+          />
+        )}
         </div>
       </Dialog>
     </>
