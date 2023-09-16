@@ -117,12 +117,14 @@ const DefaultSidebar = () => {
               Profile
             </ListItem>
           </Link>
+          <Link to={'/settings'}>
           <ListItem>
             <ListItemPrefix>
               <Cog6ToothIcon className="h-5 w-5" />
             </ListItemPrefix>
             Settings
           </ListItem>
+          </Link>
           <ListItem onClick={handleLogout}>
             <ListItemPrefix>
               <PowerIcon className="h-5 w-5" />

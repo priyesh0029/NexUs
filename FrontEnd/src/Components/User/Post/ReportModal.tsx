@@ -79,7 +79,7 @@ const ReportModal: React.FC<IReportModal> = (props) => {
           <ConfirmDialouge
             open={confirmModal}
             setOpen={setConfirmModal}
-            item={"Report this Post"}
+            item={`Report this ${item}`}
             handleConfirmFunction={handleReportModal}
             reportReason ={clickedItem}
           />

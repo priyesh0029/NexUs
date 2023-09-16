@@ -19,6 +19,12 @@ const user = (router: Router) => {
 
   router.post('/savepost',controllers.savePost)
 
+  router.patch('/changeGender',controllers.changeGender)
+
+  router.patch('/updateProfile',controllers.updateProfile)
+
+
+
 
   return router;
 };

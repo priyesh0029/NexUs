@@ -109,3 +109,44 @@ export const savePostHandle =  async (
     }
   });
 };
+
+
+//to handle save post 
+
+export const amendGender =  async (
+  gender: string,
+  userId :string,
+  repository: ReturnType<userTypeDbRepository>
+) => {
+  return await repository.genderAmend(gender,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while saving post.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+
+//to handle update Profile
+
+export const updateProfileHandle =  async (
+  name: string,
+  bio:string,
+  userId :string,
+  repository: ReturnType<userTypeDbRepository>
+) => {
+  return await repository.handleUpdateProfile(name,bio,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while saving post.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};

@@ -18,6 +18,7 @@ export const handleDp = async (post: FormData) => {
   }
 };
 
+//get user details for profile
 export const getUserDetails = async (user: string) => {
   try {
     const response: any = await baseURL.get(`/user/user/${user}`);
@@ -89,6 +90,43 @@ export const handleSavePost = async(postId:string):Promise<any>=>{
     if(response.data.status === 'success'){
       const savedPost = response.data.savedPost
       return savedPost
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+//edit profile handler
+
+export const editProfileHandle = async(userData: any)=>{
+  console.log("userData in profile edit : ", userData );
+  try{
+    const response:any = await baseURL.patch("/user/updateProfile",{userData})
+    console.log("response edited post : ",response);
+    if(response.data.status === 'success'){
+      const gender = response.data.gender
+      return gender
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+  
+}
+
+//edit gender in edit profile
+
+export const handleGenderSave = async(gender: string)=>{
+  console.log("userData in gender edit : ", gender );
+  try{
+    const response:any = await baseURL.patch("/user/changeGender",{gender})
+    console.log("response edited post : ",response);
+    if(response.data.status === 'success'){
+      const profileupdate = response.data.profileupdate
+      return profileupdate
     }
 
   }catch(error){

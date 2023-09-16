@@ -32,9 +32,6 @@ const userSchema = new Schema(
     gender: {
       type: String,
     },
-    city: {
-      type: String,
-    },
     isBlock: {
       type: Boolean,
       default: false,

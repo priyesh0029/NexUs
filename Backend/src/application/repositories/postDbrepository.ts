@@ -83,6 +83,25 @@ const reportPost = async (
   userId :string
 ) => await repository.postReport(postId,report,userId);
 
+
+//to report a comment
+
+const reportComment = async (
+  commentId: string,
+  report:string,
+  userId :string
+) => await repository.commentReport(commentId,report,userId);
+
+
+//to report a reply
+
+const reportReply = async (
+  commentId: string,
+  replyId:string,
+  report:string,
+  userId :string
+) => await repository.replyReport(commentId,replyId,report,userId);
+
   return {
     uploadPost,
     getAllPosts,
@@ -98,7 +117,9 @@ const reportPost = async (
     commentDelete,
     ReplytDelete,
     postDelete,
-    reportPost
+    reportPost,
+    reportComment,
+    reportReply
   };
 };
 

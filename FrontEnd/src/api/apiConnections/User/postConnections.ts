@@ -294,3 +294,41 @@ export const reportPost = async(postId: string,report:string):Promise<any>=>{
     
   }
 }
+
+//repoet a comment
+
+export const reportComment = async(commentId: string,report:string):Promise<any>=>{
+  try{
+    const reportDetails = {commentId,report}
+    console.log("response report post reportDetails : ",reportDetails);
+    const response:any = await baseURL.patch("/post/reportComment",reportDetails)
+    console.log("response report post : ",response);
+    if(response.data.status === 'success'){
+      const reported = response.data.reported
+      return reported
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+//repoet a reply
+
+export const reportReply = async(commentId: string,replyId:string,report:string,):Promise<any>=>{
+  try{
+    const reportDetails = {commentId,replyId,report}
+    console.log("response report post reportDetails : ",reportDetails);
+    const response:any = await baseURL.patch("/post/reportReply",reportDetails)
+    console.log("response report post : ",response);
+    if(response.data.status === 'success'){
+      const reported = response.data.reported
+      return reported
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}

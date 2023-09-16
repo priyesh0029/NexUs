@@ -4,8 +4,11 @@ import { useSelector } from "react-redux";
 import {
   deleteComment,
   deleteReply,
+  reportComment,
+  reportReply,
 } from "../../../api/apiConnections/User/postConnections";
 import ConfirmDialouge from "../assetComponents/ConfirmModal";
+import ReportModal from "./ReportModal";
 
 interface ImanagePostProps {
   open: boolean;
@@ -75,6 +78,32 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
     }
   };
 
+  //report comment
+  const [reportPageOpen, setReportPageOpen] = useState(false);
+  const handleReportPage = () => {
+    setReportPageOpen(!reportPageOpen);
+  };
+
+  const handleReportComment = async(report: string) => {
+    const response = await reportComment(commentId,report)
+    console.log("response f reported post : ", response);
+    if(response){
+      handleOpen()
+    }
+  };
+
+  //report Reply
+
+  const handleReportReply = async(report: string) => {
+    if (typeof replyId === "string") {
+      const response = await reportReply(commentId,replyId,report)
+      console.log("response f reported post : ", response);
+      if(response){
+        handleOpen()
+      }
+    }
+  };
+
   return (
     <>
       <Dialog
@@ -98,7 +127,10 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
               >
                 Delete
               </div>
-              <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400">
+              <div
+                className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400"
+                onClick={handleReportPage}
+              >
                 Report
               </div>
             </>
@@ -130,7 +162,7 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
               user.userName === commentedUser &&
               repliedUser !== undefined &&
               user.userName !== repliedUser) ? (
-            <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400">
+            <div className="text-md text-red-800 font-semibold w-full text-center  border-t border-b border-gray-400" onClick={handleReportPage}>
               Report
             </div>
           ) : (
@@ -162,6 +194,20 @@ const ManageComment: React.FC<ImanagePostProps> = (props) => {
             Cancel
           </div>
         </div>
+        {reportPageOpen && (
+          <ReportModal
+            open={reportPageOpen}
+            setOpen={setReportPageOpen}
+            item={
+              replyId !== undefined
+                ? "Reply"
+                : "Comment"
+            }
+            handleReport={replyId !== undefined
+              ? handleReportReply
+              : handleReportComment}
+          />
+        )}
       </Dialog>
     </>
   );

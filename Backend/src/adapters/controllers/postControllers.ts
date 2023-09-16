@@ -13,7 +13,9 @@ import {
   handleCommentDelete,
   handleDeletePost,
   handleDeleteReply,
+  handleReportComment,
   handleReportPost,
+  handleReportReply,
   likeHandler,
   postCreate,
   replyLikeHandler,
@@ -39,13 +41,7 @@ export const postControllers = (
     }
     const userId = req.query.userId;
     const { caption } = req.body;
-    console.log(
-      "postvfrom frontend : ",
-      req.files,
-      filenames,
-      caption,
-      userId
-    );
+    console.log("postvfrom frontend : ", req.files, filenames, caption, userId);
     if (typeof userId === "string") {
       const postDetails = { filenames, caption, userId };
       await postCreate(postDetails, postRepo).then((newPost) => {
@@ -206,14 +202,23 @@ export const postControllers = (
     }
   });
 
-  //to edit post 
+  //to edit post
 
-  const updatePost = asyncHandler(async(req :Request,res : Response)=>{
-    const {postId,description} = req.body
-    const userId = req.query.userId
-    if (typeof postId === "string"  && typeof description === 'string' && typeof userId === 'string') {
-      console.log("contollers edit post postDetails : ", postId,description,userId);
-      await editPost(postId,description,userId,postRepo).then((post) => {
+  const updatePost = asyncHandler(async (req: Request, res: Response) => {
+    const { postId, description } = req.body;
+    const userId = req.query.userId;
+    if (
+      typeof postId === "string" &&
+      typeof description === "string" &&
+      typeof userId === "string"
+    ) {
+      console.log(
+        "contollers edit post postDetails : ",
+        postId,
+        description,
+        userId
+      );
+      await editPost(postId, description, userId, postRepo).then((post) => {
         console.log("contollers all post response : ", post);
 
         res.status(200).json({
@@ -221,21 +226,21 @@ export const postControllers = (
           post,
         });
       });
-    }else {
+    } else {
       throw new AppError(
         ` Error while updating post.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
-  })
+  });
 
-  //to delete comment 
+  //to delete comment
 
-  const deleteComment = asyncHandler(async(req :Request,res : Response)=>{
-    const {commentId} = req.body
+  const deleteComment = asyncHandler(async (req: Request, res: Response) => {
+    const { commentId } = req.body;
     if (typeof commentId === "string") {
       console.log("contollers delete comment : ", commentId);
-      await handleCommentDelete(commentId,postRepo).then((comment) => {
+      await handleCommentDelete(commentId, postRepo).then((comment) => {
         console.log("contollers all post response : ", comment);
 
         res.status(200).json({
@@ -243,21 +248,21 @@ export const postControllers = (
           comment,
         });
       });
-    }else {
+    } else {
       throw new AppError(
         ` Error while deleting comment.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
-  })
+  });
 
   //to delete Reply
 
-  const deleteReply = asyncHandler(async(req :Request,res : Response)=>{
-    const {commentId,ReplyId} = req.body
-    console.log("contollers delete reply : ", commentId,ReplyId);
-    if (typeof commentId === "string" && typeof ReplyId === "string" ) {
-      await handleDeleteReply(commentId,ReplyId,postRepo).then((reply) => {
+  const deleteReply = asyncHandler(async (req: Request, res: Response) => {
+    const { commentId, ReplyId } = req.body;
+    console.log("contollers delete reply : ", commentId, ReplyId);
+    if (typeof commentId === "string" && typeof ReplyId === "string") {
+      await handleDeleteReply(commentId, ReplyId, postRepo).then((reply) => {
         console.log("contollers all post response : ", reply);
 
         res.status(200).json({
@@ -265,21 +270,21 @@ export const postControllers = (
           reply,
         });
       });
-    }else {
+    } else {
       throw new AppError(
         ` Error while deleting reply.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
-  })
+  });
 
   //to delete Post
 
-  const deletePost = asyncHandler(async(req :Request,res : Response)=>{
-    const {postId} = req.body
+  const deletePost = asyncHandler(async (req: Request, res: Response) => {
+    const { postId } = req.body;
     console.log("contollers delete post : ", postId);
     if (typeof postId === "string") {
-      await handleDeletePost(postId,postRepo).then((post) => {
+      await handleDeletePost(postId, postRepo).then((post) => {
         console.log("contollers all post response : ", post);
 
         res.status(200).json({
@@ -287,37 +292,101 @@ export const postControllers = (
           post,
         });
       });
-    }else {
+    } else {
       throw new AppError(
         ` Error while deleting post.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
-  })
+  });
 
   //to report post
 
-  const reportPost = asyncHandler(async(req :Request,res : Response)=>{
-    const {postId,report} = req.body
+  const reportPost = asyncHandler(async (req: Request, res: Response) => {
+    const { postId, report } = req.body;
     const userId = req.query.userId;
-    console.log("contollers report post : ", postId,report,userId);
-    if (typeof postId === "string" && typeof report ==='string' && typeof userId ==='string' ) {
-      await handleReportPost(postId,report,userId,postRepo).then((reported) => {
-        console.log("contollers all post response : ", reported);
+    console.log("contollers report post : ", postId, report, userId);
+    if (
+      typeof postId === "string" &&
+      typeof report === "string" &&
+      typeof userId === "string"
+    ) {
+      await handleReportPost(postId, report, userId, postRepo).then(
+        (reported) => {
+          console.log("contollers all post response : ", reported);
 
-        res.status(200).json({
-          status: "success",
-          reported,
-        });
-      });
-    }else {
+          res.status(200).json({
+            status: "success",
+            reported,
+          });
+        }
+      );
+    } else {
       throw new AppError(
         ` Error while deleting post.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
-  })
+  });
 
+  //to report comment
+
+  const reportComment = asyncHandler(async (req: Request, res: Response) => {
+    const { commentId, report } = req.body;
+    const userId = req.query.userId;
+    console.log("contollers report comment : ", commentId, report, userId);
+    if (
+      typeof commentId === "string" &&
+      typeof report === "string" &&
+      typeof userId === "string"
+    ) {
+      await handleReportComment(commentId, report, userId, postRepo).then(
+        (reported) => {
+          console.log("contollers report comment response : ", reported);
+
+          res.status(200).json({
+            status: "success",
+            reported,
+          });
+        }
+      );
+    } else {
+      throw new AppError(
+        ` Error while deleting post.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+  //to report reply
+
+  const reportReply = asyncHandler(async (req: Request, res: Response) => {
+    const { commentId,replyId, report } = req.body;
+    const userId = req.query.userId;
+    console.log("contollers report post : ", commentId,replyId,report,userId);
+    if (
+      typeof commentId === "string" &&
+      typeof replyId === "string" &&
+      typeof report === "string" &&
+      typeof userId === "string"
+    ) {
+      await handleReportReply(commentId,replyId,report, userId, postRepo).then(
+        (reported) => {
+          console.log("contollers all post response : ", reported);
+
+          res.status(200).json({
+            status: "success",
+            reported,
+          });
+        }
+      );
+    } else {
+      throw new AppError(
+        ` Error while deleting post.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
 
   return {
     createPost,
@@ -334,6 +403,8 @@ export const postControllers = (
     deleteComment,
     deleteReply,
     deletePost,
-    reportPost
+    reportPost,
+    reportComment,
+    reportReply
   };
 };

@@ -252,7 +252,48 @@ export const handleReportPost =  async (
   return await repository.reportPost(postId,report,userId).then((response) => {
     if (!response) {
       throw new AppError(
-        ` Error occured while deleting post.please try again..!`,
+        ` Error occured while reporting post.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+//to report a commenet 
+
+export const handleReportComment =  async (
+  commentId: string,
+  report:string,
+  userId:string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.reportComment(commentId,report,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while reporting comment.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
+//to report a reply 
+
+export const handleReportReply =  async (
+  commentId: string,
+  replyId:string,
+  report:string,
+  userId:string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.reportReply(commentId,replyId,report,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while reporting comment.please try again..!`,
         HttpStatus.BAD_REQUEST
       );
     } else {

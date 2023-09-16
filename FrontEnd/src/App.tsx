@@ -6,6 +6,7 @@ import LoginForm from "./pages/User/Auths/Login";
 import Home from "./pages/User/Home/Home";
 import { useSelector } from "react-redux";
 import Profile from "./pages/User/Profile/Profile";
+import Settings from "./pages/User/Settings/settings";
 
 const App = () => {
   const token = useSelector(
@@ -27,6 +28,7 @@ const App = () => {
             path="/profile/:proId"
             element={token ? <Profile /> : <LoginForm />}
           />
+          <Route path="/settings" element={token ? <Settings/> :  <LoginForm />} />
         </Routes>
       </ThemeProvider>
     </Router>

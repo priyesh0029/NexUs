@@ -41,6 +41,12 @@ const postRouter = (router:Router)=>{
 
         router.patch('/reportPost',controllers.reportPost)
 
+        router.patch('/reportComment',controllers.reportComment)
+
+        router.patch('/reportReply',controllers.reportReply)
+
+
+
 
         
 

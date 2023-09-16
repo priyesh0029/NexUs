@@ -56,8 +56,8 @@ export const userRepositoryMongoDB = () => {
   //search user by char
 
   const searchUserbyChar = async (user: string) => {
-    console.log("search cahr : ",user);
-    
+    console.log("search cahr : ", user);
+
     const users = await User.find({
       userName: { $regex: user, $options: "i" },
     });
@@ -74,18 +74,21 @@ export const userRepositoryMongoDB = () => {
     );
     if (userDetails !== null) {
       userDetails.following.push(user);
-    
-    console.log("00000000000000000000000000000000000000000000000", userDetails.following);
 
-    const users = await User.find(
-      {
-        userName: { $exists: true, $nin : userDetails.following },
-      },
-      { userName: 1, dp: 1 }
-    ).limit(5);
-    console.log("getUsersList from database : ", users);
+      console.log(
+        "00000000000000000000000000000000000000000000000",
+        userDetails.following
+      );
 
-    return users;
+      const users = await User.find(
+        {
+          userName: { $exists: true, $nin: userDetails.following },
+        },
+        { userName: 1, dp: 1 }
+      ).limit(5);
+      console.log("getUsersList from database : ", users);
+
+      return users;
     }
   };
 
@@ -143,9 +146,7 @@ export const userRepositoryMongoDB = () => {
 
   //to handle save post
 
-  const handlePostSave = async (
-    postId: string, userId: string
-  ) => {
+  const handlePostSave = async (postId: string, userId: string) => {
     const userID = new mongoose.Types.ObjectId(userId);
 
     const saved = await User.findOne({
@@ -158,17 +159,17 @@ export const userRepositoryMongoDB = () => {
       const unSave = await User.findOneAndUpdate(
         { _id: userID },
         { $pull: { savedPost: postId } },
-        { new: true,projection: { savedPost: 1, _id: 0 } }
+        { new: true, projection: { savedPost: 1, _id: 0 } }
       );
       console.log("unSave 1:", unSave);
-      if (unSave !==null) {
+      if (unSave !== null) {
         return { status: true, postId: unSave.savedPost };
       }
     } else {
       const save = await User.findOneAndUpdate(
         { _id: userID },
         { $push: { savedPost: postId } },
-        { new: true,projection: { savedPost: 1, _id: 0 } }
+        { new: true, projection: { savedPost: 1, _id: 0 } }
       );
       console.log("save 2 :", save);
       if (save !== null) {
@@ -179,6 +180,36 @@ export const userRepositoryMongoDB = () => {
     return false; // Return false if the update operation didn't succeed
   };
 
+  //to amend the gender of user
+  const handleChangeGender = async (gender: string, userId: string) => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const updateGender = await User.updateOne(
+      { _id: userID },
+      { $set: { gender: gender } }
+    );
+
+    if (updateGender.modifiedCount === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  //to amend the gender of user
+  const handleProfileUpdate = async (name: string,bio:string, userId: string) => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const updateGender = await User.updateOne(
+      { _id: userID },
+      { $set: {name:name, bio: bio } }
+    );
+
+    if (updateGender.modifiedCount === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return {
     findByProperty,
     findByNumber,
@@ -187,7 +218,9 @@ export const userRepositoryMongoDB = () => {
     searchUserbyChar,
     getUsersList,
     handleFollowUnfollow,
-    handlePostSave
+    handlePostSave,
+    handleChangeGender,
+    handleProfileUpdate
   };
 };
 
