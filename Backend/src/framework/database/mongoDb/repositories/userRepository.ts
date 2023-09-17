@@ -5,8 +5,16 @@ export const userRepositoryMongoDB = () => {
   const findByProperty = async (params: string) => {
     console.log("user111111111 : ", params);
     const user: any = await User.find({
-      $or: [{ userName: params }, { email: params }],
+      $or: [ { userName: params }, { email: params }],
     });
+    console.log("user : ", user);
+    return user;
+  };
+
+  const findById = async (userId: string) => {
+    console.log("user111111111 : ", userId);
+    const userID = new mongoose.Types.ObjectId(userId);
+    const user: any = await User.find({ _id: userID })
     console.log("user : ", user);
     return user;
   };
@@ -196,11 +204,15 @@ export const userRepositoryMongoDB = () => {
   };
 
   //to amend the gender of user
-  const handleProfileUpdate = async (name: string,bio:string, userId: string) => {
+  const handleProfileUpdate = async (
+    name: string,
+    bio: string,
+    userId: string
+  ) => {
     const userID = new mongoose.Types.ObjectId(userId);
     const updateGender = await User.updateOne(
       { _id: userID },
-      { $set: {name:name, bio: bio } }
+      { $set: { name: name, bio: bio } }
     );
 
     if (updateGender.modifiedCount === 1) {
@@ -210,8 +222,27 @@ export const userRepositoryMongoDB = () => {
     }
   };
 
+  //to handle Change Password
+
+  const handleChangePassword = async (
+    userId: string,
+    password: string
+  ): Promise<boolean> => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const updatePassword = await User.updateOne(
+      { _id: userID },
+      { $set: { password: password } }
+    );
+
+    if (updatePassword.modifiedCount === 1) {
+      return true;
+    }
+    return false;
+  };
+
   return {
     findByProperty,
+    findById,
     findByNumber,
     addUser,
     uploadDp,
@@ -220,7 +251,8 @@ export const userRepositoryMongoDB = () => {
     handleFollowUnfollow,
     handlePostSave,
     handleChangeGender,
-    handleProfileUpdate
+    handleProfileUpdate,
+    handleChangePassword,
   };
 };
 

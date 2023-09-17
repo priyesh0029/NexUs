@@ -31,13 +31,12 @@ const EditProfile = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch();
   const [genderOpen, setGenderOpen] = useState<boolean>(false);
-  const[userInfo,setUserInfo] = useState<UserInfo>();
-  const [gender, setGender] = useState<string>('');
+  const [userInfo, setUserInfo] = useState<UserInfo>();
+  const [gender, setGender] = useState<string>("");
 
-
-  const handleGenderModal =()=>{
-    setGenderOpen(!genderOpen)
-  }
+  const handleGenderModal = () => {
+    setGenderOpen(!genderOpen);
+  };
 
   const handlePropic = async () => {
     if (fileInputRef.current) {
@@ -47,14 +46,13 @@ const EditProfile = () => {
 
   useEffect(() => {
     getProfileDetails(user.userName);
-  },[]);
+  }, []);
 
   const getProfileDetails = async (proId: string) => {
-    const response:UserInfo = await getUserDetails(proId);
-    setUserInfo(()=>response);
+    const response: UserInfo = await getUserDetails(proId);
+    setUserInfo(() => response);
     console.log("response getProfileDetails : ", userInfo);
-    if(typeof response.gender === 'string')
-    setGender(response.gender)
+    if (typeof response.gender === "string") setGender(response.gender);
   };
 
   const submitHandler = async (userData: any) => {
@@ -80,7 +78,6 @@ const EditProfile = () => {
     }
   };
 
-
   const formik = useFormik({
     initialValues: {
       name: user.name,
@@ -91,7 +88,7 @@ const EditProfile = () => {
       name: Yup.string()
         .max(20, "Must be less than 20 characters")
         .required("Required"),
-      bio: Yup.string().max(20, "Must be less than 150 characters"),
+      bio: Yup.string().max(150, "Must be less than 150 characters"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       submitHandler(values);
@@ -177,9 +174,24 @@ const EditProfile = () => {
                 </p>
               </div>
               <div>
-                <Input type="text" size="lg" label="Gender" readOnly className="cursor-pointer" value={gender} onClick={handleGenderModal}/>
+                <Input
+                  type="text"
+                  size="lg"
+                  label="Gender"
+                  readOnly
+                  className="cursor-pointer"
+                  value={gender}
+                  onClick={handleGenderModal}
+                />
               </div>
-              {genderOpen && <GenderModal open={genderOpen} setOpen={setGenderOpen} gender={gender} setGender={setGender}/>}
+              {genderOpen && (
+                <GenderModal
+                  open={genderOpen}
+                  setOpen={setGenderOpen}
+                  gender={gender}
+                  setGender={setGender}
+                />
+              )}
             </div>
 
             <Button type="submit" className="mt-6" fullWidth>

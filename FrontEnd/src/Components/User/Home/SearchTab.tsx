@@ -24,7 +24,7 @@ const SearchTab: React.FC<ISearchTab> = (props) => {
     setSearchResults(data);
   };
 
-  const openDrawer = () => setOpenSearchTab(!openSearchTab);
+  // const openDrawer = () => setOpenSearchTab(!openSearchTab);
   const closeDrawer = () => setOpenSearchTab(!openSearchTab);
 
   return (

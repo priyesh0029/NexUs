@@ -22,7 +22,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const submitHandler = async (userData: any) => {
-    let response = await login(userData);
+    let response = await login(userData)
     console.log("data of user login = ", response);
     if (response.status === "success") {
       const token = response.userInfo.token;

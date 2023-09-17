@@ -5,6 +5,8 @@ export const userDbRepository = (
 ) => {
   const findByProperty = async (params: string) =>
     await repository.findByProperty(params);
+  const findById = async (userId: string) =>
+    await repository.findById(userId);
   const findByNumber = async (params: string) =>
     await repository.findByNumber(params);
   const RegisterUser = async (userEntity: {}) =>
@@ -26,10 +28,18 @@ export const userDbRepository = (
   const genderAmend = async (gender: string, userId: string) =>
     await repository.handleChangeGender(gender, userId);
   //to handle update profile
-  const handleUpdateProfile = async (name: string,bio:string, userId: string) =>
-  await repository.handleProfileUpdate(name,bio, userId);
+  const handleUpdateProfile = async (
+    name: string,
+    bio: string,
+    userId: string
+  ) => await repository.handleProfileUpdate(name, bio, userId);
+  //to change password
+  const changePassword = async (userId: string, password: string) =>
+    await repository.handleChangePassword(userId, password);
+
   return {
     findByProperty,
+    findById,
     findByNumber,
     RegisterUser,
     uploadDp,
@@ -38,7 +48,8 @@ export const userDbRepository = (
     handleFollowUnfollow,
     handleSavePost,
     genderAmend,
-    handleUpdateProfile
+    handleUpdateProfile,
+    changePassword,
   };
 };
 

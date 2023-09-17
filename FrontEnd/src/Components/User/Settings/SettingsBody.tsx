@@ -7,7 +7,6 @@ import {
   Tab,
   TabPanel,
 } from "@material-tailwind/react";
-import { UserCircleIcon } from "@heroicons/react/24/solid";
 import {
   IdentificationIcon,
   PencilIcon,
@@ -15,6 +14,8 @@ import {
   SunIcon,
 } from "@heroicons/react/24/outline";
 import EditProfile from "./EditProfile";
+import PersonalDetails from "./ManagePassword";
+import ManagePassword from "./ManagePassword";
 
 const SettingsBody = () => {
   const data = [
@@ -25,21 +26,19 @@ const SettingsBody = () => {
       desc: <EditProfile />,
     },
     {
-      label: "Personal details",
-      value: "personalDetails",
-      icon: IdentificationIcon,
-      desc: `We're not always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
-    },
-    {
       label: "Password and security",
       value: "passwordAndSecurity",
       icon: ShieldCheckIcon,
-      desc: `We're not always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
+      desc: <ManagePassword/>,
     },
+    {
+        label: "Manage your account",
+        value: "manageYourAccount",
+        icon: ShieldCheckIcon,
+        desc: `We're not always in the position that we want to be at.
+          We're constantly growing. We're constantly making mistakes. We're
+          constantly trying to express ourselves and actualize our dreams.`,
+      },
     {
       label: "Switch appearence",
       value: "switchAppearence",

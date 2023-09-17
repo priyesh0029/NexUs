@@ -59,18 +59,18 @@
 //           .email("*Invalid email address")
 //           .required("*Email required"),
 //         password: Yup.string()
-//           .required("*Password required")
-//           // .min(8, "*Pasword must be 8 or more characters")
-//           // .matches(
-//           //   /(?=.*[a-z])(?=.*[A-Z])\w+/,
-//           //   "*Password should contain at least one uppercase and lowercase character"
-//           // )
-//           // .matches(/\d/, "*Password should contain at least one number")
-//           // .matches(
-//           //   /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/,
-//           //   "*Password should contain at least one special character"
-//           // )
-//           ,
+          // .required("*Password required")
+          // .min(8, "*Pasword must be 8 or more characters")
+          // .matches(
+          //   /(?=.*[a-z])(?=.*[A-Z])\w+/,
+          //   "*Password should contain at least one uppercase and lowercase character"
+          // )
+          // .matches(/\d/, "*Password should contain at least one number")
+          // .matches(
+          //   /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/,
+          //   "*Password should contain at least one special character"
+          // )
+          // ,
 //           confirmPassword: Yup.string().test(
 //             "passwords-match",
 //             "*Passwords do not match",

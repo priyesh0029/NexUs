@@ -4,6 +4,8 @@ import {
   amendGender,
   findUser,
   followHandle,
+  handleCheckPassword,
+  handleNewPassword,
   postDp,
   savePostHandle,
   updateProfileHandle,
@@ -14,12 +16,17 @@ import AppError from "../../utilities/appError";
 import { HttpStatus } from "../../types/httpStatus";
 import { userTypeDbRepository } from "../../application/repositories/userDbRepositories";
 import { userTypeRepositoryMongoDB } from "../../framework/database/mongoDb/repositories/userRepository";
+import { authServiceInterfaceType } from "../../application/services/authServiceInterface";
+import { authServiceType } from "../../framework/services/authServices";
 
 export const userControllers = (
   userDbRepo: userTypeDbRepository,
-  userDbRepoImpl: userTypeRepositoryMongoDB
+  userDbRepoImpl: userTypeRepositoryMongoDB,
+  authServiceInterfaceApp: authServiceInterfaceType,
+  authService: authServiceType
 ) => {
   const postRepo = userDbRepo(userDbRepoImpl());
+  const authServices = authServiceInterfaceApp(authService());
 
   //change profile picture of user
   const changedp = asyncHandler(async (req: Request, res: Response) => {
@@ -214,6 +221,57 @@ export const userControllers = (
     }
   });
 
+  //check password
+  const checkPassword = asyncHandler(async (req: Request, res: Response) => {
+    const {password} = req.body
+    const userId = req.query.userId;
+    console.log("contollersupdateProfile : ", password);
+    if (typeof password === "string" && typeof userId === "string") {
+      await handleCheckPassword(password,userId, postRepo,authServices).then((password) => {
+        console.log(
+          "contollers gender response  1111111222222222222222222222222222222: ",
+          password
+        );
+
+        res.status(200).json({
+          status: "success",
+          password,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while updating profile.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+  //set new password
+  const newPassword = asyncHandler(async (req: Request, res: Response) => {
+    const {password} = req.body
+    const userId = req.query.userId;
+    console.log("contollersupdateProfile : ", password);
+    if (typeof password === "string" && typeof userId === "string") {
+      await handleNewPassword(password,userId, postRepo,authServices).then((password) => {
+        console.log(
+          "contollers gender response  1111111222222222222222222222222222222: ",
+          password
+        );
+
+        res.status(200).json({
+          status: "success",
+          password,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while updating profile.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+
   return {
     changedp,
     getUser,
@@ -222,6 +280,8 @@ export const userControllers = (
     handleFollows,
     savePost,
     changeGender,
-    updateProfile
+    updateProfile,
+    checkPassword,
+    newPassword
   };
 };
