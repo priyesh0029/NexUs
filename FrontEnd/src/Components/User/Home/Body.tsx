@@ -33,9 +33,9 @@ const HomeBody = () => {
 
   return (
     <div className="flex flex-col w-full h-full justify-center ">
-      {/* <div className="flex justify-center ">
+      <div className="flex justify-center ">
         <Stories />
-      </div> */}
+      </div>
       <div className="flex lg:px-32 items-center flex-col  ">
         {allPost.map((post) => (
           <div key={post._id}>

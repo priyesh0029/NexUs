@@ -12,10 +12,11 @@ import {
   PencilIcon,
   ShieldCheckIcon,
   SunIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import EditProfile from "./EditProfile";
-import PersonalDetails from "./ManagePassword";
 import ManagePassword from "./ManagePassword";
+import ManageAccount from "./ManageAccount";
 
 const SettingsBody = () => {
   const data = [
@@ -34,10 +35,8 @@ const SettingsBody = () => {
     {
         label: "Manage your account",
         value: "manageYourAccount",
-        icon: ShieldCheckIcon,
-        desc: `We're not always in the position that we want to be at.
-          We're constantly growing. We're constantly making mistakes. We're
-          constantly trying to express ourselves and actualize our dreams.`,
+        icon: UserCircleIcon,
+        desc: <ManageAccount/>,
       },
     {
       label: "Switch appearence",
@@ -52,7 +51,7 @@ const SettingsBody = () => {
   const isMediumScreen = useMediaQuery({ maxWidth: 1024 });
 
   return (
-    <div key="medium-screen" className="flex flex-col">
+    <div key="medium-screen" className="flex flex-col h-full">
       <div className="py-8 px-6">
         <p className="font-2xl text-2xl">Settings</p>
       </div>
@@ -73,7 +72,7 @@ const SettingsBody = () => {
             </TabsHeader>
             <TabsBody className="flex flex-col w-full h-full justify-center">
               {data.map(({ value, desc }) => (
-                <TabPanel key={value} value={value}>
+                <TabPanel key={value} value={value} className="w-full h-full">
                   {desc}
                 </TabPanel>
               ))}
@@ -86,7 +85,7 @@ const SettingsBody = () => {
             <TabsHeader className="lg:w-72 md:w-44 w-32 min-h-screen">
               {data.map(({ label, value, icon }) => (
                 <Tab key={value} value={value} className="flex justify-start">
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-center gap-2">
                     {React.createElement(icon, { className: "w-5 h-5" })}
                     {label}
                   </div>

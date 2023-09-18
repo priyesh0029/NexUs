@@ -210,3 +210,46 @@ export const handleNewPassword = async (
       
     })
 };
+
+
+//to handle deactivate account
+
+export const handleDeactivateAccount = async (
+  userId: string,
+  repository: ReturnType<userTypeDbRepository>,
+) => {
+
+    return await repository.deactivateAccount(userId).then((response) => {
+      if (!response) {
+        throw new AppError(
+          `something went wrong while deactivating account.try again..`,
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+      console.log("deactivateAccount: ", response);
+      
+      return response;
+    });
+      
+};
+
+//to handle delete Account
+
+export const handleDeleteAccount = async (
+  userId: string,
+  repository: ReturnType<userTypeDbRepository>,
+) => {
+
+    return await repository.deleteAccount(userId).then((response) => {
+      if (!response) {
+        throw new AppError(
+          `something went wrong while deactivating account.try again..`,
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+      console.log("deactivateAccount: ", response);
+      
+      return response;
+    });
+      
+};

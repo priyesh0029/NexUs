@@ -36,6 +36,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    accountDeactive: {
+      type: Boolean,
+      default: false,
+    },
     blockedUsers: [String],
     blockingUsers: [String],
     savedPost: [String],

@@ -34,6 +34,12 @@ const user = (router: Router) => {
 
   router.patch("/newPassword", controllers.newPassword);
 
+  router.patch("/deactivateAccount", controllers.deactivateAccount);
+
+  router.patch("/deleteAccount", controllers.deleteAccount);
+
+
+
 
   return router;
 };

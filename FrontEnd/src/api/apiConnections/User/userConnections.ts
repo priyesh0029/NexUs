@@ -181,3 +181,49 @@ export const newPassword = async (password: string) => {
     // Throw the error to be caught by the caller
   }
 };
+
+//to deactivate account 
+
+export const deactivateAccount = async()=>{
+  try{
+    const response: any = await baseURL.patch("/user/deactivateAccount");
+    console.log("response edited post : ", response);
+    if (response.data.status === "success") {
+      const deactivate = response.data.deactivate;
+      return deactivate;
+    }
+
+  }catch (error){
+    console.log("error inside the api acall catch :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    // return errorMessage
+    throw new Error(errorMessage); 
+    //Throw the error to be caught by the caller
+  }
+}
+
+//to delete Account
+
+export const deleteAccount = async()=>{
+  try{
+    const response: any = await baseURL.patch("/user/deleteAccount");
+    console.log("response edited post : ", response);
+    if (response.data.status === "success") {
+      const deleted = response.data.deleted;
+      return deleted;
+    }
+
+  }catch (error){
+    console.log("error inside the api acall catch :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    // return errorMessage
+    throw new Error(errorMessage); 
+    //Throw the error to be caught by the caller
+  }
+}

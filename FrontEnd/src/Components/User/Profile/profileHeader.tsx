@@ -11,11 +11,13 @@ import { SetHandlefollows, SetUserDp } from "../../../features/redux/slices/user
 interface ProfileHeaderProps {
   totalPosts: number;
   userInfo: UserInfo;
+  setUserInfo : React.Dispatch<React.SetStateAction<UserInfo | undefined>>;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   totalPosts,
   userInfo,
+  setUserInfo
 }) => {
   const [follower, setFollower] = useState(userInfo.followers);
 
@@ -46,7 +48,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
       console.log("response: ",response,"response type: ",typeof response);
         dispatch(SetUserDp(response))
-      
+       
     }
   };
 

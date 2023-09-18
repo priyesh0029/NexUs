@@ -5,6 +5,8 @@ import {
   findUser,
   followHandle,
   handleCheckPassword,
+  handleDeactivateAccount,
+  handleDeleteAccount,
   handleNewPassword,
   postDp,
   savePostHandle,
@@ -271,6 +273,54 @@ export const userControllers = (
     }
   });
 
+  //deactivateAccount
+
+  const deactivateAccount = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId;
+    if (typeof userId === "string") {
+      await handleDeactivateAccount(userId, postRepo).then((deactivate) => {
+        console.log(
+          "contollers gender response  1111111222222222222222222222222222222: ",
+          deactivate
+        );
+
+        res.status(200).json({
+          status: "success",
+          deactivate,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while deactivating account.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+  //deleteAccount
+
+  const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId;
+    if (typeof userId === "string") {
+      await handleDeleteAccount(userId, postRepo).then((deactivate) => {
+        console.log(
+          "contollers gender response  1111111222222222222222222222222222222: ",
+          deactivate
+        );
+
+        res.status(200).json({
+          status: "success",
+          deactivate,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while deactivating account.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
 
   return {
     changedp,
@@ -282,6 +332,8 @@ export const userControllers = (
     changeGender,
     updateProfile,
     checkPassword,
-    newPassword
+    newPassword,
+    deactivateAccount,
+    deleteAccount
   };
 };

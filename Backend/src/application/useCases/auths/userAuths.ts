@@ -77,22 +77,42 @@ export const loginUser = async (
 ) => {
   const { username, password } = userData;
 
-  return await userRepository.findByProperty(username)
-    .then((user) => {
-      console.log("login details of user :", user[0].password);
-      if (user.length === 0) {
-        throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
-      }
-      return authService
-        .comparePassword(password, user[0].password)
-        .then(async(status) => {
-          if (!status) {
-            throw new AppError(
-              `Incorrect password.try again!`,
-              HttpStatus.UNAUTHORIZED
-            );
-          }
-          return { token: await authService.generateToken(user[0]._id), user };
-        });
-    });
+  return await userRepository.findByProperty(username).then((user) => {
+    if (user.length === 0) {
+      throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+    }
+    return authService
+      .comparePassword(password, user[0].password)
+      .then(async (status) => {
+        if (!status) {
+          throw new AppError(
+            `Incorrect password.try again!`,
+            HttpStatus.UNAUTHORIZED
+          );
+        } else if (status && user[0].accountDeactive) {
+          return await userRepository
+            .activateAccount(user[0].userName)
+            .then(async (active) => {
+              console.log("actieve status of activate account : ", active);
+
+              if (!active) {
+                throw new AppError(
+                  `Error occured while activating ${user[0].userName}'s account.try again!`,
+                  HttpStatus.UNAUTHORIZED
+                );
+              }else {
+                return {
+                  token: await authService.generateToken(user[0]._id),
+                  user,
+                };
+              }
+            });
+        } else {
+          return {
+            token: await authService.generateToken(user[0]._id),
+            user,
+          };
+        }
+      });
+  });
 };

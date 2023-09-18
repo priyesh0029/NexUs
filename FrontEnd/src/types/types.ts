@@ -17,7 +17,8 @@ interface UserInfo {
     requested?:string[]
     updatedAt ?: string
     createdAt ?: string
-    savedPost : string[]
+    savedPost : string[],
+    accountDeactive ?:boolean
   }
 
   interface IuserHomeSlice{

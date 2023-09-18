@@ -34,7 +34,7 @@ const ProfileArea = () => {
     return (
       <div className="flex flex-col">
         <div className="flex flex-col w-full">
-          {user !==undefined && <ProfileHeader totalPosts={posts.length} userInfo={user}/>}
+          {user !==undefined && <ProfileHeader totalPosts={posts.length} userInfo={user} setUserInfo={setUser}/>}
         </div>
         <div>
           <ProfileBody posts={posts} setPosts={setPosts} proId={proId} />

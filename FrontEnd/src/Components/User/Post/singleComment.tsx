@@ -116,9 +116,9 @@ const SingleComment: React.FC<SingleComment> = (props) => {
           <div className="flex items-start  ">
             <div className="max-w-[320px] break-all inline-block">
               <p className="text-md font-bold">
-                <Link to={`/profile/${userName}`} onClick={handleOpen}>
+                {userName !==null ?<Link to={`/profile/${userName}`} onClick={handleOpen}>
                   {userName}{" "}
-                </Link>
+                </Link>:"user "}
                 <span
                   className="comment-style text-md font-normal"
                   aria-hidden="true"

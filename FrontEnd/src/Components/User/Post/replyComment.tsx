@@ -100,9 +100,9 @@ const ReplyComment: React.FC<ReplyCommentProps> = (props) => {
           <div className="flex items-start  ">
             <div className="w-[220px] break-all flex">
               <p className="text-md font-bold">
-                <Link to={`/profile/${userName}`} onClick={handleOpen}>
+                {userName !== null ?<Link to={`/profile/${userName}`} onClick={handleOpen}>
                   {userName}{" "}
-                </Link>
+                </Link>:"user "}
                 <span
                   className="comment-style text-md font-normal"
                   aria-hidden="true"

@@ -46,6 +46,11 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
+        $match: {
+          "results.accountDeactive": false,
+        },
+      },
+      {
         $project: {
           _id: 1,
           postedUser: 1,
@@ -242,6 +247,11 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
+        $match: {
+          "commentedUser.accountDeactive": false,
+        },
+      },
+      {
         $unwind: {
           path: "$liked",
           preserveNullAndEmptyArrays: true,
@@ -268,7 +278,7 @@ export const postRepositoryMongoDb = () => {
             $first: "$postId",
           },
           userName: {
-            $first: "$userName",
+            $first: "$commentedUser.userName",
           },
           comment: {
             $first: "$comment",
@@ -402,7 +412,7 @@ export const postRepositoryMongoDb = () => {
             $first: "$_id",
           },
           userName: {
-            $first: "$reply.userName",
+            $first: "$repliedUser.userName",
           },
           comment: {
             $first: "$reply.comment",
@@ -858,7 +868,11 @@ export const postRepositoryMongoDb = () => {
 
   //to report a comment
 
-  const commentReport = async (commentId: string, reportComment: string,userId:string) => {
+  const commentReport = async (
+    commentId: string,
+    reportComment: string,
+    userId: string
+  ) => {
     const commentID = new mongoose.Types.ObjectId(commentId);
     const userID = new mongoose.Types.ObjectId(userId);
     const user = await User.findOne({ _id: userID }, { _id: 0, userName: 1 });
@@ -897,7 +911,12 @@ export const postRepositoryMongoDb = () => {
 
   //to report a reply
 
-  const replyReport = async (commentId: string,replyId:string, reportComment: string,userId:string) => {
+  const replyReport = async (
+    commentId: string,
+    replyId: string,
+    reportComment: string,
+    userId: string
+  ) => {
     const commentID = new mongoose.Types.ObjectId(commentId);
     const replyID = new mongoose.Types.ObjectId(replyId);
     const userID = new mongoose.Types.ObjectId(userId);
@@ -909,7 +928,7 @@ export const postRepositoryMongoDb = () => {
       };
       const checkReport = await Comment.findOne({
         _id: commentID,
-        "reply._id":replyID,
+        "reply._id": replyID,
         "reply.$.reports": {
           $elemMatch: {
             reportedUser: user.userName,
@@ -918,12 +937,11 @@ export const postRepositoryMongoDb = () => {
         },
       });
 
-      console.log("check report of reply : ",checkReport);
-      
+      console.log("check report of reply : ", checkReport);
 
       if (checkReport === null) {
         const updatedReport = await Comment.updateOne(
-          { _id: commentID,"reply._id":replyID },
+          { _id: commentID, "reply._id": replyID },
           { $push: { "reply.$.reports": reportObj } }
         );
         if (updatedReport.modifiedCount === 1) {
@@ -956,7 +974,7 @@ export const postRepositoryMongoDb = () => {
     deletePost,
     postReport,
     commentReport,
-    replyReport
+    replyReport,
   };
 };
 

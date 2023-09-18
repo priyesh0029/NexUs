@@ -37,6 +37,18 @@ export const userDbRepository = (
   const changePassword = async (userId: string, password: string) =>
     await repository.handleChangePassword(userId, password);
 
+  //to deactivateAccount
+  const deactivateAccount = async(userId: string) =>
+  await repository.handleAccountDeactivate(userId);
+
+  //to activate Account
+  const activateAccount = async(username: string) =>
+  await repository.handleAccountActivate(username);
+  
+  //to delete Account
+  const deleteAccount = async(userId: string) =>
+  await repository.handleAccountDelete(userId);
+
   return {
     findByProperty,
     findById,
@@ -50,6 +62,9 @@ export const userDbRepository = (
     genderAmend,
     handleUpdateProfile,
     changePassword,
+    deactivateAccount,
+    activateAccount,
+    deleteAccount
   };
 };
 

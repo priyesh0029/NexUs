@@ -1,20 +1,21 @@
 import mongoose from "mongoose";
 import User from "../models/userModel";
+import Post from "../models/postModel";
 
 export const userRepositoryMongoDB = () => {
   const findByProperty = async (params: string) => {
     console.log("user111111111 : ", params);
     const user: any = await User.find({
-      $or: [ { userName: params }, { email: params }],
+      $or: [{ userName: params }, { email: params }],
     });
-    console.log("user : ", user);
-    return user;
+    console.log("user : ", user.length);
+      return user;
   };
 
   const findById = async (userId: string) => {
     console.log("user111111111 : ", userId);
     const userID = new mongoose.Types.ObjectId(userId);
-    const user: any = await User.find({ _id: userID })
+    const user: any = await User.find({ _id: userID });
     console.log("user : ", user);
     return user;
   };
@@ -240,6 +241,59 @@ export const userRepositoryMongoDB = () => {
     return false;
   };
 
+  //to handle account deactivation
+
+  const handleAccountDeactivate = async (userId: string): Promise<boolean> => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const deactivated = await User.updateOne(
+      { _id: userID },
+      { $set: { accountDeactive: true } }
+    );
+
+    if (deactivated.modifiedCount === 1) {
+      return true;
+    }
+    return false;
+  };
+
+   //to handle account activation
+
+   const handleAccountActivate = async (username: string): Promise<boolean> => {
+    const deactivated = await User.updateOne(
+      { userName: username },
+      { $set: { accountDeactive: false } }
+    );
+
+    if (deactivated.modifiedCount === 1) {
+      return true;
+    }
+    return false;
+  };
+
+  //to handle account deletion
+
+  const handleAccountDelete = async (userId: string) => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const userDetails = await User.findOne(
+      { _id: userID },
+      { _id: 0, userName: 1 }
+    );
+    if (userDetails !== null) {
+      const [userDeleteResult, postsDeleteResult] = await Promise.all([
+        User.deleteOne({ userName: userDetails.userName }),
+        Post.deleteMany({ postedUser: userDetails.userName }),
+      ]);
+      console.log("handleAccountDelete mongo query : ", userDeleteResult, postsDeleteResult);
+
+    if (userDeleteResult.deletedCount === 1 && postsDeleteResult.deletedCount > 0) {
+      return true;
+    }else{
+      return false
+    }
+    }
+    return false;
+  };
+
   return {
     findByProperty,
     findById,
@@ -253,6 +307,9 @@ export const userRepositoryMongoDB = () => {
     handleChangeGender,
     handleProfileUpdate,
     handleChangePassword,
+    handleAccountDeactivate,
+    handleAccountDelete,
+    handleAccountActivate
   };
 };
 
