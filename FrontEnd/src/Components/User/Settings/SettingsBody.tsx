@@ -8,7 +8,6 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 import {
-  IdentificationIcon,
   PencilIcon,
   ShieldCheckIcon,
   SunIcon,
@@ -38,14 +37,14 @@ const SettingsBody = () => {
         icon: UserCircleIcon,
         desc: <ManageAccount/>,
       },
-    {
-      label: "Switch appearence",
-      value: "switchAppearence",
-      icon: SunIcon,
-      desc:`We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
-    },
+    // {
+    //   label: "Switch appearence",
+    //   value: "switchAppearence",
+    //   icon: SunIcon,
+    //   desc:`We're not always in the position that we want to be at.
+    //   We're constantly growing. We're constantly making mistakes. We're
+    //   constantly trying to express ourselves and actualize our dreams.`,
+    // },
   ];
 
   const isMediumScreen = useMediaQuery({ maxWidth: 1024 });

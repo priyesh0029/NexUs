@@ -41,7 +41,7 @@ const ManageAccount = () => {
     if (action === "Deactivate Account") {
       await deactivateAccount()
         .then((response) => {
-          if (response) {
+          if (typeof response === 'boolean') {
             Swal.fire({
               position: "center",
               icon: "success",
@@ -52,6 +52,14 @@ const ManageAccount = () => {
             }).then(()=>{
                 handleLogout();
             })
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: response,
+            }).then(()=>{
+              handleLogout();
+          })
           }
         })
         .catch((error: any) => {
@@ -60,7 +68,9 @@ const ManageAccount = () => {
     } else if (action === "Delete Account") {
         await deleteAccount()
         .then((response) => {
-            if (response) {
+          console.log("response of deleteaccount : ", response);
+          
+            if (typeof response === 'boolean') {
               Swal.fire({
                 position: "center",
                 icon: "success",
@@ -70,6 +80,14 @@ const ManageAccount = () => {
               }).then(()=>{
                   handleLogout();
               })
+            }else{
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: response,
+              }).then(()=>{
+                handleLogout();
+            })
             }
           })
           .catch((error: any) => {

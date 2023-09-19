@@ -243,7 +243,7 @@ export const handleDeleteAccount = async (
     return await repository.deleteAccount(userId).then((response) => {
       if (!response) {
         throw new AppError(
-          `something went wrong while deactivating account.try again..`,
+          `something went wrong while deleting account.try again..`,
           HttpStatus.UNAUTHORIZED
         );
       }

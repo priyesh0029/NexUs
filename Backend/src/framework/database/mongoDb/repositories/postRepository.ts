@@ -106,6 +106,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$likedUsers.userName",
               dp: "$likedUsers.dp",
+              deactive : "$likedUsers.accountDeactive"
             },
           },
           reports: {
@@ -290,6 +291,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$commentLikedUser.userName",
               dp: "$commentLikedUser.dp",
+              deactive : "$commentLikedUser.accountDeactive"
             },
           },
           reply: {
@@ -386,6 +388,11 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
+        $match: {
+          "repliedUser.accountDeactive": false,
+        },
+      },
+      {
         $unwind: {
           path: "$reply.liked",
           preserveNullAndEmptyArrays: true,
@@ -424,6 +431,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$replyLikedUser.userName",
               dp: "$replyLikedUser.dp",
+              deactive : "$replyLikedUser.accountDeactive"
             },
           },
           createdAt: {
@@ -737,6 +745,180 @@ export const postRepositoryMongoDb = () => {
     return posts;
   };
 
+  //to get users saved post on profile
+  const getUserPostSaved = async (userId: string) => {
+    const userID = new mongoose.Types.ObjectId(userId);
+    const savedPosts = await User.aggregate([
+      {
+        $match: {
+          _id: userID,
+        },
+      },
+      {
+        $unwind:
+          {
+            path: "$savedPost",
+          },
+      },
+      {
+        $project:
+          {
+            savedPost: {
+              $toObjectId: "$savedPost",
+            },
+          },
+      },
+      {
+        $lookup:
+          {
+            from: "posts",
+            localField: "savedPost",
+            foreignField: "_id",
+            as: "savedPosts",
+          },
+      },
+      {
+        $unwind:
+          {
+            path: "$savedPosts",
+          },
+      },
+      {
+        $match: {
+          "savedPosts.postDeleted": false,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "savedPosts.postedUser",
+          foreignField: "userName",
+          as: "results",
+        },
+      },
+      {
+        $unwind: {
+          path: "$results",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: "$savedPosts._id",
+          postedUser: "$savedPosts.postedUser",
+          description: "$savedPosts.description",
+          imgNames: "$savedPosts.imgNames",
+          isBlocked: "$savedPosts.isBlocked",
+          liked: "$savedPosts.liked",
+          reports: "$savedPosts.reports",
+          createdAt: "$savedPosts.createdAt",
+          updatedAt: "$savedPosts.updatedAt",
+          dp: "$results.dp",
+        },
+      },
+      {
+        $unwind: {
+          path: "$liked",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "liked",
+          foreignField: "userName",
+          as: "likedUsers",
+        },
+      },
+      {
+        $unwind: {
+          path: "$likedUsers",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          postedUser: {
+            $first: "$postedUser",
+          },
+          description: {
+            $first: "$description",
+          },
+          imgNames: {
+            $first: "$imgNames",
+          },
+          isBlocked: {
+            $first: "$isBlocked",
+          },
+          dp: {
+            $first: "$dp",
+          },
+          liked: {
+            $push: {
+              userName: "$likedUsers.userName",
+              dp: "$likedUsers.dp",
+            },
+          },
+          reports: {
+            $first: "$reports",
+          },
+          createdAt: {
+            $first: "$createdAt",
+          },
+          updatedAt: {
+            $first: "$updatedAt",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          postedUser: 1,
+          description: 1,
+          imgNames: 1,
+          isBlocked: 1,
+          dp: 1,
+          liked: {
+            $cond: {
+              if: {
+                $eq: [
+                  {
+                    $type: {
+                      $arrayElemAt: ["$liked", 0],
+                    },
+                  },
+                  "object",
+                ],
+              },
+              then: {
+                $filter: {
+                  input: "$liked",
+                  as: "like",
+                  cond: {
+                    $ne: ["$$like", {}],
+                  },
+                },
+              },
+              else: "$liked",
+            },
+          },
+          reports: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    console.log("savedPosts : ", savedPosts);
+    
+    return savedPosts;
+  };
+
   //to edit users post
 
   const editUserPost = async (
@@ -967,6 +1149,7 @@ export const postRepositoryMongoDb = () => {
     postReply,
     handleReplyLike,
     getUserPosts,
+    getUserPostSaved,
     getAllCommentReplies,
     editUserPost,
     deleteComment,

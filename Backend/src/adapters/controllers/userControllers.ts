@@ -302,15 +302,15 @@ export const userControllers = (
   const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.query.userId;
     if (typeof userId === "string") {
-      await handleDeleteAccount(userId, postRepo).then((deactivate) => {
+      await handleDeleteAccount(userId, postRepo).then((deleted) => {
         console.log(
           "contollers gender response  1111111222222222222222222222222222222: ",
-          deactivate
+          deleted
         );
 
         res.status(200).json({
           status: "success",
-          deactivate,
+          deleted,
         });
       });
     } else {

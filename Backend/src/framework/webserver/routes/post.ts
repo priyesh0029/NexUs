@@ -31,6 +31,8 @@ const postRouter = (router:Router)=>{
 
         router.get('/userposts',controllers.getUserPosts)
 
+        router.get('/getUserSavedPost',controllers.getUserSavedPost)
+
         router.post('/updatepost',controllers.updatePost)
 
         router.patch('/deletecomment',controllers.deleteComment)

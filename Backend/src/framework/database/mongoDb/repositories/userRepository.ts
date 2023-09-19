@@ -204,7 +204,7 @@ export const userRepositoryMongoDB = () => {
     }
   };
 
-  //to amend the gender of user
+  //to handle Profile Update
   const handleProfileUpdate = async (
     name: string,
     bio: string,
@@ -285,7 +285,7 @@ export const userRepositoryMongoDB = () => {
       ]);
       console.log("handleAccountDelete mongo query : ", userDeleteResult, postsDeleteResult);
 
-    if (userDeleteResult.deletedCount === 1 && postsDeleteResult.deletedCount > 0) {
+    if (userDeleteResult.deletedCount === 1 && postsDeleteResult.deletedCount >= 0) {
       return true;
     }else{
       return false

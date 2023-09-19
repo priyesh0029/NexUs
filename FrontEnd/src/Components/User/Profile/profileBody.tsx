@@ -73,7 +73,8 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({
   }, [commentArr]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-48 2xl:px-24 lg:px-0">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-20 2xl:px-24 lg:px-0">
+      
       {posts.map((post) => (
         <div key={post._id} className="aspect-w-1 aspect-h-1">
           <img

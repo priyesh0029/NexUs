@@ -19,6 +19,7 @@ interface LikeModalProps {
   user: {
     userName: string;
     dp: string;
+    deactive:boolean;
   }[];
 }
 
@@ -48,7 +49,7 @@ const LikeModal: React.FC<LikeModalProps> = (props) => {
             <div className="flex px-12 py-2 items-center justify-between">
               <div className="flex gap-3">
                 
-                {user.dp ? (
+                {user.dp && !user.deactive ? (
                   <Avatar
                     src={POST_URL + `${user.dp}.jpg`}
                     alt="avatar"
@@ -60,9 +61,9 @@ const LikeModal: React.FC<LikeModalProps> = (props) => {
                 
 
                 <div>
-                <Link to={`/profile/${user.userName}`}>
+               {!user.deactive? <Link to={`/profile/${user.userName}`}>
                   <Typography variant="h6">{user.userName}</Typography>
-                </Link>
+                </Link>: <Typography variant="h6">user {" "}</Typography>}
                   <Typography
                     variant="small"
                     color="gray"
@@ -72,7 +73,7 @@ const LikeModal: React.FC<LikeModalProps> = (props) => {
                   </Typography>
                 </div>
               </div>
-              {user.userName !== owner.userName ? (
+              {user.userName !== owner.userName && !user.deactive ? (
                 <button className="border-2 bg-blue-600 rounded-xl text-md text-white px-6 flex items-end">
                   follow
                 </button>

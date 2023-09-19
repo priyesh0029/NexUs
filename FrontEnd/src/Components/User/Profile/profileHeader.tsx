@@ -8,16 +8,15 @@ import {
 } from "../../../api/apiConnections/User/userConnections";
 import { useRef, useState } from "react";
 import { SetHandlefollows, SetUserDp } from "../../../features/redux/slices/user/homeSlice";
+import { Link } from "react-router-dom";
 interface ProfileHeaderProps {
   totalPosts: number;
   userInfo: UserInfo;
-  setUserInfo : React.Dispatch<React.SetStateAction<UserInfo | undefined>>;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   totalPosts,
   userInfo,
-  setUserInfo
 }) => {
   const [follower, setFollower] = useState(userInfo.followers);
 
@@ -116,9 +115,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <div className="flex flex-row items-center pt-4 pb-2 gap-4">
           <p className="text-2xl">{userInfo.userName}</p>
           {userInfo.userName === user.userName ? (
-            <button className="text-lg border-1 bg-blue-gray-200 p-1 rounded-lg">
+            <Link to={'/settings'}><button className="text-lg border-1 bg-blue-gray-200 p-1 rounded-lg">
               Edit profile
-            </button>
+            </button></Link>
           ) : (
             ""
           )}

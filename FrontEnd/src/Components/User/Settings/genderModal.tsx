@@ -28,6 +28,8 @@ const GenderModal: React.FC<IgenderModal> = ({ open, setOpen,gender,setGender })
 
   const handleGender = async(genderArg:string)=>{
      const response = await handleGenderSave(genderArg)      
+     console.log("response of gender :" ,response);
+     
      if(response){
         setGender(genderArg)
         handleOpen()
@@ -58,8 +60,8 @@ const GenderModal: React.FC<IgenderModal> = ({ open, setOpen,gender,setGender })
                         containerProps={{
                           className: "p-0",
                         }}
-                        checked={eachGender === gender}
                         onClick={()=>{handleGender(eachGender)}}
+                        checked={eachGender === gender}
                       />
                     </ListItemPrefix>
                     <Typography color="blue-gray" className="font-medium">

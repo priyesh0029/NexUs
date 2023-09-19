@@ -124,8 +124,8 @@ export const handleGenderSave = async (gender: string) => {
     const response: any = await baseURL.patch("/user/changeGender", { gender });
     console.log("response edited post : ", response);
     if (response.data.status === "success") {
-      const profileupdate = response.data.profileupdate;
-      return profileupdate;
+      const gender = response.data.gender;
+      return gender;
     }
   } catch (error) {
     console.log(error);
@@ -199,8 +199,8 @@ export const deactivateAccount = async()=>{
       (error as any)?.response?.data?.message ||
       "something went wrong! try again.";
     console.log("response error : ", errorMessage);
-    // return errorMessage
-    throw new Error(errorMessage); 
+    return errorMessage
+    // throw new Error(errorMessage); 
     //Throw the error to be caught by the caller
   }
 }
@@ -222,8 +222,8 @@ export const deleteAccount = async()=>{
       (error as any)?.response?.data?.message ||
       "something went wrong! try again.";
     console.log("response error : ", errorMessage);
-    // return errorMessage
-    throw new Error(errorMessage); 
+     return errorMessage
+    // throw new Error(errorMessage); 
     //Throw the error to be caught by the caller
   }
 }

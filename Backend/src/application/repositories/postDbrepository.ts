@@ -48,6 +48,11 @@ export const postRepositoryInterface = (
   const getUserPosts = async (user: string) =>
     await repository.getUserPosts(user);
 
+  //to get all saved posts of user
+
+  const getUserSavedPosts = async (user: string) =>
+    await repository.getUserPostSaved(user);
+
   //to edit users post
 
   const editUserPost = async (
@@ -112,6 +117,7 @@ const reportReply = async (
     postReply,
     handleReplyLike,
     getUserPosts,
+    getUserSavedPosts,
     getAllCommentReplies,
     editUserPost,
     commentDelete,

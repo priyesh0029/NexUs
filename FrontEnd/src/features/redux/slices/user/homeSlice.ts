@@ -45,6 +45,29 @@ const homeSlice = createSlice({
         console.log("Error storing token in local storage:", error);
       }
     },
+     //to set dp for profile
+     SetName: (state, action: PayloadAction<string>) => {
+      state.userInfo.name = action.payload;
+
+      try {
+        const userInfoString = localStorage.getItem("userInfo");
+        if (userInfoString) {
+          const userInfo = JSON.parse(userInfoString);
+          userInfo.name = action.payload;
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        } else {
+          const userInfo = {
+            name: "",
+            userName: "",
+            dp: action.payload,
+            savedPost: [],
+          };
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        }
+      } catch (error) {
+        console.log("Error updating dp in local storage:", error);
+      }
+    },
     //to set dp for profile
     SetUserDp: (state, action: PayloadAction<string>) => {
       state.userInfo.dp = action.payload;
@@ -188,6 +211,7 @@ const homeSlice = createSlice({
 export const {
   SetUserInfo,
   SetUserDp,
+  SetName,
   SetSavePost,
   SetHandlefollows,
   // SetHandleUnfollows,

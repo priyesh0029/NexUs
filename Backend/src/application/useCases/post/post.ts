@@ -165,6 +165,24 @@ export const userPosts = async (
   });
 };
 
+//to get users saved posts
+
+export const userSavedPosts = async (
+  user: string,
+  repository: ReturnType<postRepositoryInterfaceType>
+) => {
+  return await repository.getUserSavedPosts(user).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured fetching posts of ${user}.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
+
 //t edit post
 
 export const editPost =  async (

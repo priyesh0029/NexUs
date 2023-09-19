@@ -20,6 +20,7 @@ import {
   postCreate,
   replyLikeHandler,
   userPosts,
+  userSavedPosts,
 } from "../../application/useCases/post/post";
 import AppError from "../../utilities/appError";
 import { HttpStatus } from "../../types/httpStatus";
@@ -197,6 +198,27 @@ export const postControllers = (
     } else {
       throw new AppError(
         ` Error occured fetching posts of ${user}.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+  //to get all saved post by user
+
+  const getUserSavedPost = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId;
+    if (typeof userId === "string") {
+      await userSavedPosts(userId, postRepo).then((posts) => {
+        console.log("contollers all post response : ", posts);
+
+        res.status(200).json({
+          status: "success",
+          posts,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error occured fetching saved posts.try again..!`,
         HttpStatus.BAD_REQUEST
       );
     }
@@ -398,6 +420,7 @@ export const postControllers = (
     replycomment,
     replylike,
     getUserPosts,
+    getUserSavedPost,
     getAllCommentReplies,
     updatePost,
     deleteComment,

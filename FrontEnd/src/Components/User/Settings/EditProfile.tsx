@@ -19,7 +19,7 @@ import {
   getUserDetails,
   handleDp,
 } from "../../../api/apiConnections/User/userConnections";
-import { SetUserDp } from "../../../features/redux/slices/user/homeSlice";
+import { SetName, SetUserDp } from "../../../features/redux/slices/user/homeSlice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import GenderModal from "./genderModal";
@@ -31,7 +31,8 @@ const EditProfile = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch();
   const [genderOpen, setGenderOpen] = useState<boolean>(false);
-  const [userInfo, setUserInfo] = useState<UserInfo>();
+  const [biodata, setBiodata] = useState<string>('');
+  const[name,Setname] = useState<string>('')
   const [gender, setGender] = useState<string>("");
 
   const handleGenderModal = () => {
@@ -49,14 +50,21 @@ const EditProfile = () => {
   }, []);
 
   const getProfileDetails = async (proId: string) => {
-    const response: UserInfo = await getUserDetails(proId);
-    setUserInfo(() => response);
-    console.log("response getProfileDetails : ", userInfo);
-    if (typeof response.gender === "string") setGender(response.gender);
+    const response  = await getUserDetails(proId);
+    if (typeof response.gender === "string") 
+    setGender(response.gender);
+    if (typeof response.bio === "string") 
+    setBiodata(response.bio);
+    if (typeof response.name === "string") 
+    Setname(response.name);
   };
 
   const submitHandler = async (userData: any) => {
-    await editProfileHandle(userData);
+    await editProfileHandle(userData).then((response)=>{
+      if(response){
+        dispatch(SetName(name))
+      }
+    })
   };
   const changePropic = async (file: File) => {
     console.log("Selected file:", file);
@@ -80,8 +88,8 @@ const EditProfile = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: user.name,
-      bio: userInfo?.bio,
+      name: name,
+      bio: biodata,
     },
 
     validationSchema: Yup.object({
@@ -153,7 +161,11 @@ const EditProfile = () => {
                   id="name"
                   size="lg"
                   label="Name"
-                  {...formik.getFieldProps("name")}
+                  onChange={(e) => {
+                    Setname(e.target.value);
+                    formik.handleChange(e);
+                  }}
+                  value={name}
                 />
                 <p className="h-6 ml-2 text-xs text-red-800">
                   {formik.touched.name && formik.errors.name
@@ -164,8 +176,12 @@ const EditProfile = () => {
               <div className="w-96">
                 <Textarea
                   id="bio"
-                  {...formik.getFieldProps("bio")}
                   label="Bio"
+                  onChange={(e) => {
+                    setBiodata(e.target.value);
+                    formik.handleChange(e);
+                  }}
+                  value={biodata}
                 />
                 <p className="h-6 ml-2 text-xs text-red-800">
                   {formik.touched.bio && formik.errors.bio

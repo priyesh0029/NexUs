@@ -332,3 +332,20 @@ export const reportReply = async(commentId: string,replyId:string,report:string,
     
   }
 }
+
+//to gget user saved posts
+
+export const getUserSavedPost = async()=>{
+  try{
+    const response:any = await baseURL.get("/post/getUserSavedPost")
+    console.log("response of user Post 222 : ",response);
+    if(response.data.status === 'success'){
+      const posts = response.data.posts
+      return posts
+    }
+
+  }catch(error){
+    console.log(error);
+    
+  }
+}
