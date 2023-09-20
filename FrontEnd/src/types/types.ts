@@ -34,10 +34,11 @@ interface UserInfo {
       description:string,
       imgNames: string[],
       isBlocked:boolean,
-      liked:[{
+      liked:{
         userName:string;
         dp:string;
-      }],
+        deactive ?: boolean;
+      }[],
       reports:[],
       _id : string,
       updatedAt : string,

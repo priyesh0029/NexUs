@@ -54,9 +54,20 @@ const DefaultSidebar = () => {
     <>
       <Card className="xl:h-full xl:flex xl:fixed xl:left-0 w-[16rem] xl:p-4 xl:rounded-none xl:border-1 xl:border-black hidden">
         <div className="mb-2 p-4">
-          <Typography variant="h5" color="blue-gray">
-            NexUs
-          </Typography>
+          <div className="flex justify-center gap-2">
+            <div className="w-16 h-16 ">
+              <img
+                className="border rounded-xl"
+                src={POST_URL + "logo/nexuswhite.jpg"}
+                alt="logo"
+              />
+            </div>
+            <div className="flex items-center">
+              <p className="text-4xl font-bold font-cursive text-black">
+                neXus
+              </p>
+            </div>
+          </div>
         </div>
         <List>
           <Link to={"/home"}>
@@ -73,27 +84,29 @@ const DefaultSidebar = () => {
             </ListItemPrefix>
             Search
           </ListItem>
-          <ListItem>
-            {searchTabOpen && (
-              <SearchTab
-                openSearchTab={searchTabOpen}
-                setOpenSearchTab={setSearchTabOpen}
-              />
-            )}
-            <ListItemPrefix>
-              <EnvelopeIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Messages
-            <ListItemSuffix>
-              <Chip
-                value="14"
-                size="sm"
-                variant="ghost"
-                color="blue-gray"
-                className="rounded-full"
-              />
-            </ListItemSuffix>
-          </ListItem>
+          {searchTabOpen && (
+            <SearchTab
+              openSearchTab={searchTabOpen}
+              setOpenSearchTab={setSearchTabOpen}
+            />
+          )}
+          <Link to={"/messages"}>
+            <ListItem>
+              <ListItemPrefix>
+                <EnvelopeIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Messages
+              <ListItemSuffix>
+                <Chip
+                  value="14"
+                  size="sm"
+                  variant="ghost"
+                  color="blue-gray"
+                  className="rounded-full"
+                />
+              </ListItemSuffix>
+            </ListItem>
+          </Link>
           <ListItem onClick={handleListItemClick}>
             <ListItemPrefix>
               <SquaresPlusIcon className="h-5 w-5" />
@@ -117,13 +130,13 @@ const DefaultSidebar = () => {
               Profile
             </ListItem>
           </Link>
-          <Link to={'/settings'}>
-          <ListItem>
-            <ListItemPrefix>
-              <Cog6ToothIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Settings
-          </ListItem>
+          <Link to={"/settings"}>
+            <ListItem>
+              <ListItemPrefix>
+                <Cog6ToothIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Settings
+            </ListItem>
           </Link>
           <ListItem onClick={handleLogout}>
             <ListItemPrefix>
@@ -133,7 +146,87 @@ const DefaultSidebar = () => {
           </ListItem>
         </List>
       </Card>
-      <Card className=" fixed bottom-0 left-0 xl:hidden w-full bg-blue-200 p-2 border-2 rounded-none z-10">
+      <Card className="md:h-full md:flex md:fixed md:left-0 md:w-[6rem] md:p-4 md:rounded-none md:border-1 md: border-black xl:hidden hidden">
+        <div className="mb-2 p-4">
+          <div className="flex justify-start">
+            <div className="w-28 h-28 ">
+              <img
+                className="border rounded-xl"
+                src={POST_URL + "logo/nexuswhite.jpg"}
+                alt="logo"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-6">
+          <Link to={"/home"}>
+            <div>
+                <HomeIcon className="h-10 w-10" />
+            </div>
+          </Link>
+          <div onClick={handleSearchTab}>
+            <div>
+              <MagnifyingGlassIcon className="h-10 w-10" />
+            </div>
+          </div>
+          {searchTabOpen && (
+            <SearchTab
+              openSearchTab={searchTabOpen}
+              setOpenSearchTab={setSearchTabOpen}
+            />
+          )}
+          <Link to={"/messages"}>
+            <div>
+              <div>
+                <EnvelopeIcon className="h-10 w-10" />
+              </div>
+              <div>
+                {/* <Chip
+                  value="14"
+                  size="sm"
+                  variant="ghost"
+                  color="blue-gray"
+                  className="rounded-full"
+                /> */}
+              </div>
+            </div>
+          </Link>
+          <div onClick={handleListItemClick}>
+            <div>
+              <SquaresPlusIcon className="h-10 w-10" />
+            </div>
+          </div>
+          {open && <CreatePost open={open} setOpen={setOpen} />}
+          <Link to={`/profile/${user.userName}`}>
+            <div>
+              <div>
+                {user.dp ? (
+                  <Avatar
+                    src={POST_URL + `${user.dp}.jpg`}
+                    alt="avatar"
+                    className="h-12 w-12 "
+                  />
+                ) : (
+                  <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                )}
+              </div>
+            </div>
+          </Link>
+          <Link to={"/settings"}>
+            <div>
+              <div>
+                <Cog6ToothIcon className="h-10 w-10" />
+              </div>
+            </div>
+          </Link>
+          <div onClick={handleLogout}>
+            <div>
+              <PowerIcon className="h-10 w-10" />
+            </div>
+          </div>
+        </div>
+      </Card>
+      <Card className=" fixed bottom-0 left-0  w-full bg-blue-200 p-2 border-2 rounded-none z-10 lg:hidden">
         <div className="flex justify-around items-center">
           <Link to={"/home"}>
             <HomeIcon className="h-6 w-6 text-gray-700" />

@@ -8,6 +8,7 @@ module.exports = withMT({
       fontFamily: {
         sans: ["Open Sans", "Roboto", "Arial", "sans-serif"],
         serif: ["Merriweather", "serif"],
+        cursive: ["Snell Roundhand", "cursive"]
       },
       spacing: {
         '100': '28rem', // You can adjust the value as needed.

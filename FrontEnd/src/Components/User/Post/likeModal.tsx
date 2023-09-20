@@ -19,7 +19,7 @@ interface LikeModalProps {
   user: {
     userName: string;
     dp: string;
-    deactive:boolean;
+    deactive ?:boolean;
   }[];
 }
 
