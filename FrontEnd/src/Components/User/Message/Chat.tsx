@@ -2,18 +2,34 @@ import { PencilSquareIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { Avatar, Tooltip } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatSearch from "./chatSearch";
+import { getUserChats } from "../../../api/apiConnections/User/chatConnections";
 
 const Chat = () => {
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
 
-  const [chatSearchOpen,setChatSearchOpen] = useState(false)
-  const handleNewChatSearch = ()=>{
-    setChatSearchOpen(!chatSearchOpen)
-  }
+  const [chatSearchOpen, setChatSearchOpen] = useState(false);
+  const [chatList, setChatList] = useState<IuserChatList[]>([]);
+  const handleNewChatSearch = () => {
+    setChatSearchOpen(!chatSearchOpen);
+  };
+
+  useEffect(() => {
+    handleGetUserChats();
+  }, []);
+
+  //to fetch chats of the user
+
+  const handleGetUserChats = async () => {
+    const response = await getUserChats();
+    console.log("respons eof handleGetUserChats after api call : ", response);
+    if (response.length > 0) {
+      setChatList(response);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full h-full  border-r-2 border-gray-300 ">
@@ -39,38 +55,49 @@ const Chat = () => {
             content="new message"
             placement="bottom"
           >
-            <PencilSquareIcon className="h-10 w-10 text-black" onClick={handleNewChatSearch}/>
+            <PencilSquareIcon
+              className="h-10 w-10 text-black"
+              onClick={handleNewChatSearch}
+            />
           </Tooltip>
         </div>
       </div>
       <div className="flex flex-col flex-grow overflow-y-auto">
-        {Array(100)
-          .fill("")
-          .map((index) => (
-            <div className="flex p-4 gap-4 items-center hover:bg-gray-100" key={index}>
-              {user.dp ? (
-                <>
-                  <Avatar
-                    src={POST_URL + `${user.dp}.jpg`}
-                    alt="avatar"
-                    className="h-12 w-12 "
-                  />
-                  <div className="md:flex hidden">
-                    <p>{user.userName}hmhty</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <UserCircleIcon className="h-10 w-10 text-gray-700" />
-                  <div className="md:flex hidden">
-                    <p>user</p>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
+        {chatList.flatMap((chat, index) =>
+          chat.users
+            .filter((chatUser: UserInfo) => chatUser.userName !== user.userName)
+            .map((chatUser: UserInfo) => (
+              <div
+                className="flex p-4 gap-4 items-center hover:bg-gray-100"
+                key={index}
+              >
+                {chatUser.dp ? (
+                  <>
+                    <Avatar
+                      src={POST_URL + `${chatUser.dp}.jpg`}
+                      alt="avatar"
+                      className="h-12 w-12"
+                    />
+                    <div className="md:flex hidden">
+                      <p>{chatUser.userName}</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                    <div className="md:flex hidden">
+                      <p>user</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))
+        )}
       </div>
-      {chatSearchOpen && <ChatSearch open={chatSearchOpen} setOpen={setChatSearchOpen}/>}
+
+      {chatSearchOpen && (
+        <ChatSearch open={chatSearchOpen} setOpen={setChatSearchOpen} />
+      )}
     </div>
   );
 };

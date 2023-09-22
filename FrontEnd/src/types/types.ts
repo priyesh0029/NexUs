@@ -1,5 +1,5 @@
 interface UserInfo {
-    _id?:string
+    _id:string
     name: string;
     userName: string;
     email ?:string
@@ -19,6 +19,14 @@ interface UserInfo {
     createdAt ?: string
     savedPost : string[],
     accountDeactive ?:boolean
+  }
+
+  interface IuserChatList{
+    chatName : string;
+    isGroupChat: boolean
+    users : UserInfo[]
+    updatedAt ?: string
+    createdAt ?: string
   }
 
   interface IuserHomeSlice{

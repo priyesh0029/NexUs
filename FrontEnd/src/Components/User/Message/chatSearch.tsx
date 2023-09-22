@@ -21,12 +21,17 @@ interface ChatSearchProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface IchatUsers{
+  userName : string;
+  userId:string;
+}
+
 const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
   const handleOpen = () => setOpen(!open);
 
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<UserInfo[]>([]);
-  const [chatUsers, setChatUsers] = useState<string[]>([]);
+  const [chatUsers, setChatUsers] = useState<IchatUsers[]>([]);
 
   const handleInput = (e: any) => {
     setSearchText(e.target.value);
@@ -42,8 +47,10 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
     setSearchResults(data);
   };
 
-  const handleAddChatUserList = (userName: string) => {
-    setChatUsers([...chatUsers, userName]);
+  //add user to chatlist
+
+  const handleAddChatUserList = (userName: string,userId:string) => {
+    setChatUsers([...chatUsers, {userName,userId}]);
     setSearchText("");
     const updatedsearchResults = searchResults.filter(
       (user) => user.userName !== userName
@@ -52,21 +59,23 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
     setSearchResults(updatedsearchResults);
   };
 
-  const handleRemoveChatUserList = (userName: string) => {
+  //remove user from chatlist
+  const handleRemoveChatUserList = (userName: string,userId:string) => {
     console.log("userName :", userName);
-    const updatedChatUsers = chatUsers.filter((user) => user !== userName);
+    const updatedChatUsers = chatUsers.filter((user) => user.userName !== userName);
     console.log("updatedChatUsers :", updatedChatUsers);
     setChatUsers(updatedChatUsers);
   };
   console.log("chatUsers.length :", chatUsers);
 
+  //handle submit create Or AccessChat
   const handleChatSubmit = async () => {
     if (chatUsers.length > 1) {
       console.log("chatUsers.length conformation");
       
       // const response = await createOrAccessGroupChat(chatUsers);
     } else {
-      const response = await createOrAccessChat(chatUsers[0]);
+      const response = await createOrAccessChat(chatUsers[0].userId);
     }
   };
   return (
@@ -86,9 +95,9 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
                 {chatUsers.map((user, index) => (
                   <Chip
                     key={index}
-                    value={user}
+                    value={user.userName}
                     className="rounded-full "
-                    onClose={() => handleRemoveChatUserList(user)}
+                    onClose={() => handleRemoveChatUserList(user.userName,user.userId)}
                   />
                   //  {/* </div> */}
                 ))}
@@ -101,7 +110,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
             <div className=" flex flex-col items-start w-full px-6 hover:bg-gray-100 cursor-pointer py-2 mb-2">
               <div
                 className="flex justify-between w-full"
-                onClick={() => handleAddChatUserList(user.userName)}
+                onClick={() => handleAddChatUserList(user.userName,user._id)}
               >
                 <div className="flex w-full items-center">
                   {user.dp ? (
