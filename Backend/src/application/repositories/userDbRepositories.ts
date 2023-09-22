@@ -13,8 +13,8 @@ export const userDbRepository = (
     await repository.addUser(userEntity);
   const uploadDp = async (user: string, filename: string) =>
     await repository.uploadDp(user, filename);
-  const searchUserbyChar = async (user: string) =>
-    await repository.searchUserbyChar(user);
+  const searchUserbyChar = async (user: string,userId:string) =>
+    await repository.searchUserbyChar(user,userId);
   const getUsersList = async (user: string) =>
     await repository.getUsersList(user);
   const handleFollowUnfollow = async (searchedUser: string, userId: string) =>

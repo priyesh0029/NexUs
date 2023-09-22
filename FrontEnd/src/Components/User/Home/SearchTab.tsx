@@ -30,7 +30,7 @@ const SearchTab: React.FC<ISearchTab> = (props) => {
   return (
     <>
       <div>
-        <Drawer open={openSearchTab} onClose={closeDrawer} className="p-4">
+        <Drawer open={openSearchTab} onClose={closeDrawer} className="p-4 ">
           <div className="flex justify-center flex-col">
             <div>
               <p className="font-normal text-3xl pt-4">Search</p>

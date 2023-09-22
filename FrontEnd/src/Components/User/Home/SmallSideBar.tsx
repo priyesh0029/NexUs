@@ -7,6 +7,7 @@ import {
   Card,
   Chip,
   Avatar,
+  Tooltip,
 } from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { Link } from "react-router-dom";
@@ -41,7 +42,7 @@ const SmallSideBar = () => {
   };
   return (
     <>
-      <Card className="md:h-full md:flex md:fixed md:left-0 w-[6rem] md:p-4 md:rounded-none md:border-1 md:border-black hidden">
+      <Card className="md:h-full md:flex md:fixed md:left-0 w-[6rem] md:p-4 md:rounded-none md:border-1 md:border-black hidden z-10">
         <div className="mb-2 p-4">
           <div className="flex justify-start">
             <div className="w-28 h-28 ">
@@ -55,15 +56,28 @@ const SmallSideBar = () => {
         </div>
         <div className="flex flex-col items-center gap-6">
           <Link to={"/home"}>
-            <div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Home"
+              placement="right"
+            >
+              <div>
                 <HomeIcon className="h-10 w-10" />
-            </div>
+              </div>
+            </Tooltip>
           </Link>
           <div onClick={handleSearchTab}>
-            <div>
-              <MagnifyingGlassIcon className="h-10 w-10" />
-            </div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Search"
+              placement="right"
+            >
+              <div>
+                <MagnifyingGlassIcon className="h-10 w-10" />
+              </div>
+            </Tooltip>
           </div>
+
           {searchTabOpen && (
             <SearchTab
               openSearchTab={searchTabOpen}
@@ -71,53 +85,83 @@ const SmallSideBar = () => {
             />
           )}
           <Link to={"/messages"}>
-            <div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Message"
+              placement="right"
+            >
               <div>
-                <EnvelopeIcon className="h-10 w-10" />
-              </div>
-              <div>
-                {/* <Chip
+                <div>
+                  <EnvelopeIcon className="h-10 w-10" />
+                </div>
+                <div>
+                  {/* <Chip
                   value="14"
                   size="sm"
                   variant="ghost"
                   color="blue-gray"
                   className="rounded-full"
                 /> */}
+                </div>
               </div>
-            </div>
+            </Tooltip>
           </Link>
           <div onClick={handleCreatePostClick}>
-            <div>
-              <SquaresPlusIcon className="h-10 w-10" />
-            </div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Create"
+              placement="right"
+            >
+              <div>
+                <SquaresPlusIcon className="h-10 w-10" />
+              </div>
+            </Tooltip>
           </div>
           {open && <CreatePost open={open} setOpen={setOpen} />}
           <Link to={`/profile/${user.userName}`}>
             <div>
-              <div>
-                {user.dp ? (
-                  <Avatar
-                    src={POST_URL + `${user.dp}.jpg`}
-                    alt="avatar"
-                    className="h-12 w-12 "
-                  />
-                ) : (
-                  <UserCircleIcon className="h-10 w-10 text-gray-700" />
-                )}
-              </div>
+              <Tooltip
+                className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+                content="Profile"
+                placement="right"
+              >
+                <div>
+                  {user.dp ? (
+                    <Avatar
+                      src={POST_URL + `${user.dp}.jpg`}
+                      alt="avatar"
+                      className="h-12 w-12 "
+                    />
+                  ) : (
+                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                  )}
+                </div>
+              </Tooltip>
             </div>
           </Link>
           <Link to={"/settings"}>
             <div>
-              <div>
-                <Cog6ToothIcon className="h-10 w-10" />
-              </div>
+              <Tooltip
+                className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+                content="Settings"
+                placement="right"
+              >
+                <div>
+                  <Cog6ToothIcon className="h-10 w-10" />
+                </div>
+              </Tooltip>
             </div>
           </Link>
           <div onClick={handleLogout}>
-            <div>
-              <PowerIcon className="h-10 w-10" />
-            </div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Logout"
+              placement="right"
+            >
+              <div>
+                <PowerIcon className="h-10 w-10" />
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Card>

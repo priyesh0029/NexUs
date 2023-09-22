@@ -78,9 +78,10 @@ export const userControllers = (
 
   const searchUser = asyncHandler(async (req: Request, res: Response) => {
     const user = req.query.user;
+    const userId = req.query.userId;
     console.log("user by username : ", user);
-    if (typeof user === "string") {
-      await userSearch(user, postRepo).then((users) => {
+    if (typeof user === "string" && typeof userId === "string") {
+      await userSearch(user,userId, postRepo).then((users) => {
         console.log("contollers search user response : ", users);
 
         res.status(200).json({

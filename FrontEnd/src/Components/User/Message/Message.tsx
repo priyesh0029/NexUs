@@ -1,7 +1,7 @@
-import { Avatar } from "@material-tailwind/react";
+import { Avatar, Input } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { VideoCameraIcon } from "@heroicons/react/20/solid";
 import ChatboxTextarea from "./ChatTextArea";
 
@@ -66,10 +66,16 @@ const Message = () => {
             </div>
           </div>
         </div>
-        
-        <div className="py-12 md:py-2 px-1 fixed bottom-0">
-            <ChatboxTextarea/>
+        <div className="pt-20 px-8" >
+        {Array(100)
+        .fill("")
+            .map((index) => (
+              <div key={index+1}><p>haii</p></div>
+            ))}
         </div>
+      </div>
+      <div className="py-12 md:py-2 px-2 w-full flex ">
+        <ChatboxTextarea />
       </div>
     </div>
   );

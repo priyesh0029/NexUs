@@ -38,9 +38,10 @@ export const findUser = async (
 
 export const userSearch = async (
   user: string,
+  userId:string,
   repository: ReturnType<userTypeDbRepository>
 ) => {
-  return await repository.searchUserbyChar(user).then((response) => {
+  return await repository.searchUserbyChar(user,userId).then((response) => {
     if (!response) {
       throw new AppError(
         "Error occured while searching users.try again..!",

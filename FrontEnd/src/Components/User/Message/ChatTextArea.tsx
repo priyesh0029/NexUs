@@ -1,9 +1,8 @@
 import { Textarea, Button, IconButton } from "@material-tailwind/react";
-import { LinkIcon } from "@heroicons/react/24/outline";
  
 const ChatboxTextarea = ()=>{
   return (
-    <div className="flex w-screen flex-row items-center gap-2 rounded-[99px] border border-gray-900/10 bg-gray-900/5 p-2">
+    <div className="flex w-full flex-row items-center gap-2 rounded-[99px] border border-gray-900/10 bg-gray-900/5 p-2">
       <div className="flex">
         <IconButton variant="text" className="rounded-full">
           <svg

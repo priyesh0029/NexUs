@@ -9,7 +9,7 @@ export const userRepositoryMongoDB = () => {
       $or: [{ userName: params }, { email: params }],
     });
     console.log("user : ", user.length);
-      return user;
+    return user;
   };
 
   const findById = async (userId: string) => {
@@ -64,15 +64,21 @@ export const userRepositoryMongoDB = () => {
 
   //search user by char
 
-  const searchUserbyChar = async (user: string) => {
+  const searchUserbyChar = async (user: string,userId:string) => {
     console.log("search cahr : ", user);
 
+    const userID = new mongoose.Types.ObjectId(userId);
+    const userDetails = await User.findOne({ _id: userID }, { _id: 0, userName: 1 });
+    if (userDetails !== null) {
     const users = await User.find({
-      userName: { $regex: user, $options: "i" },
+      $and: [
+        { userName: { $regex: user, $options: "i" } },
+        { userName: { $ne: userDetails.userName } }
+      ]
     });
     console.log("users search using regex : ", users);
-
     return users;
+  }
   };
 
   //to get usersList
@@ -256,9 +262,9 @@ export const userRepositoryMongoDB = () => {
     return false;
   };
 
-   //to handle account activation
+  //to handle account activation
 
-   const handleAccountActivate = async (username: string): Promise<boolean> => {
+  const handleAccountActivate = async (username: string): Promise<boolean> => {
     const deactivated = await User.updateOne(
       { userName: username },
       { $set: { accountDeactive: false } }
@@ -283,13 +289,20 @@ export const userRepositoryMongoDB = () => {
         User.deleteOne({ userName: userDetails.userName }),
         Post.deleteMany({ postedUser: userDetails.userName }),
       ]);
-      console.log("handleAccountDelete mongo query : ", userDeleteResult, postsDeleteResult);
+      console.log(
+        "handleAccountDelete mongo query : ",
+        userDeleteResult,
+        postsDeleteResult
+      );
 
-    if (userDeleteResult.deletedCount === 1 && postsDeleteResult.deletedCount >= 0) {
-      return true;
-    }else{
-      return false
-    }
+      if (
+        userDeleteResult.deletedCount === 1 &&
+        postsDeleteResult.deletedCount >= 0
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
     return false;
   };
@@ -309,7 +322,7 @@ export const userRepositoryMongoDB = () => {
     handleChangePassword,
     handleAccountDeactivate,
     handleAccountDelete,
-    handleAccountActivate
+    handleAccountActivate,
   };
 };
 

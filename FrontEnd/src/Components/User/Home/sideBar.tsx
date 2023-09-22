@@ -7,6 +7,7 @@ import {
   ListItemSuffix,
   Chip,
   Avatar,
+  Tooltip,
 } from "@material-tailwind/react";
 import {
   HomeIcon,
@@ -84,12 +85,7 @@ const DefaultSidebar = () => {
             </ListItemPrefix>
             Search
           </ListItem>
-          {searchTabOpen && (
-            <SearchTab
-              openSearchTab={searchTabOpen}
-              setOpenSearchTab={setSearchTabOpen}
-            />
-          )}
+
           <Link to={"/messages"}>
             <ListItem>
               <ListItemPrefix>
@@ -113,7 +109,7 @@ const DefaultSidebar = () => {
             </ListItemPrefix>
             Create
           </ListItem>
-          {open && <CreatePost open={open} setOpen={setOpen} />}
+         
           <Link to={`/profile/${user.userName}`}>
             <ListItem>
               <ListItemPrefix>
@@ -160,69 +156,106 @@ const DefaultSidebar = () => {
         </div>
         <div className="flex flex-col items-center gap-6">
           <Link to={"/home"}>
-            <div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Home"
+              placement="right"
+            >
+              <div>
                 <HomeIcon className="h-10 w-10" />
-            </div>
+              </div>
+            </Tooltip>
           </Link>
           <div onClick={handleSearchTab}>
-            <div>
-              <MagnifyingGlassIcon className="h-10 w-10" />
-            </div>
-          </div>
-          {searchTabOpen && (
-            <SearchTab
-              openSearchTab={searchTabOpen}
-              setOpenSearchTab={setSearchTabOpen}
-            />
-          )}
-          <Link to={"/messages"}>
-            <div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Search"
+              placement="right"
+            >
               <div>
-                <EnvelopeIcon className="h-10 w-10" />
+                <MagnifyingGlassIcon className="h-10 w-10" />
               </div>
+            </Tooltip>
+          </div>
+
+          <Link to={"/messages"}>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Message"
+              placement="right"
+            >
               <div>
-                {/* <Chip
+                <div>
+                  <EnvelopeIcon className="h-10 w-10" />
+                </div>
+                <div>
+                  {/* <Chip
                   value="14"
                   size="sm"
                   variant="ghost"
                   color="blue-gray"
                   className="rounded-full"
                 /> */}
+                </div>
               </div>
-            </div>
+            </Tooltip>
           </Link>
           <div onClick={handleListItemClick}>
-            <div>
-              <SquaresPlusIcon className="h-10 w-10" />
-            </div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Create"
+              placement="right"
+            >
+              <div>
+                <SquaresPlusIcon className="h-10 w-10" />
+              </div>
+            </Tooltip>
           </div>
-          {open && <CreatePost open={open} setOpen={setOpen} />}
+         
           <Link to={`/profile/${user.userName}`}>
             <div>
-              <div>
-                {user.dp ? (
-                  <Avatar
-                    src={POST_URL + `${user.dp}.jpg`}
-                    alt="avatar"
-                    className="h-12 w-12 "
-                  />
-                ) : (
-                  <UserCircleIcon className="h-10 w-10 text-gray-700" />
-                )}
-              </div>
+              <Tooltip
+                className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+                content="Profile"
+                placement="right"
+              >
+                <div>
+                  {user.dp ? (
+                    <Avatar
+                      src={POST_URL + `${user.dp}.jpg`}
+                      alt="avatar"
+                      className="h-12 w-12 "
+                    />
+                  ) : (
+                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                  )}
+                </div>
+              </Tooltip>
             </div>
           </Link>
           <Link to={"/settings"}>
             <div>
-              <div>
-                <Cog6ToothIcon className="h-10 w-10" />
-              </div>
+              <Tooltip
+                className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+                content="Settings"
+                placement="right"
+              >
+                <div>
+                  <Cog6ToothIcon className="h-10 w-10" />
+                </div>
+              </Tooltip>
             </div>
           </Link>
           <div onClick={handleLogout}>
-            <div>
-              <PowerIcon className="h-10 w-10" />
-            </div>
+            <Tooltip
+              className="border border-blue-gray-50 bg-white px-4 py-3 shadow-xl shadow-black/10 text-black"
+              content="Logout"
+              placement="right"
+            >
+              <div>
+                <PowerIcon className="h-10 w-10" />
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Card>
@@ -236,7 +269,6 @@ const DefaultSidebar = () => {
             className="h-6 w-6 text-gray-700"
             onClick={handleSearchTab}
           />
-          {/* {searchTabOpen && <SearchTab openSearchTab = {searchTabOpen} setOpenSearchTab={setSearchTabOpen}/>} */}
           <Link to={"/messages"}>
             <EnvelopeIcon className="h-6 w-6 text-gray-700" />
           </Link>
@@ -249,6 +281,13 @@ const DefaultSidebar = () => {
           </Link>
         </div>
       </Card>
+      {searchTabOpen && (
+        <SearchTab
+          openSearchTab={searchTabOpen}
+          setOpenSearchTab={setSearchTabOpen}
+        />
+      )}
+       {open && <CreatePost open={open} setOpen={setOpen} />}
     </>
   );
 };
