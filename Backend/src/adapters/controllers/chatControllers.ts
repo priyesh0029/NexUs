@@ -4,7 +4,7 @@ import { chatRepositoryMongoDbType } from "../../framework/database/mongoDb/repo
 import { Request, Response } from "express";
 import AppError from "../../utilities/appError";
 import { HttpStatus } from "../../types/httpStatus";
-import { accessOrCreateChat, accessOrCreateGroupChat, fetchUserChats } from "../../application/useCases/chats/chats";
+import { accessOrCreateChat, accessOrCreateGroupChat, fetchAllChatMessages, fetchUserChats, sentNewMessage } from "../../application/useCases/chats/chats";
 
 export const chatControllers = (
   chatRepositoryInf: chatRepositoryInterfaceType,
@@ -82,10 +82,56 @@ export const chatControllers = (
     }
   }) 
 
+  //to sent a new message 
+  const newMessage = asyncHandler(async(req:Request,res:Response)=>{
+    const {content,chatId} = req.body;
+    const userId = req.query.userId;
+    console.log("createOrAccessChat user : ", content,chatId);
+    if ( typeof content === "string" &&  typeof chatId === "string" && typeof userId === "string") {
+      await sentNewMessage(content,chatId,userId,chatRepo).then((newMessage) => {
+        console.log("contollers all post response : ", newMessage);
+
+        res.status(200).json({
+          status: "success",
+          newMessage,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while fetching user chat.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }) 
+
+  //to fetch all messages 
+  const fetchallmessages = asyncHandler(async(req:Request,res:Response)=>{
+    const {chatId} = req.query;
+    console.log("chat id of fetch all messages  : ",chatId);
+    if ( typeof chatId === "string") {
+      await fetchAllChatMessages(chatId,chatRepo).then((allMessages) => {
+        console.log("contollers all post response : ", allMessages);
+
+        res.status(200).json({
+          status: "success",
+          allMessages,
+        });
+      });
+    } else {
+      throw new AppError(
+        ` Error while fetching user chat.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }) 
+
+
   return {
     createOrAccessChat,
     getUserChats,
-    createOrAccessGroupChat
+    createOrAccessGroupChat,
+    newMessage,
+    fetchallmessages
   };
 };
 

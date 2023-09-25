@@ -15,6 +15,11 @@ const chatRouter = (router: Router) => {
 
   router.get('/getUserChats',controllers.getUserChats)
 
+  router.post('/newMessage',controllers.newMessage) 
+
+  router.get('/fetchallmessages',controllers.fetchallmessages) 
+
+
 
   return router;
 };

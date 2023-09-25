@@ -1,6 +1,7 @@
 import { log } from "console";
 import Chat from "../models/chatModel";
 import User from "../models/userModel";
+import Message from "../models/messageModel";
 
 export const chatRepositoryMongoDb = () => {
   //Handle access Or CreateChat
@@ -57,7 +58,7 @@ export const chatRepositoryMongoDb = () => {
         .populate("users", "-password")
         .populate("groupAdmin", "-password");
 
-        return fullGroupChat
+      return fullGroupChat;
     } catch (error) {
       console.log(error);
       return false;
@@ -86,10 +87,58 @@ export const chatRepositoryMongoDb = () => {
     }
   };
 
+  // to sent a new message
+
+  const newMessageHandle = async (
+    content: string,
+    chatId: string,
+    userId: string
+  ) => {
+    try {
+      const newMessage = {
+        sender: userId,
+        content: content,
+        chatId: chatId,
+      };
+
+      let message = await Message.create(newMessage);
+      message = await message.populate("sender", "userName dp");
+      message = await message.populate("chatId");
+      message = await User.populate(message, {
+        path: "chatId.users",
+        select: "userName dp",
+      });
+      await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
+      console.log("Message Created and Populated:", message);
+
+      return message;
+    } catch (error) {
+      console.error(error);
+      return false; // Return false in case of an error
+    }
+  };
+
+  //to get all messages of a chat
+
+  const getChatAllMessages = async (chatId: string) => {
+    try {
+      const allMessages = await Message.find({ chatId: chatId })
+        .populate("sender", "userName dp")
+        .populate("chatId");
+
+        return allMessages
+    } catch (error) {
+      console.error(error);
+      return false; // Return false in case of an error
+    }
+  };
+
   return {
     accessOrCreateChatHandle,
     accessOrCreateGroupChatHandle,
     getChatsOfUser,
+    newMessageHandle,
+    getChatAllMessages,
   };
 };
 

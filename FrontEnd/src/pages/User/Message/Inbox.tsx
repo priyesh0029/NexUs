@@ -2,15 +2,19 @@ import { useEffect, useState } from "react";
 import SmallSideBar from "../../../Components/User/Home/SmallSideBar";
 import Chat from "../../../Components/User/Message/Chat";
 import Message from "../../../Components/User/Message/Message";
-import { createOrAccessChat, createOrAccessGroupChat, getUserChats } from "../../../api/apiConnections/User/chatConnections";
+import {
+  createOrAccessChat,
+  createOrAccessGroupChat,
+  getUserChats,
+} from "../../../api/apiConnections/User/chatConnections";
 import { useDispatch } from "react-redux";
 import { clearSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 
 const Inbox = () => {
   const [chatList, setChatList] = useState<IuserChatList[]>([]);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  dispatch(clearSelectedChat())
+  // dispatch(clearSelectedChat());
 
   useEffect(() => {
     handleGetUserChats();
@@ -33,13 +37,15 @@ const Inbox = () => {
       "respons eof createOrAccessOnetoOneChat after api call : ",
       response
     );
-    setChatList((prevState) => {
-      if (prevState.some((chat) => chat._id === response._id)) {
-        return prevState;
-      } else {
-        return [response, ...prevState];
-      }
-    });
+    if (response.length > 0) {
+      setChatList((prevState) => {
+        if (prevState.some((chat) => chat._id === response._id)) {
+          return prevState;
+        } else {
+          return [response, ...prevState];
+        }
+      });
+    }
   };
 
   //create or access group chat
@@ -50,13 +56,15 @@ const Inbox = () => {
       "respons eof createOrAccessOnetoOneChat after api call : ",
       response
     );
-    setChatList((prevState) => {
-      if (prevState.some((chat) => chat._id === response._id)) {
-        return prevState;
-      } else {
-        return [response, ...prevState];
-      }
-    });
+    if (response.length > 0) {
+      setChatList((prevState) => {
+        if (prevState.some((chat) => chat._id === response._id)) {
+          return prevState;
+        } else {
+          return [response, ...prevState];
+        }
+      });
+    }
   };
 
   return (
@@ -65,10 +73,17 @@ const Inbox = () => {
         <SmallSideBar />
       </div>
       <div className="flex w-[calc(100vw-28rem)] max-w-[22rem] md:ml-[6rem] max-h-screen">
-        <Chat chatList ={chatList} createOrAccessOnetoOneChat={createOrAccessOnetoOneChat} createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}/>
+        <Chat
+          chatList={chatList}
+          createOrAccessOnetoOneChat={createOrAccessOnetoOneChat}
+          createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}
+        />
       </div>
       <div className="flex w-screen max-h-screen">
-        <Message createOrAccessOnetoOneChat={createOrAccessOnetoOneChat} createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}/>
+        <Message
+          createOrAccessOnetoOneChat={createOrAccessOnetoOneChat}
+          createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}
+        />
       </div>
     </div>
   );

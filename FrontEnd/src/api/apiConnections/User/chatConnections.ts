@@ -70,3 +70,48 @@ export const getUserChats = async () => {
     //Throw the error to be caught by the caller
   }
 };
+
+
+//sent a New Message
+
+export const sentNewMessage = async(content: string,chatId : string)=>{
+  try {
+    const response: any = await baseURL.post("/chat/newMessage",{content,chatId});
+    console.log("response newMessage : ", response);
+    if (response.data.status === "success") {
+      const newMessage = response.data.newMessage;
+      return newMessage;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}
+
+//to fetch all messags of a chat
+
+export const fetchallMessagesOfChat = async(chatId : string)=>{
+  try {
+    const response: any = await baseURL.get(`/chat/fetchallmessages?chatId=${chatId}`);
+    console.log("response fetchallmessages : ", response);
+    if (response.data.status === "success") {
+      const allMessages = response.data.allMessages;
+      return allMessages;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}

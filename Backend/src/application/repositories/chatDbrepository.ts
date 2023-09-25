@@ -14,10 +14,20 @@ await repository.accessOrCreateGroupChatHandle(users, userId);
   // get all users chat 
   const usersChatFetch = async (userId: string) => await repository.getChatsOfUser(userId);
 
+  //to sent a new message 
+
+  const handleNewMessage = async (content: string,chatId:string,userId: string) => await repository.newMessageHandle(content,chatId,userId);
+
+  //to fetch all messages of a chat
+
+  const allChatMessages = async (chatId: string) => await repository.getChatAllMessages(chatId);
+
   return {
     handleAccessOrCreateChat,
     handleAccessOrCreateGroupChat,
-    usersChatFetch
+    usersChatFetch,
+    handleNewMessage,
+    allChatMessages
   };
 };
 

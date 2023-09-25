@@ -2,13 +2,8 @@ import { PencilSquareIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { Avatar, Tooltip } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ChatSearch from "./chatSearch";
-import {
-  createOrAccessChat,
-  createOrAccessGroupChat,
-  getUserChats,
-} from "../../../api/apiConnections/User/chatConnections";
 import { setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 
 interface Ichat{
@@ -73,7 +68,7 @@ const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAcce
           chat.isGroupChat ? (
             <div
               className="flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer"
-              key={chat._id}
+              key={chat._id} onClick={()=>handleMessage(chat)}
             >
               <div className="flex items-center -space-x-6">
                 {chat.users.slice(-2).map((user: UserInfo) => (

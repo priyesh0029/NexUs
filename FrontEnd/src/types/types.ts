@@ -31,6 +31,19 @@ interface UserInfo {
     _id : string
   }
 
+  interface Imessage{
+    _id : string;
+    chatId : IuserChatList;
+    content : string;
+    sender :{
+      _id : string;
+      userName: string;
+      dp : string;
+    }
+    updatedAt : string;
+    createdAt : string;
+  }
+
   interface IuserHomeSlice{
     name: string;
     userName: string;
