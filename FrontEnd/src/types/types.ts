@@ -24,9 +24,11 @@ interface UserInfo {
   interface IuserChatList{
     chatName : string;
     isGroupChat: boolean
+    groupAdmin ?: string
     users : UserInfo[]
-    updatedAt ?: string
-    createdAt ?: string
+    updatedAt : string
+    createdAt : string
+    _id : string
   }
 
   interface IuserHomeSlice{

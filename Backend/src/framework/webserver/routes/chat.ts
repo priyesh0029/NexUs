@@ -11,6 +11,8 @@ const chatRouter = (router: Router) => {
 
   router.post('/createOrAccessChat',controllers.createOrAccessChat)
 
+  router.post('/createOrAccessGroupChat',controllers.createOrAccessGroupChat)
+
   router.get('/getUserChats',controllers.getUserChats)
 
 

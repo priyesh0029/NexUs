@@ -1,35 +1,41 @@
 import { PencilSquareIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { Avatar, Tooltip } from "@material-tailwind/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
 import { useEffect, useState } from "react";
 import ChatSearch from "./chatSearch";
-import { getUserChats } from "../../../api/apiConnections/User/chatConnections";
+import {
+  createOrAccessChat,
+  createOrAccessGroupChat,
+  getUserChats,
+} from "../../../api/apiConnections/User/chatConnections";
+import { setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 
-const Chat = () => {
+interface Ichat{
+  chatList : IuserChatList[]
+  createOrAccessOnetoOneChat: (user: string) => void;
+  createOrAccessGroupChatToChatList: (users: string[]) => void;
+}
+
+const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAccessGroupChatToChatList}) => {
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
 
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
-  const [chatList, setChatList] = useState<IuserChatList[]>([]);
   const handleNewChatSearch = () => {
     setChatSearchOpen(!chatSearchOpen);
   };
 
-  useEffect(() => {
-    handleGetUserChats();
-  }, []);
+  const dispatch = useDispatch()
 
-  //to fetch chats of the user
+ 
 
-  const handleGetUserChats = async () => {
-    const response = await getUserChats();
-    console.log("respons eof handleGetUserChats after api call : ", response);
-    if (response.length > 0) {
-      setChatList(response);
-    }
-  };
+  //to select a chat 
+
+  const handleMessage = (chat : IuserChatList)=>{
+    dispatch(setSelectedChat(chat));
+  }
 
   return (
     <div className="flex flex-col w-full h-full  border-r-2 border-gray-300 ">
@@ -64,39 +70,68 @@ const Chat = () => {
       </div>
       <div className="flex flex-col flex-grow overflow-y-auto">
         {chatList.flatMap((chat, index) =>
-          chat.users
-            .filter((chatUser: UserInfo) => chatUser.userName !== user.userName)
-            .map((chatUser: UserInfo) => (
-              <div
-                className="flex p-4 gap-4 items-center hover:bg-gray-100"
-                key={index}
-              >
-                {chatUser.dp ? (
-                  <>
-                    <Avatar
-                      src={POST_URL + `${chatUser.dp}.jpg`}
-                      alt="avatar"
-                      className="h-12 w-12"
-                    />
-                    <div className="md:flex hidden">
-                      <p>{chatUser.userName}</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
-                    <div className="md:flex hidden">
-                      <p>user</p>
-                    </div>
-                  </>
-                )}
+          chat.isGroupChat ? (
+            <div
+              className="flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer"
+              key={chat._id}
+            >
+              <div className="flex items-center -space-x-6">
+                {chat.users.slice(-2).map((user: UserInfo) => (
+                  <Avatar
+                    key={user.dp}
+                    variant="circular"
+                    alt="user 1"
+                    className="border-2 border-white hover:z-10 focus:z-10"
+                    src={POST_URL + `${user.dp}.jpg`}
+                  />
+                ))}
               </div>
-            ))
+              <div className="md:flex hidden">
+                <p>{chat.chatName}</p>
+              </div>
+            </div>
+          ) : (
+            chat.users
+              .filter(
+                (chatUser: UserInfo) => chatUser.userName !== user.userName
+              )
+              .map((chatUser: UserInfo) => (
+                <div
+                  className="flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer"
+                  key={index} onClick={()=>handleMessage(chat)}
+                >
+                  {chatUser.dp ? (
+                    <>
+                      <Avatar
+                        src={POST_URL + `${chatUser.dp}.jpg`}
+                        alt="avatar"
+                        className="h-12 w-12"
+                      />
+                      <div className="md:flex hidden">
+                        <p>{chatUser.userName}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                      <div className="md:flex hidden">
+                        <p>user</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+          )
         )}
       </div>
 
       {chatSearchOpen && (
-        <ChatSearch open={chatSearchOpen} setOpen={setChatSearchOpen} />
+        <ChatSearch
+          open={chatSearchOpen}
+          setOpen={setChatSearchOpen}
+          createOrAccessOnetoOneChat={createOrAccessOnetoOneChat}
+          createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}
+        />
       )}
     </div>
   );

@@ -14,19 +14,24 @@ import { searchUser } from "../../../api/apiConnections/User/userConnections";
 import { Link } from "react-router-dom";
 import { POST_URL } from "../../../constants/constants";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { createOrAccessChat } from "../../../api/apiConnections/User/chatConnections";
-
 interface ChatSearchProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  createOrAccessOnetoOneChat: (user: string) => void;
+  createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
 
-interface IchatUsers{
-  userName : string;
-  userId:string;
+interface IchatUsers {
+  userName: string;
+  userId: string;
 }
 
-const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
+const ChatSearch: React.FC<ChatSearchProps> = ({
+  open,
+  setOpen,
+  createOrAccessOnetoOneChat,
+  createOrAccessGroupChatToChatList,
+}) => {
   const handleOpen = () => setOpen(!open);
 
   const [searchText, setSearchText] = useState("");
@@ -44,13 +49,17 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
 
   const getSearchData = async (search: string) => {
     const data: UserInfo[] = await searchUser(search);
-    setSearchResults(data);
+    const filteredData = data.filter(
+      (user) =>
+        !chatUsers.some((chatUser) => user.userName === chatUser.userName)
+    );
+    setSearchResults(filteredData);
   };
 
   //add user to chatlist
 
-  const handleAddChatUserList = (userName: string,userId:string) => {
-    setChatUsers([...chatUsers, {userName,userId}]);
+  const handleAddChatUserList = (userName: string, userId: string) => {
+    setChatUsers([...chatUsers, { userName, userId }]);
     setSearchText("");
     const updatedsearchResults = searchResults.filter(
       (user) => user.userName !== userName
@@ -60,9 +69,11 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
   };
 
   //remove user from chatlist
-  const handleRemoveChatUserList = (userName: string,userId:string) => {
+  const handleRemoveChatUserList = (userName: string) => {
     console.log("userName :", userName);
-    const updatedChatUsers = chatUsers.filter((user) => user.userName !== userName);
+    const updatedChatUsers = chatUsers.filter(
+      (user) => user.userName !== userName
+    );
     console.log("updatedChatUsers :", updatedChatUsers);
     setChatUsers(updatedChatUsers);
   };
@@ -71,12 +82,15 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
   //handle submit create Or AccessChat
   const handleChatSubmit = async () => {
     if (chatUsers.length > 1) {
-      console.log("chatUsers.length conformation");
-      
-      // const response = await createOrAccessGroupChat(chatUsers);
+      const chatUsersId = chatUsers.map((user) => {
+        return user.userId;
+      });
+      console.log("chatUsers.length conformation: ", chatUsersId);
+      createOrAccessGroupChatToChatList(chatUsersId);
     } else {
-      const response = await createOrAccessChat(chatUsers[0].userId);
+      createOrAccessOnetoOneChat(chatUsers[0].userId);
     }
+    setOpen(!open)
   };
   return (
     <>
@@ -97,7 +111,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
                     key={index}
                     value={user.userName}
                     className="rounded-full "
-                    onClose={() => handleRemoveChatUserList(user.userName,user.userId)}
+                    onClose={() => handleRemoveChatUserList(user.userName)}
                   />
                   //  {/* </div> */}
                 ))}
@@ -110,7 +124,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ open, setOpen }) => {
             <div className=" flex flex-col items-start w-full px-6 hover:bg-gray-100 cursor-pointer py-2 mb-2">
               <div
                 className="flex justify-between w-full"
-                onClick={() => handleAddChatUserList(user.userName,user._id)}
+                onClick={() => handleAddChatUserList(user.userName, user._id)}
               >
                 <div className="flex w-full items-center">
                   {user.dp ? (
