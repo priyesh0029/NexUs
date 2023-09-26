@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { Avatar, Drawer, Input } from "@material-tailwind/react";
 import { searchUser } from "../../../api/apiConnections/User/userConnections";
 import { Link } from "react-router-dom";
@@ -9,6 +9,7 @@ const SearchTab: React.FC<ISearchTab> = (props) => {
   const { openSearchTab, setOpenSearchTab } = props;
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<UserInfo[]>([]);
+
 
   const handleInput = (e: any) => {
     setSearchText(e.target.value);

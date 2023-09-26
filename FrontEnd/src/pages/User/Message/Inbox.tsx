@@ -37,7 +37,7 @@ const Inbox = () => {
       "respons eof createOrAccessOnetoOneChat after api call : ",
       response
     );
-    if (response.length > 0) {
+    if (response.length !== null) {
       setChatList((prevState) => {
         if (prevState.some((chat) => chat._id === response._id)) {
           return prevState;
@@ -56,7 +56,7 @@ const Inbox = () => {
       "respons eof createOrAccessOnetoOneChat after api call : ",
       response
     );
-    if (response.length > 0) {
+    if (response.length !== null) {
       setChatList((prevState) => {
         if (prevState.some((chat) => chat._id === response._id)) {
           return prevState;
