@@ -67,10 +67,10 @@ const ProfileBody: React.FC<ProfileAreaProps> = ({
       setCommentArr(response);
     }
   };
-  useEffect(() => {
-    // This code will run whenever commentArr changes
-    console.log("commentArr nnuseeffect : ", commentArr);
-  }, [commentArr]);
+  // useEffect(() => {
+  //   // This code will run whenever commentArr changes
+  //   console.log("commentArr nnuseeffect : ", commentArr);
+  // }, [commentArr]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-20 2xl:px-24 lg:px-0">

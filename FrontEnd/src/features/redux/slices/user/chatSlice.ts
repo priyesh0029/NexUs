@@ -1,5 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+interface IchatSlice{
+  userChat : IuserChatList;
+  newMessage : string;
+}
 
 const chatSlice = createSlice({
     name: "userChat",
@@ -12,7 +16,9 @@ const chatSlice = createSlice({
         updatedAt :'',
         createdAt : '',
         _id : ''
-      } as IuserChatList,},
+      },
+      newMessage : ''
+    } as IchatSlice,
     reducers: {
       setSelectedChat: (state, action: PayloadAction<IuserChatList>) => {
         state.userChat= action.payload;
@@ -27,11 +33,14 @@ const chatSlice = createSlice({
             createdAt : '',
             _id : ''
           }
-      }
+      },
+      SetNewMessage:  (state, action: PayloadAction<string>) => {
+        state.newMessage = action.payload;
+      },
     },
   });
   
-  export const { setSelectedChat,clearSelectedChat } =
+  export const { setSelectedChat,clearSelectedChat,SetNewMessage } =
   chatSlice.actions;
   
   export default chatSlice.reducer;

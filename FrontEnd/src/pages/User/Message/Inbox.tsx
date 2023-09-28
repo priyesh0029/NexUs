@@ -7,24 +7,26 @@ import {
   createOrAccessGroupChat,
   getUserChats,
 } from "../../../api/apiConnections/User/chatConnections";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 
 const Inbox = () => {
   const [chatList, setChatList] = useState<IuserChatList[]>([]);
   const dispatch = useDispatch();
 
-  // dispatch(clearSelectedChat());
+  dispatch(clearSelectedChat());
+
+  const newMessageReceived = useSelector((store:{chat:{newMessage:string}})=>store.chat.newMessage)
 
   useEffect(() => {
     handleGetUserChats();
-  }, []);
+  }, [newMessageReceived]);
 
   //to fetch chats of the user
 
   const handleGetUserChats = async () => {
     const response = await getUserChats();
-    console.log("respons eof handleGetUserChats after api call : ", response);
+    console.log("respons eof handleGetUserChats list after api call : ", response);
     if (response.length > 0) {
       setChatList(response);
     }

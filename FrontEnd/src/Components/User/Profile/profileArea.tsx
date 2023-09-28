@@ -7,6 +7,7 @@ import {
 } from "../../../api/apiConnections/User/postConnections";
 import { useParams } from "react-router-dom";
 import { getUserDetails } from "../../../api/apiConnections/User/userConnections";
+import { useSelector } from "react-redux";
 
 const ProfileArea = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -18,12 +19,24 @@ const ProfileArea = () => {
   //  on click of post and saved
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // details of logged user
+  const loggedUser = useSelector(
+    (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
+  );
+
   const handleClick = (index: number) => {
     if (activeIndex !== index) {
       setActiveIndex(index);
     }
   };
-  const headers = ["Posts", "Saved"];
+
+    let headers 
+    if(user !== undefined && user.userName === loggedUser.userName){
+      headers = ["Posts", "Saved"];
+    }else{
+      headers = ["Posts"];
+    }
+  
 
   if (typeof proId === "string") {
     useEffect(() => {
@@ -41,7 +54,7 @@ const ProfileArea = () => {
         console.log("response after fetching post of user : ", response);
         setPosts(response);
         setPostLength(response.length);
-      } else if (activeIndex === 1) {
+      } else if (activeIndex === 1 ) {
         setPosts([]);
         const response = await getUserSavedPost();
         console.log("response after fetching post of user : ", response);
@@ -65,7 +78,7 @@ const ProfileArea = () => {
         <div>
           <div className="flex justify-center pt-28">
             <div className=" flex justify-center border-t-2 w-full gap-12">
-              {headers.map((element, index) => (
+              { headers !== undefined && headers.map((element, index) => (
                 <div
                   className={`flex justify-center px-2 ${
                     activeIndex === index ? "border-t-2 border-black" : ""

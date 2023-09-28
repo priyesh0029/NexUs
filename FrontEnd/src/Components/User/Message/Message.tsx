@@ -1,5 +1,5 @@
 import { Avatar, Tooltip } from "@material-tailwind/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
 import {
   ChatBubbleLeftRightIcon,
@@ -21,6 +21,7 @@ import {
   sameCenterMargin,
 } from "../../../constants/chatLogics";
 import { io, Socket } from "socket.io-client";
+import { SetNewMessage } from "../../../features/redux/slices/user/chatSlice";
 
 interface ImessageProps {
   createOrAccessOnetoOneChat: (user: string) => void;
@@ -42,6 +43,8 @@ const Message: React.FC<ImessageProps> = ({
   const selectedChat = useSelector(
     (store: { chat: { userChat: IuserChatList } }) => store.chat.userChat
   );
+
+  const dispatch = useDispatch()
 
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
   const [messages, setMessages] = useState<Imessage[]>([]);
@@ -71,6 +74,7 @@ const Message: React.FC<ImessageProps> = ({
 
   useEffect(() => {
     socket.on("message received", (newMesageReceived) => {
+      dispatch(SetNewMessage("message received"))
       if (
         !selectedChatCompare ||
         selectedChatCompare._id !== newMesageReceived.chatId._id
@@ -138,6 +142,7 @@ const Message: React.FC<ImessageProps> = ({
     socket.emit("new message", response);
     setMessages([...messages, response]);
     scrollToBottom();
+    dispatch(SetNewMessage("message received"))
   };
 
   //scroll to bottom function for messages
@@ -300,8 +305,7 @@ const Message: React.FC<ImessageProps> = ({
                             user.userName
                           )} 
                             ${
-                              isSameUser(messages, message, index) ||
-                              message.chatId.isGroupChat
+                              isSameUser(messages, message, index) 
                                 ? "mt-1"
                                 : "mt-8"
                             } block`}
