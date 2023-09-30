@@ -40,6 +40,7 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    notifications :[String],
     blockedUsers: [String],
     blockingUsers: [String],
     savedPost: [String],

@@ -19,6 +19,15 @@ const chatRouter = (router: Router) => {
 
   router.get('/fetchallmessages',controllers.fetchallmessages) 
 
+  router.get('/saveChatNotification',controllers.saveChatNotification) 
+
+  router.get('/removeChatNotification',controllers.removeChatNotification) 
+
+  router.get('/getChatNotifications',controllers.getChatNotifications) 
+
+
+
+
 
 
   return router;

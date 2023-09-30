@@ -1,41 +1,25 @@
 import { FaceSmileIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { Textarea, Button, IconButton } from "@material-tailwind/react";
-import Lottie from "react-lottie"
-import animationData from "../../../Animaitons/typing.json"
+
 
 interface ICahtBoxTextarea {
   newMessage: string;
   setNewMessage: React.Dispatch<React.SetStateAction<string>>;
   sendMessage: () => void;
   typinHandler: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  isTyping: boolean;
 }
 
 const ChatboxTextarea: React.FC<ICahtBoxTextarea> = ({
   newMessage,
   typinHandler,
   sendMessage,
-  isTyping,
 }) => {
 
-  const defaultOptions = {
-    loop:true,
-    autoplay : true,
-    animationData : animationData,
-    rendererSetttings :{
-      preserveAspectRatio :"xMidYMid slice"
-    }
-  }
+  
 
   return (
     <div className="flex flex-col w-full">
-      {isTyping ? (
-        <div>
-          <Lottie options={defaultOptions} width={70} style={{marginBottom : 15,marginLeft :0}}/>
-        </div>
-      ) : (
-        <></>
-      )}
+      
       <div className="flex w-full flex-row items-center gap-2 rounded-[99px] border border-gray-900/10 bg-gray-900/5 p-2">
         <div className="flex">
           {/* media */}

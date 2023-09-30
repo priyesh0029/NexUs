@@ -4,17 +4,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
 import { useState } from "react";
 import ChatSearch from "./chatSearch";
-import { setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
+import {
+  SetNotification,
+  setSelectedChat,
+} from "../../../features/redux/slices/user/chatSlice";
+import { checkNotificationStatus } from "../../../constants/chatLogics";
+import { removeChatNotification } from "../../../api/apiConnections/User/chatConnections";
 
-interface Ichat{
-  chatList : IuserChatList[]
+interface Ichat {
+  chatList: IuserChatList[];
   createOrAccessOnetoOneChat: (user: string) => void;
   createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
 
-const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAccessGroupChatToChatList}) => {
+const Chat: React.FC<Ichat> = ({
+  chatList,
+  createOrAccessOnetoOneChat,
+  createOrAccessGroupChatToChatList,
+}) => {
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
+  );
+
+  const notification = useSelector(
+    (store: { chat: { notification: string[] } }) => store.chat.notification
   );
 
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
@@ -22,15 +35,22 @@ const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAcce
     setChatSearchOpen(!chatSearchOpen);
   };
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
- 
+  //to select a chat
 
-  //to select a chat 
-
-  const handleMessage = (chat : IuserChatList)=>{
+  const handleMessage = async (chat: IuserChatList) => {
+    if (checkNotificationStatus(notification, chat._id)) {
+      const response = await removeChatNotification(chat._id);
+      console.log("removeChatNotification after calling api : ", response);
+      if (typeof response === "boolean") {
+        if (response) {
+          dispatch(SetNotification(notification.filter((notify) => notify !== chat._id)))
+        }
+      }
+    }
     dispatch(setSelectedChat(chat));
-  }
+  };
 
   return (
     <div className="flex flex-col w-full h-full  border-r-2 border-gray-300 ">
@@ -67,13 +87,18 @@ const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAcce
         {chatList.flatMap((chat, index) =>
           chat.isGroupChat ? (
             <div
-              className="flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer"
-              key={chat._id} onClick={()=>handleMessage(chat)}
+              className={`flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer  ${
+                notification.some((notify) => notify === chat._id)
+                  ? `bg-black text-white`
+                  : ``
+              }`}
+              key={`${chat._id}groupchat`}
+              onClick={() => handleMessage(chat)}
             >
               <div className="flex items-center -space-x-6">
                 {chat.users.slice(-2).map((user: UserInfo) => (
                   <Avatar
-                    key={user.dp}
+                    key={`${user.dp}user`}
                     variant="circular"
                     alt="user 1"
                     className="border-2 border-white hover:z-10 focus:z-10"
@@ -92,8 +117,9 @@ const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAcce
               )
               .map((chatUser: UserInfo) => (
                 <div
-                  className="flex p-4 gap-4 items-center hover:bg-gray-100 cursor-pointer"
-                  key={index} onClick={()=>handleMessage(chat)}
+                  className="flex p-4 gap-4  hover:bg-gray-100 cursor-pointer"
+                  key={`${chat._id}chat`}
+                  onClick={() => handleMessage(chat)}
                 >
                   {chatUser.dp ? (
                     <>
@@ -102,8 +128,15 @@ const Chat : React.FC<Ichat>= ({chatList,createOrAccessOnetoOneChat,createOrAcce
                         alt="avatar"
                         className="h-12 w-12"
                       />
-                      <div className="md:flex hidden">
-                        <p>{chatUser.userName}</p>
+                      <div
+                        className={`md:flex hidden flex-col ${
+                          checkNotificationStatus(notification, chat._id)
+                            ? ` font-semibold`
+                            : ``
+                        }`}
+                      >
+                        <p className="text-lg">{chatUser.userName}</p>
+                        <p className="text-md">{chat.latestMessage.content}</p>
                       </div>
                     </>
                   ) : (

@@ -1,122 +1,136 @@
 interface UserInfo {
-    _id:string
-    name: string;
-    userName: string;
-    email ?:string
-    phoneNumber?: Number
-    dp: string
-    bio?:string
-    gender?: string
-    city?:string
-    isBlock?: Boolean
-    blockedUsers?:string[]
-    blockingUsers?:string[]
-    followers: string[]
-    following: string[]
-    requests?:string[]
-    requested?:string[]
-    updatedAt ?: string
-    createdAt ?: string
-    savedPost : string[],
-    accountDeactive ?:boolean
-  }
-
-  interface IuserChatList{
-    chatName : string;
-    isGroupChat: boolean
-    groupAdmin ?: string
-    users : UserInfo[]
-    updatedAt : string
-    createdAt : string
-    _id : string
-  }
-
-  interface Imessage{
-    _id : string;
-    chatId : IuserChatList;
-    content : string;
-    sender :{
-      _id : string;
-      userName: string;
-      dp : string;
-    }
-    updatedAt : string;
-    createdAt : string;
-  }
-
-  interface IuserHomeSlice{
-    name: string;
-    userName: string;
-    dp: string
-    savedPost : string[];
-    followers : string[];
-    following : string[];
-  }
-  interface Post{
-      postedUser:string,
-      description:string,
-      imgNames: string[],
-      isBlocked:boolean,
-      liked:{
-        userName:string;
-        dp:string;
-        deactive ?: boolean;
-      }[],
-      reports:[],
-      _id : string,
-      updatedAt : string,
-      createdAt : string,
-      dp:string
-  }
-
-  interface iPostSlice{
-    postedUser:string,
-    description:string,
-    imgNames: string[],
-    isBlocked:boolean,
-    liked:[],
-    reports:[],
-    _id : string,
-    updatedAt : string,
-    createdAt : string,
-    dp:string
+  _id: string;
+  name: string;
+  userName: string;
+  email?: string;
+  phoneNumber?: Number;
+  dp: string;
+  bio?: string;
+  gender?: string;
+  city?: string;
+  isBlock?: Boolean;
+  blockedUsers?: string[];
+  blockingUsers?: string[];
+  followers: string[];
+  following: string[];
+  requests?: string[];
+  requested?: string[];
+  updatedAt?: string;
+  createdAt?: string;
+  savedPost: string[];
+  accountDeactive?: boolean;
 }
 
-  interface Comment{
-    _id :string
-    postId :string
-    userName:string
-    comment:string
-    liked:[{
-      userName:string;
-      dp:string;
-    }],
-    reply:{
-      _id:string
-      userName : string,
-      comment : string,
-      liked:[{
-        userName:string;
-        dp:string;
-      }],
-      updatedAt : string,
-      createdAt : string
-    }[];
-    updatedAt : string,
-    createdAt : string,
-    dp :string
+interface IuserChatList {
+  chatName: string;
+  isGroupChat: boolean;
+  groupAdmin?: string;
+  users: UserInfo[];
+  latestMessage: {
+    chatId: string;
+    content: string;
+    createdAt: string;
+    sender: string;
+    updatedAt: string;
+    _id: string;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _id: string;
+}
+
+interface Imessage {
+  _id: string;
+  chatId: IuserChatList;
+  content: string;
+  sender: {
+    _id: string;
+    userName: string;
+    dp: string;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+
+interface IuserHomeSlice {
+  name: string;
+  userName: string;
+  dp: string;
+  savedPost: string[];
+  followers: string[];
+  following: string[];
+}
+interface Post {
+  postedUser: string;
+  description: string;
+  imgNames: string[];
+  isBlocked: boolean;
+  liked: {
+    userName: string;
+    dp: string;
+    deactive?: boolean;
+  }[];
+  reports: [];
+  _id: string;
+  updatedAt: string;
+  createdAt: string;
+  dp: string;
+}
+
+interface iPostSlice {
+  postedUser: string;
+  description: string;
+  imgNames: string[];
+  isBlocked: boolean;
+  liked: [];
+  reports: [];
+  _id: string;
+  updatedAt: string;
+  createdAt: string;
+  dp: string;
+}
+
+interface Comment {
+  _id: string;
+  postId: string;
+  userName: string;
+  comment: string;
+  liked: [
+    {
+      userName: string;
+      dp: string;
+    }
+  ];
+  reply: {
+    _id: string;
+    userName: string;
+    comment: string;
+    liked: [
+      {
+        userName: string;
+        dp: string;
+      }
+    ];
+    updatedAt: string;
+    createdAt: string;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+  dp: string;
 }
 
 interface Reply {
   [x: string]: any;
-  _id:string
+  _id: string;
   userName: string;
   comment: string;
-  dp:string;
-  liked:[{
-    userName:string;
-    dp:string;
-  }],
+  dp: string;
+  liked: [
+    {
+      userName: string;
+      dp: string;
+    }
+  ];
   updatedAt: string;
   createdAt: string;
 }

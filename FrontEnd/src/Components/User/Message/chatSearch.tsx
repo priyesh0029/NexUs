@@ -108,7 +108,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
               <div className="flex gap-2 p-2  flex-wrap">
                 {chatUsers.map((user, index) => (
                   <Chip
-                    key={index}
+                    key={`${index}search`}
                     value={user.userName}
                     className="rounded-full "
                     onClose={() => handleRemoveChatUserList(user.userName)}

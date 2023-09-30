@@ -115,3 +115,68 @@ export const fetchallMessagesOfChat = async(chatId : string)=>{
     //Throw the error to be caught by the caller
   }
 }
+
+//to save chat notificaton
+
+export const saveChatNotification = async(chatId : string)=>{
+  try {
+    const response: any = await baseURL.get(`/chat/saveChatNotification?chatId=${chatId}`);
+    console.log("response fetchallmessages : ", response);
+    if (response.data.status === "success") {
+      const notification = response.data.notification;
+      return notification;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}
+
+//to remove chat notificaton
+
+export const removeChatNotification = async(chatId : string)=>{
+  try {
+    const response: any = await baseURL.get(`/chat/removeChatNotification?chatId=${chatId}`);
+    if (response.data.status === "success") {
+      const notification = response.data.notification;
+      return notification;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}
+
+// to get all notifications
+
+export const handleGetNofications = async()=>{
+  try {
+    const response: any = await baseURL.get("/chat/getChatNotifications");
+    console.log("response getChatNotifications : ", response);
+    if (response.data.status === "success") {
+      const notification = response.data.notification;
+      return notification;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}

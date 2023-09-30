@@ -1,30 +1,32 @@
-import React, { useState } from "react";
-import {
-  Drawer,
-  Button,
-  Typography,
-  IconButton,
-  Card,
-  Chip,
-  Avatar,
-  Tooltip,
-} from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { Card, Chip, Avatar, Tooltip } from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { Link } from "react-router-dom";
-import { Cog6ToothIcon, EnvelopeIcon, HomeIcon, MagnifyingGlassIcon, PowerIcon, SquaresPlusIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import {
+  Cog6ToothIcon,
+  EnvelopeIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  PowerIcon,
+  SquaresPlusIcon,
+  UserCircleIcon,
+} from "@heroicons/react/24/solid";
 import SearchTab from "./SearchTab";
 import CreatePost from "../Post/CreatePost";
 import { useDispatch, useSelector } from "react-redux";
 import { clearToken } from "../../../features/redux/slices/user/tokenSlice";
 import { clearUserInfo } from "../../../features/redux/slices/user/homeSlice";
+import { handleGetNofications } from "../../../api/apiConnections/User/chatConnections";
+import { SetNotification } from "../../../features/redux/slices/user/chatSlice";
 
 const SmallSideBar = () => {
   const [open, setOpen] = React.useState(false);
   const [searchTabOpen, setSearchTabOpen] = useState(false);
   const dispatch = useDispatch();
 
-
-
+  const notification = useSelector(
+    (store: { chat: { notification: string[] } }) => store.chat.notification
+  );
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
@@ -40,6 +42,26 @@ const SmallSideBar = () => {
   const handleCreatePostClick = () => {
     setOpen(!open);
   };
+
+  useEffect(() => {
+      getNotifications();
+  }, []);
+
+  const getNotifications = async () => {
+    const response = await handleGetNofications();
+    console.log(
+      "response of notificaationa  after api call : ",
+      response.notifications
+    );
+      dispatch(SetNotification(response.notifications));
+    
+  };
+
+  useEffect(() => {
+    console.log("Updated notification in the smal side bar :", typeof notification[0]);
+    // Rest of your code
+  }, [notification]);
+
   return (
     <>
       <Card className="md:h-full md:flex md:fixed md:left-0 w-[6rem] md:p-4 md:rounded-none md:border-1 md:border-black hidden z-10">
@@ -90,18 +112,18 @@ const SmallSideBar = () => {
               content="Message"
               placement="right"
             >
-              <div>
+              <div className="flex">
                 <div>
                   <EnvelopeIcon className="h-10 w-10" />
                 </div>
                 <div>
-                  {/* <Chip
-                  value="14"
-                  size="sm"
-                  variant="ghost"
-                  color="blue-gray"
-                  className="rounded-full"
-                /> */}
+                  <Chip
+                    value={notification.length}
+                    size="sm"
+                    variant="ghost"
+                    color="blue-gray"
+                    className="rounded-full"
+                  />
                 </div>
               </div>
             </Tooltip>

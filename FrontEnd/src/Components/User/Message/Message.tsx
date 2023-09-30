@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import ChatSearch from "./chatSearch";
 import {
   fetchallMessagesOfChat,
+  saveChatNotification,
   sentNewMessage,
 } from "../../../api/apiConnections/User/chatConnections";
 import {
@@ -21,9 +22,16 @@ import {
   sameCenterMargin,
 } from "../../../constants/chatLogics";
 import { io, Socket } from "socket.io-client";
-import { SetNewMessage } from "../../../features/redux/slices/user/chatSlice";
+import {
+  SetNewMessage,
+  SetNotification,
+} from "../../../features/redux/slices/user/chatSlice";
+import Lottie from "react-lottie"
+import animationData from "../../../Animaitons/typing.json" 
 
 interface ImessageProps {
+  fetchAgain :boolean
+  setFetchAgain :React.Dispatch<React.SetStateAction<boolean>>;
   createOrAccessOnetoOneChat: (user: string) => void;
   createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
@@ -33,9 +41,21 @@ let ENDPOINT = "http://localhost:5000";
 let socket: Socket, selectedChatCompare: IuserChatList;
 
 const Message: React.FC<ImessageProps> = ({
+  fetchAgain,
+  setFetchAgain,
   createOrAccessOnetoOneChat,
   createOrAccessGroupChatToChatList,
 }) => {
+
+  const defaultOptions = {
+    loop:true,
+    autoplay : true,
+    animationData : animationData,
+    rendererSetttings :{
+      preserveAspectRatio :"xMidYMid slice"
+    }
+  }
+
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
@@ -44,25 +64,29 @@ const Message: React.FC<ImessageProps> = ({
     (store: { chat: { userChat: IuserChatList } }) => store.chat.userChat
   );
 
-  const dispatch = useDispatch()
+  const notification = useSelector(
+    (store: { chat: { notification: string[] } }) => store.chat.notification
+  );
+
+   console.log("--------------notification : ", notification);
+
+  const dispatch = useDispatch();
 
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
   const [messages, setMessages] = useState<Imessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [socketConnected, setSocketConnected] = useState(false);
   const chatDivRef = useRef<HTMLDivElement | null>(null);
-  const [typing,setTyping] =useState(false)
-  const [isTyping,setIstyping] = useState(false)
-
-
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIstyping] = useState(false);
+  const [room,setRoom] = useState<string>('')
   //socket io connection
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user.userName);
     socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing",()=>setIstyping(()=>true))
-    socket.on("stop typing",()=>setIstyping(()=>false))
-
+    socket.on("typing", (room) =>(setRoom(()=>room),setIstyping(() => true)));
+    socket.on("stop typing", () => setIstyping(() => false));
   }, []);
 
   useEffect(() => {
@@ -74,18 +98,43 @@ const Message: React.FC<ImessageProps> = ({
 
   useEffect(() => {
     socket.on("message received", (newMesageReceived) => {
-      dispatch(SetNewMessage("message received"))
+      // dispatch(SetNewMessage("message received"))
+      console.log("--------------newMesageReceived : ", newMesageReceived);
+
       if (
         !selectedChatCompare ||
         selectedChatCompare._id !== newMesageReceived.chatId._id
       ) {
         //notification
+        const notificationStatus = notification.some((notify) => notify === newMesageReceived.chatId._id);
+        console.log("--------------notificationStatus : ",notification, notificationStatus);
+        if (!notificationStatus) {
+          dispatch(SetNotification([newMesageReceived.chatId._id, ...notification]));
+          setFetchAgain(!fetchAgain)
+          handleSaveChatNotification(newMesageReceived.chatId._id);
+        }
       } else {
-        setMessages([...messages, newMesageReceived]);
+        setMessages((prevState)=>[...prevState, newMesageReceived]);
       }
     });
-  });
 
+    return () => {
+      socket.off("message received");
+    };
+  },[notification]);
+
+  useEffect(() => {
+    console.log("Updated notification:", typeof notification[0]);
+    // Rest of your code
+  }, [notification]);
+
+  // to handle Save Notification
+
+  const handleSaveChatNotification = async (chatId: string) => {
+    const response = await saveChatNotification(chatId);
+    console.log("notification save after new message response : ",response);
+    
+  };
   //to open search modal
   const handleNewChatSearch = () => {
     setChatSearchOpen(!chatSearchOpen);
@@ -102,47 +151,46 @@ const Message: React.FC<ImessageProps> = ({
 
   //typin Handler for message while typing
 
-  const typinHandler = (event : React.ChangeEvent<HTMLTextAreaElement>)=>{
-    setNewMessage(event.target.value)
+  const typinHandler = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewMessage(event.target.value);
 
     //typing indicator logic
-    if(!socketConnected) return
+    if (!socketConnected) return;
 
-    if(!typing){
-      setTyping(true)
-      socket.emit("typing", selectedChat._id)
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
     }
-    let lastTypingTime = new Date().getTime()
-    let timerLength = 3000
+    let lastTypingTime = new Date().getTime();
+    let timerLength = 3000;
 
+    setTimeout(() => {
+      let timeNow = new Date().getTime();
+      let timeDiff = timeNow - lastTypingTime;
 
-    setTimeout(()=>{
-      let timeNow = new Date().getTime()
-      let timeDiff = timeNow - lastTypingTime
-
-      if(timeDiff >= timerLength && typing){
-        socket.emit("stop typing",selectedChat._id)
-        setTyping(false)
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
       }
-    },timerLength)
-  }
-  
+    }, timerLength);
+  };
+
   // to sent a message
 
   const sendMessage = async () => {
-    if(newMessage.length === 0)return
+    if (newMessage.length === 0) return;
     const response: Imessage = await sentNewMessage(
       newMessage,
       selectedChat._id
     );
-    socket.emit("stop typing",selectedChat._id)
-    setTyping(false)
+    socket.emit("stop typing", selectedChat._id);
+    setTyping(false);
     setNewMessage("");
     console.log("newMessage sent by usern response : ", response);
     socket.emit("new message", response);
     setMessages([...messages, response]);
     scrollToBottom();
-    dispatch(SetNewMessage("message received"))
+    // dispatch(SetNewMessage("message received"))
   };
 
   //scroll to bottom function for messages
@@ -160,7 +208,7 @@ const Message: React.FC<ImessageProps> = ({
           .slice(-1)
           .map((chatUser: UserInfo) => (
             <div
-              key={chatUser._id}
+              key={`${chatUser._id}user`}
               className="flex flex-col min-h-screen justify-between"
             >
               <div className="flex  justify-between px-8 py-4 items-center border-b-2 border-gray-300">
@@ -170,7 +218,7 @@ const Message: React.FC<ImessageProps> = ({
                       <div className="flex items-center -space-x-8">
                         {selectedChat.users.map((user: UserInfo) => (
                           <Avatar
-                            key={user.dp}
+                            key={`${user.dp}messageGroupChat`}
                             variant="circular"
                             alt="user 1"
                             className="border-2 border-white hover:z-10 focus:z-10"
@@ -213,12 +261,12 @@ const Message: React.FC<ImessageProps> = ({
                 {selectedChat.isGroupChat ? (
                   <div
                     className="flex justify-center flex-col p-4 gap-4 items-center cursor-pointer"
-                    key={selectedChat._id}
+                    key={`${selectedChat._id}selectedChat`}
                   >
                     <div className="flex items-center -space-x-16 pt-6">
                       {selectedChat.users.map((user: UserInfo) => (
                         <Avatar
-                          key={user.dp}
+                          key={`${user.dp}usersdp`}
                           variant="circular"
                           alt="user 1"
                           className="border-2 border-white hover:z-10 focus:z-10"
@@ -270,7 +318,7 @@ const Message: React.FC<ImessageProps> = ({
                 <div className="pt-20 px-1">
                   {messages &&
                     messages.map((message: Imessage, index) => (
-                      <div className="flex px-8" key={message._id}>
+                      <div className="flex px-8" key={`${message._id}messageId`}>
                         {(isSameSender(
                           messages,
                           message,
@@ -305,7 +353,7 @@ const Message: React.FC<ImessageProps> = ({
                             user.userName
                           )} 
                             ${
-                              isSameUser(messages, message, index) 
+                              isSameUser(messages, message, index)
                                 ? "mt-1"
                                 : "mt-8"
                             } block`}
@@ -316,13 +364,24 @@ const Message: React.FC<ImessageProps> = ({
                     ))}
                 </div>
               </div>
-              <div className="py-12 md:py-2 px-2 w-full flex ">
+              <div className="py-12 md:py-2 px-2 w-full flex-col ">
+                {isTyping && selectedChat._id === room ? (
+                  <div>
+                    <Lottie
+                      options={defaultOptions}
+                      width={70}
+                      style={{ marginBottom: 15, marginLeft: 0 }}
+                      key={`${room}room`}
+                    />
+                  </div>
+                ) : (
+                  <></>
+                )}
                 <ChatboxTextarea
                   newMessage={newMessage}
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
                   typinHandler={typinHandler}
-                  isTyping = {isTyping}
                 />
               </div>
             </div>

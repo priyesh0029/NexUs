@@ -126,10 +126,87 @@ export const chatRepositoryMongoDb = () => {
         .populate("sender", "userName dp")
         .populate("chatId");
 
-        return allMessages
+      return allMessages;
     } catch (error) {
       console.error(error);
       return false; // Return false in case of an error
+    }
+  };
+
+  //to handle save chat notifications
+
+  const handleSaveChatNotificatons = async (chatId: string, userId: string) => {
+    try {
+      const notificationExist = await User.findOne({
+        _id: userId,
+        notifications: { $elemMatch: { $eq: chatId } },
+      });
+      console.log("notificationExist :", notificationExist);
+
+      if (!notificationExist) {
+        const addNotification = await User.updateOne(
+          { _id: userId },
+          { $push: { notifications: chatId } }
+        );
+        console.log("addNotification :", addNotification);
+        if (addNotification.modifiedCount === 1) {
+          return true;
+        }
+      } else {
+        return "already added";
+      }
+    } catch (error) {
+      return false; // Return false if the update operation didn't succeed
+    }
+  };
+
+  //to handle remove chat notifications
+
+  const handleRemoveChatNotificatons = async (
+    chatId: string,
+    userId: string
+  ) => {
+    try {
+      // const notificationExist = await User.findOne({
+      //   _id: userId,
+      //   notifications: { $elemMatch: { $eq: chatId } },
+      // });
+      // console.log("notificationExist :", notificationExist);
+
+      // if (notificationExist) {
+        const removeNotification = await User.findOneAndUpdate(
+          { _id: userId ,notifications: { $elemMatch: { $eq: chatId } } },
+          { $pull: { notifications: chatId } }
+        );
+        if (removeNotification) {
+          console.log("removeNotification:", removeNotification.notifications);
+          return true
+        }else{
+          return 'alreadyremoved'
+        }
+      // }
+      //  else {
+      //   return "already removed";
+      // }
+    } catch (error) {
+      return false; // Return false if the update operation didn't succeed
+    }
+  };
+
+  //to get all chat notifications
+
+  const handleAllChatNotificatons = async (userId: string) => {
+    try {
+      const notifications = await User.findOne(
+        {
+          _id: userId,
+        },
+        { _id: 0, notifications: 1 }
+      );
+      console.log("notificationExist :", notifications);
+      return notifications;
+    } catch (error) {
+      return false; // Return false if the update operation didn't succeed
     }
   };
 
@@ -139,6 +216,9 @@ export const chatRepositoryMongoDb = () => {
     getChatsOfUser,
     newMessageHandle,
     getChatAllMessages,
+    handleSaveChatNotificatons,
+    handleRemoveChatNotificatons,
+    handleAllChatNotificatons,
   };
 };
 

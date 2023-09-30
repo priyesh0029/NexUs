@@ -88,3 +88,58 @@ export const fetchAllChatMessages = async (
     return newMessage;
   });
 };
+
+// to save chat notificaitons
+
+export const handleChatNotificationSave = async (
+  chatId: string,
+  userId : string,
+  repository: ReturnType<chatRepositoryInterfaceType>
+) => {
+  return await repository.chatNotificationSave(chatId,userId).then((notification) => {
+    if (!notification) {
+      throw new AppError(
+        "Error occured while saving chat notifications.please refresh the page and try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return notification;
+  });
+};
+
+
+
+// to reemove chat notificaitons
+
+export const handleChatNotificationRemove = async (
+  chatId: string,
+  userId : string,
+  repository: ReturnType<chatRepositoryInterfaceType>
+) => {
+  return await repository.chatNotificationRemove(chatId,userId).then((notification) => {
+    if (!notification) {
+      throw new AppError(
+        "Error occured while remiving chat notifications.please refresh the page and try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return notification;
+  });
+};
+
+// to get all chat notificaitons
+
+export const handleAllChatNotifications = async (
+  userId : string,
+  repository: ReturnType<chatRepositoryInterfaceType>
+) => {
+  return await repository.allChatNotifications(userId).then((notification) => {
+    if (!notification) {
+      throw new AppError(
+        "Error occured while remiving chat notifications.please refresh the page and try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return notification;
+  });
+};

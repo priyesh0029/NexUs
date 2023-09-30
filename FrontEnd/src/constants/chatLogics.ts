@@ -39,3 +39,9 @@ export const sameCenterMargin = (allMessages:Imessage[],message:Imessage,index: 
 export const isSameUser = (allMessages:Imessage[],message:Imessage,index: number)=>{
     return index > 0 && allMessages[index-1].sender.userName === message.sender.userName
 }
+
+//notification check
+
+export const checkNotificationStatus = (notifications :string[] ,chatId :string)=>{
+    return notifications.some((notify)=>notify === chatId)
+}
