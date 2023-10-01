@@ -12,6 +12,7 @@ import {
   handleAllChatNotifications,
   handleChatNotificationRemove,
   handleChatNotificationSave,
+  newMembersAddGrpChat,
   sentNewMessage,
 } from "../../application/useCases/chats/chats";
 
@@ -145,17 +146,19 @@ export const chatControllers = (
   //to save chat notificataions
   const saveChatNotification = asyncHandler(
     async (req: Request, res: Response) => {
-      const { chatId,userId } = req.query;
-      console.log("chat id of fetch all messages  : ", chatId,userId);
+      const { chatId, userId } = req.query;
+      console.log("chat id of fetch all messages  : ", chatId, userId);
       if (typeof chatId === "string" && typeof userId === "string") {
-        await handleChatNotificationSave(chatId,userId, chatRepo).then((notification) => {
-          console.log("contollers all post response : ", notification);
+        await handleChatNotificationSave(chatId, userId, chatRepo).then(
+          (notification) => {
+            console.log("contollers all post response : ", notification);
 
-          res.status(200).json({
-            status: "success",
-            notification,
-          });
-        });
+            res.status(200).json({
+              status: "success",
+              notification,
+            });
+          }
+        );
       } else {
         throw new AppError(
           ` Error while fetching user chat notifications.try again..!`,
@@ -169,17 +172,19 @@ export const chatControllers = (
 
   const removeChatNotification = asyncHandler(
     async (req: Request, res: Response) => {
-      const { chatId,userId } = req.query;
-      console.log("chat id of fetch all messages  : ", chatId,userId);
+      const { chatId, userId } = req.query;
+      console.log("chat id of fetch all messages  : ", chatId, userId);
       if (typeof chatId === "string" && typeof userId === "string") {
-        await handleChatNotificationRemove(chatId,userId,chatRepo).then((notification) => {
-          console.log("contollers all post response : ", notification);
+        await handleChatNotificationRemove(chatId, userId, chatRepo).then(
+          (notification) => {
+            console.log("contollers all post response : ", notification);
 
-          res.status(200).json({
-            status: "success",
-            notification,
-          });
-        });
+            res.status(200).json({
+              status: "success",
+              notification,
+            });
+          }
+        );
       } else {
         throw new AppError(
           ` Error while fetching user chat notifications.try again..!`,
@@ -189,29 +194,57 @@ export const chatControllers = (
     }
   );
 
-    ///to get all  Chat notification
+  ///to get all  Chat notification
 
-    const getChatNotifications = asyncHandler(
-      async (req: Request, res: Response) => {
-        const { userId } = req.query;
-        console.log("chat id of fetch all messages  : ",userId);
-        if ( typeof userId === "string") {
-          await handleAllChatNotifications(userId,chatRepo).then((notification) => {
+  const getChatNotifications = asyncHandler(
+    async (req: Request, res: Response) => {
+      const { userId } = req.query;
+      console.log("chat id of fetch all messages  : ", userId);
+      if (typeof userId === "string") {
+        await handleAllChatNotifications(userId, chatRepo).then(
+          (notification) => {
             console.log("contollers all post response : ", notification);
-  
+
             res.status(200).json({
               status: "success",
               notification,
             });
-          });
-        } else {
-          throw new AppError(
-            ` Error while fetching user chat notifications.try again..!`,
-            HttpStatus.BAD_REQUEST
-          );
-        }
+          }
+        );
+      } else {
+        throw new AppError(
+          ` Error while fetching user chat notifications.try again..!`,
+          HttpStatus.BAD_REQUEST
+        );
       }
-    );
+    }
+  );
+
+  //add People To GroupChat
+
+  const addPeopleToGroupChat = asyncHandler(
+    async (req: Request, res: Response) => {
+      const {newUsers,chatId} = req.body
+      if (Array.isArray(newUsers) && typeof chatId === "string") {
+        console.log("createOrAccessChat user : ", newUsers, typeof newUsers);
+        await newMembersAddGrpChat(newUsers, chatId, chatRepo).then(
+          (newUsers) => {
+            console.log("contollers all post response : ", newUsers);
+
+            res.status(200).json({
+              status: "success",
+              newUsers,
+            });
+          }
+        );
+      } else {
+        throw new AppError(
+          ` Error while senting message.try again..!`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+  );
 
   return {
     createOrAccessChat,
@@ -221,6 +254,7 @@ export const chatControllers = (
     fetchallmessages,
     saveChatNotification,
     removeChatNotification,
-    getChatNotifications
+    getChatNotifications,
+    addPeopleToGroupChat,
   };
 };

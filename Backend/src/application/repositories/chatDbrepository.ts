@@ -44,6 +44,14 @@ export const chatRepositoryInterface = (
 
   const allChatNotifications = async ( userId: string) =>
     await repository.handleAllChatNotificatons(userId);
+
+    
+  //handle  add new  membets to the group chat 
+  const handleAddNewUsersGroupChat = async (
+    users: string[],
+    chatId: string
+  ) => await repository.addNewMembersToGroupChat(users, chatId);
+
   return {
     handleAccessOrCreateChat,
     handleAccessOrCreateGroupChat,
@@ -52,7 +60,8 @@ export const chatRepositoryInterface = (
     allChatMessages,
     chatNotificationSave,
     chatNotificationRemove,
-    allChatNotifications
+    allChatNotifications,
+    handleAddNewUsersGroupChat
   };
 };
 

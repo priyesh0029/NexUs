@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { POST_URL } from "../../../constants/constants";
 import {
   ChatBubbleLeftRightIcon,
+  InformationCircleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { VideoCameraIcon } from "@heroicons/react/20/solid";
@@ -26,12 +27,13 @@ import {
   SetNewMessage,
   SetNotification,
 } from "../../../features/redux/slices/user/chatSlice";
-import Lottie from "react-lottie"
-import animationData from "../../../Animaitons/typing.json" 
+import Lottie from "react-lottie";
+import animationData from "../../../Animaitons/typing.json";
+import MessageInfoDrawer from "./MessageInfo";
 
 interface ImessageProps {
-  fetchAgain :boolean
-  setFetchAgain :React.Dispatch<React.SetStateAction<boolean>>;
+  fetchAgain: boolean;
+  setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
   createOrAccessOnetoOneChat: (user: string) => void;
   createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
@@ -46,15 +48,14 @@ const Message: React.FC<ImessageProps> = ({
   createOrAccessOnetoOneChat,
   createOrAccessGroupChatToChatList,
 }) => {
-
   const defaultOptions = {
-    loop:true,
-    autoplay : true,
-    animationData : animationData,
-    rendererSetttings :{
-      preserveAspectRatio :"xMidYMid slice"
-    }
-  }
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSetttings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
 
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
@@ -68,7 +69,6 @@ const Message: React.FC<ImessageProps> = ({
     (store: { chat: { notification: string[] } }) => store.chat.notification
   );
 
-   console.log("--------------notification : ", notification);
 
   const dispatch = useDispatch();
 
@@ -79,13 +79,17 @@ const Message: React.FC<ImessageProps> = ({
   const chatDivRef = useRef<HTMLDivElement | null>(null);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
-  const [room,setRoom] = useState<string>('')
+  const [room, setRoom] = useState<string>("");
+  const [openInfoDrawer, SetOpenInfoDrawer] = useState<boolean>(false);
   //socket io connection
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user.userName);
     socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", (room) =>(setRoom(()=>room),setIstyping(() => true)));
+    socket.on(
+      "typing",
+      (room) => (setRoom(() => room), setIstyping(() => true))
+    );
     socket.on("stop typing", () => setIstyping(() => false));
   }, []);
 
@@ -106,22 +110,30 @@ const Message: React.FC<ImessageProps> = ({
         selectedChatCompare._id !== newMesageReceived.chatId._id
       ) {
         //notification
-        const notificationStatus = notification.some((notify) => notify === newMesageReceived.chatId._id);
-        console.log("--------------notificationStatus : ",notification, notificationStatus);
+        const notificationStatus = notification.some(
+          (notify) => notify === newMesageReceived.chatId._id
+        );
+        console.log(
+          "--------------notificationStatus : ",
+          notification,
+          notificationStatus
+        );
         if (!notificationStatus) {
-          dispatch(SetNotification([newMesageReceived.chatId._id, ...notification]));
-          setFetchAgain(!fetchAgain)
+          dispatch(
+            SetNotification([newMesageReceived.chatId._id, ...notification])
+          );
+          setFetchAgain(!fetchAgain);
           handleSaveChatNotification(newMesageReceived.chatId._id);
         }
       } else {
-        setMessages((prevState)=>[...prevState, newMesageReceived]);
+        setMessages((prevState) => [...prevState, newMesageReceived]);
       }
     });
 
     return () => {
       socket.off("message received");
     };
-  },[notification]);
+  }, [notification]);
 
   useEffect(() => {
     console.log("Updated notification:", typeof notification[0]);
@@ -132,8 +144,7 @@ const Message: React.FC<ImessageProps> = ({
 
   const handleSaveChatNotification = async (chatId: string) => {
     const response = await saveChatNotification(chatId);
-    console.log("notification save after new message response : ",response);
-    
+    console.log("notification save after new message response : ", response);
   };
   //to open search modal
   const handleNewChatSearch = () => {
@@ -200,6 +211,11 @@ const Message: React.FC<ImessageProps> = ({
       chatDivRef.current.scrollTop = chatDivRef.current.scrollHeight;
     }
   };
+  //handle InfoDrawer
+  const handleInfoDrawer = () => {
+    SetOpenInfoDrawer(true);
+  };
+
   return (
     <div className="flex w-full min-h-screen flex-col">
       {selectedChat._id.length > 0 ? (
@@ -253,8 +269,12 @@ const Message: React.FC<ImessageProps> = ({
                     </>
                   )}
                 </div>
-                <div>
+                <div className="flex gap-4">
                   <VideoCameraIcon className="h-6 w-6 text-black" />
+                  <InformationCircleIcon
+                    className="h-6 w-6 text-black"
+                    onClick={handleInfoDrawer}
+                  />
                 </div>
               </div>
               <div className=" overflow-y-scroll" id="chatDiv" ref={chatDivRef}>
@@ -318,7 +338,10 @@ const Message: React.FC<ImessageProps> = ({
                 <div className="pt-20 px-1">
                   {messages &&
                     messages.map((message: Imessage, index) => (
-                      <div className="flex px-8" key={`${message._id}messageId`}>
+                      <div
+                        className="flex px-8"
+                        key={`${message._id}messageId`}
+                      >
                         {(isSameSender(
                           messages,
                           message,
@@ -406,6 +429,9 @@ const Message: React.FC<ImessageProps> = ({
           createOrAccessOnetoOneChat={createOrAccessOnetoOneChat}
           createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}
         />
+      )}
+      {openInfoDrawer && (
+        <MessageInfoDrawer open={openInfoDrawer} setOpen={SetOpenInfoDrawer}/>
       )}
     </div>
   );

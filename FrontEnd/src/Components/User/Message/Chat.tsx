@@ -67,7 +67,7 @@ const Chat: React.FC<Ichat> = ({
         ) : (
           <div className="md:flex hidden">
             <UserCircleIcon className="h-10 w-10 text-gray-700" />
-            <p>user</p>
+            <p>{user.userName}</p>
           </div>
         )}
         <div>

@@ -139,3 +139,4 @@ interface ISearchTab {
   openSearchTab: boolean;
   setOpenSearchTab: React.Dispatch<React.SetStateAction<boolean>>;
 }
+

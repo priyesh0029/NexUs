@@ -44,7 +44,7 @@ export const chatRepositoryMongoDb = () => {
     userId: string
   ) => {
     const groupChatUsers = users;
-    groupChatUsers.push(userId);
+    groupChatUsers.unshift(userId);
     console.log(groupChatUsers, typeof groupChatUsers);
     try {
       const groupChat = await Chat.create({
@@ -174,16 +174,16 @@ export const chatRepositoryMongoDb = () => {
       // console.log("notificationExist :", notificationExist);
 
       // if (notificationExist) {
-        const removeNotification = await User.findOneAndUpdate(
-          { _id: userId ,notifications: { $elemMatch: { $eq: chatId } } },
-          { $pull: { notifications: chatId } }
-        );
-        if (removeNotification) {
-          console.log("removeNotification:", removeNotification.notifications);
-          return true
-        }else{
-          return 'alreadyremoved'
-        }
+      const removeNotification = await User.findOneAndUpdate(
+        { _id: userId, notifications: { $elemMatch: { $eq: chatId } } },
+        { $pull: { notifications: chatId } }
+      );
+      if (removeNotification) {
+        console.log("removeNotification:", removeNotification.notifications);
+        return true;
+      } else {
+        return "alreadyremoved";
+      }
       // }
       //  else {
       //   return "already removed";
@@ -210,6 +210,30 @@ export const chatRepositoryMongoDb = () => {
     }
   };
 
+  // to add new members to the gruoup chat
+
+  const addNewMembersToGroupChat = async (users: string[], chatId: string) => {
+    console.log("addNewMembersToGroupChat : ", users, chatId);
+    const userArray = users
+    try {
+      const addNewUsers = await Chat.findOneAndUpdate(
+        { _id: chatId, users: { $nin: userArray } },
+        { $push: { users: { $each: userArray } } }
+      );
+
+      console.log("addNewUsers addNewMembersToGroupChat : ",addNewUsers);
+      
+
+      const groupChatUsers = await Chat.findOne({ _id: chatId })
+        .populate("users", "-password")
+
+      return groupChatUsers;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
   return {
     accessOrCreateChatHandle,
     accessOrCreateGroupChatHandle,
@@ -219,6 +243,7 @@ export const chatRepositoryMongoDb = () => {
     handleSaveChatNotificatons,
     handleRemoveChatNotificatons,
     handleAllChatNotificatons,
+    addNewMembersToGroupChat,
   };
 };
 

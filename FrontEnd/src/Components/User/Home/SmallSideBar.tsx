@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Card, Chip, Avatar, Tooltip } from "@material-tailwind/react";
+import {
+  Card,
+  Chip,
+  Avatar,
+  Tooltip,
+  Badge,
+  IconButton,
+} from "@material-tailwind/react";
 import { POST_URL } from "../../../constants/constants";
 import { Link } from "react-router-dom";
 import {
@@ -44,7 +51,7 @@ const SmallSideBar = () => {
   };
 
   useEffect(() => {
-      getNotifications();
+    getNotifications();
   }, []);
 
   const getNotifications = async () => {
@@ -53,14 +60,8 @@ const SmallSideBar = () => {
       "response of notificaationa  after api call : ",
       response.notifications
     );
-      dispatch(SetNotification(response.notifications));
-    
+    dispatch(SetNotification(response.notifications));
   };
-
-  useEffect(() => {
-    console.log("Updated notification in the smal side bar :", typeof notification[0]);
-    // Rest of your code
-  }, [notification]);
 
   return (
     <>
@@ -84,7 +85,7 @@ const SmallSideBar = () => {
               placement="right"
             >
               <div>
-                <HomeIcon className="h-10 w-10" />
+                <HomeIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </Link>
@@ -95,7 +96,7 @@ const SmallSideBar = () => {
               placement="right"
             >
               <div>
-                <MagnifyingGlassIcon className="h-10 w-10" />
+                <MagnifyingGlassIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
@@ -112,20 +113,13 @@ const SmallSideBar = () => {
               content="Message"
               placement="right"
             >
-              <div className="flex">
-                <div>
-                  <EnvelopeIcon className="h-10 w-10" />
-                </div>
-                <div>
-                  <Chip
-                    value={notification.length}
-                    size="sm"
-                    variant="ghost"
-                    color="blue-gray"
-                    className="rounded-full"
-                  />
-                </div>
-              </div>
+              {notification.length === 0 ? (
+              <EnvelopeIcon className="h-10 w-10 text-black" />
+            ) : (
+              <Badge content={notification.length} className="">
+                <EnvelopeIcon className="h-10 w-10 text-black" />
+              </Badge>
+            )}
             </Tooltip>
           </Link>
           <div onClick={handleCreatePostClick}>
@@ -135,7 +129,7 @@ const SmallSideBar = () => {
               placement="right"
             >
               <div>
-                <SquaresPlusIcon className="h-10 w-10" />
+                <SquaresPlusIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
@@ -155,7 +149,7 @@ const SmallSideBar = () => {
                       className="h-12 w-12 "
                     />
                   ) : (
-                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                    <UserCircleIcon className="h-10 w-10 text-black" />
                   )}
                 </div>
               </Tooltip>
@@ -169,7 +163,7 @@ const SmallSideBar = () => {
                 placement="right"
               >
                 <div>
-                  <Cog6ToothIcon className="h-10 w-10" />
+                  <Cog6ToothIcon className="h-10 w-10 text-black" />
                 </div>
               </Tooltip>
             </div>
@@ -181,32 +175,38 @@ const SmallSideBar = () => {
               placement="right"
             >
               <div>
-                <PowerIcon className="h-10 w-10" />
+                <PowerIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
         </div>
       </Card>
-      <Card className=" fixed bottom-0 left-0 md:hidden w-full bg-blue-200 p-2 border-2 rounded-none z-10">
+      <Card className=" fixed bottom-0 left-0 md:hidden w-full bg-white p-2 border-2 rounded-none z-10">
         <div className="flex justify-around items-center">
           <Link to={"/home"}>
-            <HomeIcon className="h-6 w-6 text-gray-700" />
+            <HomeIcon className="h-6 w-6 text-black" />
           </Link>
 
           <MagnifyingGlassIcon
-            className="h-6 w-6 text-gray-700"
+            className="h-6 w-6 text-black"
             onClick={handleSearchTab}
           />
           {/* {searchTabOpen && <SearchTab openSearchTab = {searchTabOpen} setOpenSearchTab={setSearchTabOpen}/>} */}
-          <Link to={"/messages"}>
-            <EnvelopeIcon className="h-6 w-6 text-gray-700" />
+          <Link to={"/messages"} className="flex items-center">
+            {notification.length === 0 ? (
+              <EnvelopeIcon className="h-7 w-7 text-black" />
+            ) : (
+              <Badge content={notification.length} className="">
+                <EnvelopeIcon className="h-7 w-7 text-black" />
+              </Badge>
+            )}
           </Link>
           <SquaresPlusIcon
-            className="h-6 w-6 text-gray-700"
+            className="h-6 w-6 text-black"
             onClick={handleCreatePostClick}
           />
           <Link to={`/profile/${user.userName}`}>
-            <UserCircleIcon className="h-6 w-6 text-gray-700" />
+            <UserCircleIcon className="h-6 w-6 text-black" />
           </Link>
         </div>
       </Card>

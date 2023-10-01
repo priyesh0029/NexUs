@@ -180,3 +180,27 @@ export const handleGetNofications = async()=>{
     //Throw the error to be caught by the caller
   }
 }
+
+
+// to add new users to the group chat 
+
+export const addPeopleToChat = async(newUsers:string[],chatId: string)=>{
+  try {
+    console.log("addPeopleToGroupChat : ",newUsers,chatId);
+    const response: any = await baseURL.patch("/chat/addPeopleToGroupChat",{newUsers,chatId});
+    console.log("response addPeopleToGroupChat : ", response);
+    if (response.data.status === "success") {
+      const newUsers = response.data.newUsers;
+      return newUsers;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}

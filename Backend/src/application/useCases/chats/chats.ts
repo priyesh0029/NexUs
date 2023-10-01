@@ -143,3 +143,21 @@ export const handleAllChatNotifications = async (
     return notification;
   });
 };
+
+//to add new members to the group chat 
+
+export const newMembersAddGrpChat = async (
+  users: string[],
+  chatId: string,
+  repository: ReturnType<chatRepositoryInterfaceType>
+) => {
+  return await repository.handleAddNewUsersGroupChat(users,chatId).then((groupChat) => {
+    if (!groupChat) {
+      throw new AppError(
+        "Error occured while adding new members to the group chat.please refresh the page and try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return groupChat;
+  });
+};

@@ -14,11 +14,13 @@ import { searchUser } from "../../../api/apiConnections/User/userConnections";
 import { Link } from "react-router-dom";
 import { POST_URL } from "../../../constants/constants";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
 interface ChatSearchProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  createOrAccessOnetoOneChat: (user: string) => void;
-  createOrAccessGroupChatToChatList: (users: string[]) => void;
+  createOrAccessOnetoOneChat?: (user: string) => void;
+  createOrAccessGroupChatToChatList?: (users: string[]) => void;
+  handleAddPeople?: (users: string[]) => void;
 }
 
 interface IchatUsers {
@@ -31,12 +33,17 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
   setOpen,
   createOrAccessOnetoOneChat,
   createOrAccessGroupChatToChatList,
+  handleAddPeople,
 }) => {
   const handleOpen = () => setOpen(!open);
 
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<UserInfo[]>([]);
   const [chatUsers, setChatUsers] = useState<IchatUsers[]>([]);
+
+  const selectedChat = useSelector(
+    (store: { chat: { userChat: IuserChatList } }) => store.chat.userChat
+  );
 
   const handleInput = (e: any) => {
     setSearchText(e.target.value);
@@ -49,10 +56,19 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
 
   const getSearchData = async (search: string) => {
     const data: UserInfo[] = await searchUser(search);
-    const filteredData = data.filter(
-      (user) =>
-        !chatUsers.some((chatUser) => user.userName === chatUser.userName)
-    );
+    let filteredData;
+    if (!selectedChat.groupAdmin || handleAddPeople === undefined) {
+      filteredData = data.filter(
+        (user) =>
+          !chatUsers.some((chatUser) => user.userName === chatUser.userName)
+      );
+    } else {
+      filteredData = data.filter(
+        (user) =>
+          !chatUsers.some((chatUser) => user.userName === chatUser.userName)&&
+          !selectedChat.users.some((existChatUser)=> user.userName === existChatUser.userName)
+      );
+    }
     setSearchResults(filteredData);
   };
 
@@ -79,18 +95,29 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
   };
   console.log("chatUsers.length :", chatUsers);
 
-  //handle submit create Or AccessChat
+  //handle submit create Or AccessChat or add new people to the chat
   const handleChatSubmit = async () => {
-    if (chatUsers.length > 1) {
+    if (
+      chatUsers.length > 1 &&
+      createOrAccessGroupChatToChatList !== undefined
+    ) {
       const chatUsersId = chatUsers.map((user) => {
         return user.userId;
       });
       console.log("chatUsers.length conformation: ", chatUsersId);
       createOrAccessGroupChatToChatList(chatUsersId);
-    } else {
+    } else if (
+      chatUsers.length < 1 &&
+      createOrAccessOnetoOneChat !== undefined
+    ) {
       createOrAccessOnetoOneChat(chatUsers[0].userId);
+    } else if (chatUsers.length >= 1 && handleAddPeople !== undefined) {
+      const chatUsersId = chatUsers.map((user) => {
+        return user.userId;
+      });
+      handleAddPeople(chatUsersId);
     }
-    setOpen(!open)
+    setOpen(!open);
   };
   return (
     <>
@@ -151,7 +178,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
               className="border-2 rounded-xl w-full bg-blue-800 text-white py-2"
               onClick={handleChatSubmit}
             >
-              Chat
+             { handleAddPeople !== undefined ? "Add to chat" : "Chat"}
             </button>
           </div>
         ) : (

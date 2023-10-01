@@ -8,6 +8,8 @@ import {
   Chip,
   Avatar,
   Tooltip,
+  Badge,
+  IconButton,
 } from "@material-tailwind/react";
 import {
   HomeIcon,
@@ -21,11 +23,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { clearToken } from "../../../features/redux/slices/user/tokenSlice";
 import CreatePost from "../Post/CreatePost";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clearUserInfo } from "../../../features/redux/slices/user/homeSlice";
 import { Link } from "react-router-dom";
 import SearchTab from "./SearchTab";
 import { POST_URL } from "../../../constants/constants";
+import { handleGetNofications } from "../../../api/apiConnections/User/chatConnections";
+import { SetNotification } from "../../../features/redux/slices/user/chatSlice";
 
 const DefaultSidebar = () => {
   const dispatch = useDispatch();
@@ -50,6 +54,22 @@ const DefaultSidebar = () => {
   const user = useSelector(
     (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
   );
+  const notification = useSelector(
+    (store: { chat: { notification: string[] } }) => store.chat.notification
+  );
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
+
+  const getNotifications = async () => {
+    const response = await handleGetNofications();
+    console.log(
+      "response of notificaationa  after api call : ",
+      response.notifications
+    );
+    dispatch(SetNotification(response.notifications));
+  };
 
   return (
     <>
@@ -74,14 +94,14 @@ const DefaultSidebar = () => {
           <Link to={"/home"}>
             <ListItem>
               <ListItemPrefix>
-                <HomeIcon className="h-5 w-5" />
+                <HomeIcon className="h-5 w-5 text-black" />
               </ListItemPrefix>
               Home
             </ListItem>
           </Link>
           <ListItem onClick={handleSearchTab}>
             <ListItemPrefix>
-              <MagnifyingGlassIcon className="h-5 w-5" />
+              <MagnifyingGlassIcon className="h-5 w-5 text-black" />
             </ListItemPrefix>
             Search
           </ListItem>
@@ -89,27 +109,30 @@ const DefaultSidebar = () => {
           <Link to={"/messages"}>
             <ListItem>
               <ListItemPrefix>
-                <EnvelopeIcon className="h-5 w-5" />
+                <EnvelopeIcon className="h-5 w-5 text-black" />
               </ListItemPrefix>
               Messages
               <ListItemSuffix>
-                <Chip
-                  value="14"
-                  size="sm"
-                  variant="ghost"
-                  color="blue-gray"
-                  className="rounded-full"
-                />
+                {notification.length === 0 ? (
+                  ""
+                ) : (
+                  <Chip
+                    value={notification.length}
+                    size="sm"
+                    color="red"
+                    className="rounded-full"
+                  />
+                )}
               </ListItemSuffix>
             </ListItem>
           </Link>
           <ListItem onClick={handleListItemClick}>
             <ListItemPrefix>
-              <SquaresPlusIcon className="h-5 w-5" />
+              <SquaresPlusIcon className="h-5 w-5 text-black" />
             </ListItemPrefix>
             Create
           </ListItem>
-         
+
           <Link to={`/profile/${user.userName}`}>
             <ListItem>
               <ListItemPrefix>
@@ -117,10 +140,10 @@ const DefaultSidebar = () => {
                   <Avatar
                     src={POST_URL + `${user.dp}.jpg`}
                     alt="avatar"
-                    className="h-8 w-8 "
+                    className="h-8 w-8 text-black"
                   />
                 ) : (
-                  <UserCircleIcon className="h-5 w-5 text-gray-700" />
+                  <UserCircleIcon className="h-5 w-5 text-black" />
                 )}
               </ListItemPrefix>
               Profile
@@ -129,14 +152,14 @@ const DefaultSidebar = () => {
           <Link to={"/settings"}>
             <ListItem>
               <ListItemPrefix>
-                <Cog6ToothIcon className="h-5 w-5" />
+                <Cog6ToothIcon className="h-5 w-5 text-black" />
               </ListItemPrefix>
               Settings
             </ListItem>
           </Link>
           <ListItem onClick={handleLogout}>
             <ListItemPrefix>
-              <PowerIcon className="h-5 w-5" />
+              <PowerIcon className="h-5 w-5 text-black" />
             </ListItemPrefix>
             Log Out
           </ListItem>
@@ -162,7 +185,7 @@ const DefaultSidebar = () => {
               placement="right"
             >
               <div>
-                <HomeIcon className="h-10 w-10" />
+                <HomeIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </Link>
@@ -173,7 +196,7 @@ const DefaultSidebar = () => {
               placement="right"
             >
               <div>
-                <MagnifyingGlassIcon className="h-10 w-10" />
+                <MagnifyingGlassIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
@@ -184,20 +207,13 @@ const DefaultSidebar = () => {
               content="Message"
               placement="right"
             >
-              <div>
-                <div>
-                  <EnvelopeIcon className="h-10 w-10" />
-                </div>
-                <div>
-                  {/* <Chip
-                  value="14"
-                  size="sm"
-                  variant="ghost"
-                  color="blue-gray"
-                  className="rounded-full"
-                /> */}
-                </div>
-              </div>
+              {notification.length === 0 ? (
+                <EnvelopeIcon className="h-10 w-10 text-black" />
+              ) : (
+                <Badge content={notification.length} className="">
+                  <EnvelopeIcon className="h-10 w-10 text-black" />
+                </Badge>
+              )}
             </Tooltip>
           </Link>
           <div onClick={handleListItemClick}>
@@ -207,11 +223,11 @@ const DefaultSidebar = () => {
               placement="right"
             >
               <div>
-                <SquaresPlusIcon className="h-10 w-10" />
+                <SquaresPlusIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
-         
+
           <Link to={`/profile/${user.userName}`}>
             <div>
               <Tooltip
@@ -227,7 +243,7 @@ const DefaultSidebar = () => {
                       className="h-12 w-12 "
                     />
                   ) : (
-                    <UserCircleIcon className="h-10 w-10 text-gray-700" />
+                    <UserCircleIcon className="h-10 w-10 text-black" />
                   )}
                 </div>
               </Tooltip>
@@ -241,7 +257,7 @@ const DefaultSidebar = () => {
                 placement="right"
               >
                 <div>
-                  <Cog6ToothIcon className="h-10 w-10" />
+                  <Cog6ToothIcon className="h-10 w-10 text-black" />
                 </div>
               </Tooltip>
             </div>
@@ -253,31 +269,37 @@ const DefaultSidebar = () => {
               placement="right"
             >
               <div>
-                <PowerIcon className="h-10 w-10" />
+                <PowerIcon className="h-10 w-10 text-black" />
               </div>
             </Tooltip>
           </div>
         </div>
       </Card>
-      <Card className=" fixed bottom-0 left-0  w-full bg-blue-200 p-2 border-2 rounded-none z-10 lg:hidden">
+      <Card className=" fixed bottom-0 left-0  w-full bg-white p-2 border-2 rounded-none z-10 lg:hidden">
         <div className="flex justify-around items-center">
           <Link to={"/home"}>
-            <HomeIcon className="h-6 w-6 text-gray-700" />
+            <HomeIcon className="h-6 w-6 text-black" />
           </Link>
 
           <MagnifyingGlassIcon
-            className="h-6 w-6 text-gray-700"
+            className="h-6 w-6 text-black"
             onClick={handleSearchTab}
           />
-          <Link to={"/messages"}>
-            <EnvelopeIcon className="h-6 w-6 text-gray-700" />
+          <Link to={"/messages"} className="flex items-center">
+            {notification.length === 0 ? (
+              <EnvelopeIcon className="h-7 w-7 text-black" />
+            ) : (
+              <Badge content={notification.length} className="">
+                <EnvelopeIcon className="h-7 w-7 text-black" />
+              </Badge>
+            )}
           </Link>
           <SquaresPlusIcon
-            className="h-6 w-6 text-gray-700"
+            className="h-6 w-6 text-black"
             onClick={handleListItemClick}
           />
           <Link to={`/profile/${user.userName}`}>
-            <UserCircleIcon className="h-6 w-6 text-gray-700" />
+            <UserCircleIcon className="h-6 w-6 text-black" />
           </Link>
         </div>
       </Card>
@@ -287,7 +309,7 @@ const DefaultSidebar = () => {
           setOpenSearchTab={setSearchTabOpen}
         />
       )}
-       {open && <CreatePost open={open} setOpen={setOpen} />}
+      {open && <CreatePost open={open} setOpen={setOpen} />}
     </>
   );
 };

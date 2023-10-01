@@ -25,6 +25,9 @@ const chatRouter = (router: Router) => {
 
   router.get('/getChatNotifications',controllers.getChatNotifications) 
 
+  router.patch('/addPeopleToGroupChat',controllers.addPeopleToGroupChat) 
+
+
 
 
 
