@@ -56,7 +56,7 @@ export const chatRepositoryMongoDb = () => {
 
       const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
         .populate("users", "-password")
-        .populate("groupAdmin", "-password");
+        .populate("groupAdmin", "name dp userName _id");
 
       return fullGroupChat;
     } catch (error) {
@@ -73,7 +73,7 @@ export const chatRepositoryMongoDb = () => {
         users: { $elemMatch: { $eq: userId } },
       })
         .populate("users", "-password")
-        .populate("groupAdmin", "-password")
+        .populate("groupAdmin", "name dp userName _id")
         .populate("latestMessage")
         .populate("latestMessage.sender", "name dp userName")
         .sort({ updatedAt: -1 });
@@ -214,20 +214,76 @@ export const chatRepositoryMongoDb = () => {
 
   const addNewMembersToGroupChat = async (users: string[], chatId: string) => {
     console.log("addNewMembersToGroupChat : ", users, chatId);
-    const userArray = users
+    const userArray = users;
     try {
       const addNewUsers = await Chat.findOneAndUpdate(
         { _id: chatId, users: { $nin: userArray } },
         { $push: { users: { $each: userArray } } }
       );
 
-      console.log("addNewUsers addNewMembersToGroupChat : ",addNewUsers);
-      
+      console.log("addNewUsers addNewMembersToGroupChat : ", addNewUsers);
 
       const groupChatUsers = await Chat.findOne({ _id: chatId })
         .populate("users", "-password")
+        .populate("groupAdmin", "name dp userName _id");
 
       return groupChatUsers;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+  //to handle new chat name
+
+  const newChatName = async (newName: string, chatId: string) => {
+    console.log("handle new chat name  : ", newName, chatId);
+    try {
+      const UpdatedNewChatName = await Chat.updateOne(
+        { _id: chatId },
+        { $set: { chatName: newName } }
+      );
+
+      console.log("handle new chat name  : ", UpdatedNewChatName);
+
+      if (UpdatedNewChatName.modifiedCount === 1) {
+        const groupChatUsers = await Chat.findOne({ _id: chatId })
+          .populate("users", "-password")
+          .populate("groupAdmin", "name dp userName _id");
+
+        return groupChatUsers;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+  //to remove User From group Chat
+
+  const removeUserFromChatHandle = async (
+    chatId: string,
+    chatUserId: string
+  ) => {
+    console.log(" remove User From group Chat  : ", chatUserId);
+    try {
+      const removeUserFromGrpChat = await Chat.updateOne(
+        { _id: chatId },
+        { $pull: { users: chatUserId } }
+      );
+
+      console.log(" remove User From group Chat : ", removeUserFromGrpChat);
+      if (removeUserFromGrpChat.modifiedCount === 1) {
+        const groupChatUsers = await Chat.findOne({ _id: chatId })
+          .populate("users", "-password")
+          .populate("groupAdmin", "name dp userName _id");
+
+        return groupChatUsers;
+      }else{
+        return false
+      }
     } catch (error) {
       console.log(error);
       return false;
@@ -244,6 +300,8 @@ export const chatRepositoryMongoDb = () => {
     handleRemoveChatNotificatons,
     handleAllChatNotificatons,
     addNewMembersToGroupChat,
+    newChatName,
+    removeUserFromChatHandle,
   };
 };
 

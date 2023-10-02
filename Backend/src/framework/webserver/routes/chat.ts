@@ -27,6 +27,12 @@ const chatRouter = (router: Router) => {
 
   router.patch('/addPeopleToGroupChat',controllers.addPeopleToGroupChat) 
 
+  router.patch('/changeGroupChatName',controllers.changeGroupChatName) 
+
+  router.patch('/removeFromGroupChat',controllers.removeFromChat) 
+
+
+
 
 
 

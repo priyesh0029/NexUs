@@ -12,15 +12,20 @@ const chatSlice = createSlice({
     userChat: {
       chatName: "",
       isGroupChat: false,
-      groupAdmin: "",
+      groupAdmin: {
+        _id: "",
+        name: "",
+        userName: "",
+        dp: "",
+      },
       users: [],
-      latestMessage:{
-        chatId: '',
-        content: '',
-        createdAt: '',
-        sender: '',
-        updatedAt: '',
-        _id: '',
+      latestMessage: {
+        chatId: "",
+        content: "",
+        createdAt: "",
+        sender: "",
+        updatedAt: "",
+        _id: "",
       },
       updatedAt: "",
       createdAt: "",
@@ -37,15 +42,20 @@ const chatSlice = createSlice({
       state.userChat = {
         chatName: "",
         isGroupChat: false,
-        groupAdmin: "",
+        groupAdmin: {
+          _id: "",
+          name: "",
+          userName: "",
+          dp: "",
+        },
         users: [],
-        latestMessage:{
-          chatId: '',
-          content: '',
-          createdAt: '',
-          sender: '',
-          updatedAt: '',
-          _id: '',
+        latestMessage: {
+          chatId: "",
+          content: "",
+          createdAt: "",
+          sender: "",
+          updatedAt: "",
+          _id: "",
         },
         updatedAt: "",
         createdAt: "",
@@ -61,7 +71,11 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setSelectedChat, clearSelectedChat, SetNewMessage,SetNotification } =
-  chatSlice.actions;
+export const {
+  setSelectedChat,
+  clearSelectedChat,
+  SetNewMessage,
+  SetNotification,
+} = chatSlice.actions;
 
 export default chatSlice.reducer;

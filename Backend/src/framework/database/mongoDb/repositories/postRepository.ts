@@ -1121,7 +1121,7 @@ export const postRepositoryMongoDb = () => {
 
       console.log("check report of reply : ", checkReport);
 
-      if (checkReport === null) {
+      if (checkReport !== null && checkReport.reply[0].reports.length === 0) {
         const updatedReport = await Comment.updateOne(
           { _id: commentID, "reply._id": replyID },
           { $push: { "reply.$.reports": reportObj } }

@@ -24,7 +24,7 @@ interface UserInfo {
 interface IuserChatList {
   chatName: string;
   isGroupChat: boolean;
-  groupAdmin?: string;
+  groupAdmin?: { _id: string; name: string; userName: string; dp: string };
   users: UserInfo[];
   latestMessage: {
     chatId: string;
@@ -139,4 +139,3 @@ interface ISearchTab {
   openSearchTab: boolean;
   setOpenSearchTab: React.Dispatch<React.SetStateAction<boolean>>;
 }
-

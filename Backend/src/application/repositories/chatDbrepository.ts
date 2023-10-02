@@ -52,6 +52,18 @@ export const chatRepositoryInterface = (
     chatId: string
   ) => await repository.addNewMembersToGroupChat(users, chatId);
 
+  //to handle new chat name 
+  const handleNewChatName = async (
+    newName: string,
+    chatId: string
+  ) => await repository.newChatName(newName, chatId);
+
+   //to handle Remove User From group Chat
+   const handleRemoveUserFromChat = async (
+    chatId: string,
+    chatUserId:string
+  ) => await repository.removeUserFromChatHandle(chatId,chatUserId);
+
   return {
     handleAccessOrCreateChat,
     handleAccessOrCreateGroupChat,
@@ -61,7 +73,9 @@ export const chatRepositoryInterface = (
     chatNotificationSave,
     chatNotificationRemove,
     allChatNotifications,
-    handleAddNewUsersGroupChat
+    handleAddNewUsersGroupChat,
+    handleNewChatName,
+    handleRemoveUserFromChat
   };
 };
 

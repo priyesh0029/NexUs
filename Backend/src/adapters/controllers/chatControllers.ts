@@ -7,12 +7,14 @@ import { HttpStatus } from "../../types/httpStatus";
 import {
   accessOrCreateChat,
   accessOrCreateGroupChat,
+  amendGroupChatName,
   fetchAllChatMessages,
   fetchUserChats,
   handleAllChatNotifications,
   handleChatNotificationRemove,
   handleChatNotificationSave,
   newMembersAddGrpChat,
+  removeUserFromGroupChat,
   sentNewMessage,
 } from "../../application/useCases/chats/chats";
 
@@ -239,12 +241,63 @@ export const chatControllers = (
         );
       } else {
         throw new AppError(
-          ` Error while senting message.try again..!`,
+          ` Error while adding people to group chat.try again..!`,
           HttpStatus.BAD_REQUEST
         );
       }
     }
   );
+
+  // to change group chat name 
+
+  const changeGroupChatName = asyncHandler(
+    async (req: Request, res: Response) => {
+      const {newName,chatId} = req.body
+      if (typeof newName === "string" && typeof chatId === "string") {
+        await amendGroupChatName(newName, chatId, chatRepo).then(
+          (chat) => {
+            console.log("contollers all post response : ", chat);
+
+            res.status(200).json({
+              status: "success",
+              chat,
+            });
+          }
+        );
+      } else {
+        throw new AppError(
+          ` Error while changing chat name.try again..!`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+  );
+
+  // to remove a member From Chat
+
+  const removeFromChat = asyncHandler(
+    async (req: Request, res: Response) => {
+      const {chatId,chatUserId} = req.body
+      if (typeof chatId === "string" && typeof chatUserId === "string") {
+        await removeUserFromGroupChat( chatId,chatUserId,chatRepo).then(
+          (chat) => {
+            console.log("to remove a member From Chat : ", chat);
+
+            res.status(200).json({
+              status: "success",
+              chat,
+            });
+          }
+        );
+      } else {
+        throw new AppError(
+          ` Error while removing member from chat.try again..!`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+  );
+
 
   return {
     createOrAccessChat,
@@ -256,5 +309,7 @@ export const chatControllers = (
     removeChatNotification,
     getChatNotifications,
     addPeopleToGroupChat,
+    changeGroupChatName,
+    removeFromChat
   };
 };
