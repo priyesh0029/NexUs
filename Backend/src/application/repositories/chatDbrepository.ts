@@ -64,6 +64,13 @@ export const chatRepositoryInterface = (
     chatUserId:string
   ) => await repository.removeUserFromChatHandle(chatId,chatUserId);
 
+  //to handle Leave User From Chat
+  const handleLeaveUserFromChat = async (
+    chatId: string,
+    userId:string
+  ) => await repository.leaveUserFromChatHandle(chatId,userId);
+
+
   return {
     handleAccessOrCreateChat,
     handleAccessOrCreateGroupChat,
@@ -75,7 +82,8 @@ export const chatRepositoryInterface = (
     allChatNotifications,
     handleAddNewUsersGroupChat,
     handleNewChatName,
-    handleRemoveUserFromChat
+    handleRemoveUserFromChat,
+    handleLeaveUserFromChat
   };
 };
 

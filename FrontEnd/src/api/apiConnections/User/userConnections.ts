@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import baseURL from "../../api";
 
 export const handleDp = async (post: FormData) => {
@@ -225,5 +226,31 @@ export const deleteAccount = async()=>{
      return errorMessage
     // throw new Error(errorMessage); 
     //Throw the error to be caught by the caller
+  }
+}
+
+//report a user 
+
+export const reportUser = async(userId: string,report:string):Promise<any>=>{
+  try{
+    const reportDetails = {userId,report}
+    console.log("response report post reportDetails : ",reportDetails);
+    const response:any = await baseURL.patch("/user/reportUser",reportDetails)
+    console.log("response report user : ",response);
+    if(response.data.status === 'success'){
+      const reported = response.data.reported
+      return reported
+    }
+
+  }catch(error){
+    console.log("error inside the api acall catch :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    // throw new Error(errorMessage); 
+    //Throw the error to be caught by the caller
+    
   }
 }

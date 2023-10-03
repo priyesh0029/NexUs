@@ -107,7 +107,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({
       console.log("chatUsers.length conformation: ", chatUsersId);
       createOrAccessGroupChatToChatList(chatUsersId);
     } else if (
-      chatUsers.length < 1 &&
+      chatUsers.length === 1 &&
       createOrAccessOnetoOneChat !== undefined
     ) {
       createOrAccessOnetoOneChat(chatUsers[0].userId);

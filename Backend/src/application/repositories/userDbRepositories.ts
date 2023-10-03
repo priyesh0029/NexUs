@@ -49,6 +49,14 @@ export const userDbRepository = (
   const deleteAccount = async(userId: string) =>
   await repository.handleAccountDelete(userId);
 
+  //to Handle report User 
+
+  const reportUserHandle = async (
+    loggedUser: string,
+    report:string,
+    userId :string
+  ) => await repository.userReportDb(loggedUser,report,userId);
+
   return {
     findByProperty,
     findById,
@@ -64,7 +72,8 @@ export const userDbRepository = (
     changePassword,
     deactivateAccount,
     activateAccount,
-    deleteAccount
+    deleteAccount,
+    reportUserHandle
   };
 };
 

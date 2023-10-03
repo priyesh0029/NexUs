@@ -13,6 +13,7 @@ import {
   handleAllChatNotifications,
   handleChatNotificationRemove,
   handleChatNotificationSave,
+  leaveUserFromGroupChat,
   newMembersAddGrpChat,
   removeUserFromGroupChat,
   sentNewMessage,
@@ -298,6 +299,31 @@ export const chatControllers = (
     }
   );
 
+   // to leave from Group Chat
+
+   const leaveGroupChat = asyncHandler(
+    async (req: Request, res: Response) => {
+      const {chatId} = req.body
+      const userId = req.query.userId
+      if (typeof chatId === "string" && typeof userId === "string") {
+        await leaveUserFromGroupChat( chatId,userId,chatRepo).then(
+          (chat) => {
+            console.log("to leave User From a GroupChat : ", chat);
+
+            res.status(200).json({
+              status: "success",
+              chat,
+            });
+          }
+        );
+      } else {
+        throw new AppError(
+          ` Error while leaving group chat.try again..!`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+  );
 
   return {
     createOrAccessChat,
@@ -310,6 +336,7 @@ export const chatControllers = (
     getChatNotifications,
     addPeopleToGroupChat,
     changeGroupChatName,
-    removeFromChat
+    removeFromChat,
+    leaveGroupChat
   };
 };

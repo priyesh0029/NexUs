@@ -8,6 +8,7 @@ import {
   handleDeactivateAccount,
   handleDeleteAccount,
   handleNewPassword,
+  handleReportUser,
   postDp,
   savePostHandle,
   updateProfileHandle,
@@ -322,6 +323,36 @@ export const userControllers = (
     }
   });
 
+  //to report a user
+
+  const reportUser = asyncHandler(async (req: Request, res: Response) => {
+    const { userId, report } = req.body;
+    const loggedUser = req.query.userId;
+    console.log("contollers report comment : ", report, userId,loggedUser);
+    if (
+      typeof loggedUser === "string" &&
+      typeof report === "string" &&
+      typeof userId === "string"
+    ) {
+      await handleReportUser(loggedUser, report, userId, postRepo).then(
+        (reported) => {
+          console.log("contollers report comment response : ", reported);
+
+          res.status(200).json({
+            status: "success",
+            reported,
+          });
+        }
+      );
+    } else {
+      throw new AppError(
+        ` Error while reporting the user.try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  });
+
+
 
   return {
     changedp,
@@ -335,6 +366,7 @@ export const userControllers = (
     checkPassword,
     newPassword,
     deactivateAccount,
-    deleteAccount
+    deleteAccount,
+    reportUser
   };
 };

@@ -13,19 +13,28 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import ChatSearch from "./chatSearch";
-import { addPeopleToChat } from "../../../api/apiConnections/User/chatConnections";
-import { setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
+import {
+  addPeopleToChat,
+  leaveGroupChat,
+} from "../../../api/apiConnections/User/chatConnections";
+import { clearSelectedChat, setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 import ChangeGroupNameModal from "./GroupNameModal";
 import ManageGroupChatModal from "./ChatInfoOptModal";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 interface IMessageInfoDrawerProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchAgain: boolean;
+  setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
   open,
   setOpen,
+  fetchAgain,
+  setFetchAgain
 }) => {
   const closeDrawer = () => setOpen(false);
   const dispatch = useDispatch();
@@ -37,6 +46,8 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
   const selectedChat = useSelector(
     (store: { chat: { userChat: IuserChatList } }) => store.chat.userChat
   );
+
+  const navigate = useNavigate();
 
   //to handle add people search
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
@@ -56,16 +67,28 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
     setGroupNameModal(!groupNameModal);
   };
 
-  //to handle and manage group chat 
+  //to handle and manage group chat
   const [groupManageModal, setGroupManageModal] = useState<boolean>(false);
-  const[chatUserId,setChatUserId] = useState<string>('')
-  const handleGroupManageModal = (chatUserId :string) => {
-    setChatUserId(chatUserId)
+  const [chatUserId, setChatUserId] = useState<string>("");
+  const [chatUserName, setChatUserName] = useState<string>("");
+
+  const handleGroupManageModal = (userId: string, userName: string) => {
+    setChatUserId(userId);
+    setChatUserName(userName);
     setGroupManageModal(!groupManageModal);
   };
-
+  //to handle leave chat
+  const handleLeaveChat = async () => {
+    const response = await leaveGroupChat(selectedChat._id);
+    if (response) {
+     dispatch(clearSelectedChat())
+     setFetchAgain(!fetchAgain)
+     closeDrawer()
+    }
+  };
   return (
     <React.Fragment>
+        <ToastContainer position="top-center" />
       <Drawer
         placement="right"
         open={open}
@@ -130,9 +153,19 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
                             alt="avatar"
                             className="h-12 w-12"
                           />
-                          <div className="flex flex-col">
-                            <p className="text-md">{user.userName}</p>
-                            <p className="text-sm text-gray-700">{user.name}</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex flex-col">
+                              <p className="text-md">{user.userName}</p>
+                              <p className="text-sm text-gray-700">
+                                {user.name}
+                              </p>
+                            </div>
+                            {user.userName ===
+                            selectedChat.groupAdmin?.userName ? (
+                              <p className="text-xs text-green-800">(admin)</p>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -144,7 +177,12 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
                     </div>
                     {user.userName !== loggedUser.userName ? (
                       <div>
-                        <EllipsisHorizontalIcon className="h-6 w-6 text-gray-500" onClick={()=>handleGroupManageModal(user._id)}/>
+                        <EllipsisHorizontalIcon
+                          className="h-6 w-6 text-gray-500"
+                          onClick={() =>
+                            handleGroupManageModal(user._id, user.userName)
+                          }
+                        />
                       </div>
                     ) : (
                       ""
@@ -182,6 +220,17 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
                           </div>
                         )}
                       </div>
+                      <div>
+                        <EllipsisHorizontalIcon
+                          className="h-6 w-6 text-gray-500"
+                          onClick={() =>
+                            handleGroupManageModal(
+                              singleUser._id,
+                              singleUser.userName
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                   ))}
           </div>
@@ -189,7 +238,9 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
         <div className="flex flex-col px-10 min-h-[20%] max-h-[20%] gap-2 py-8 mb-8 cursor-pointer">
           {selectedChat.groupAdmin ? (
             <>
-              <p className="text-red-500 font-normal">Leave chat</p>
+              <p className="text-red-500 font-normal" onClick={handleLeaveChat}>
+                Leave chat
+              </p>
               <p className="text-gray-700 font-normal text-sm">
                 You won't get messages from this group unless someone adds you
                 back to the chat.
@@ -197,11 +248,11 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
             </>
           ) : (
             <>
-              <p className="text-red-500 font-normal">Report</p>
-              <p className="text-red-500 font-normal">Block</p>
+              {/* <p className="text-red-500 font-normal">Report</p> */}
+              {/* <p className="text-red-500 font-normal">Block</p> */}
             </>
           )}
-          <p className="text-red-500 font-normal">delete chat</p>
+          {/* <p className="text-red-500 font-normal">delete chat</p> */}
         </div>
       </Drawer>
       {chatSearchOpen && (
@@ -222,6 +273,7 @@ const MessageInfoDrawer: React.FC<IMessageInfoDrawerProps> = ({
           open={groupManageModal}
           setOpen={setGroupManageModal}
           chatUserId={chatUserId}
+          chatUserName={chatUserName}
         />
       )}
     </React.Fragment>

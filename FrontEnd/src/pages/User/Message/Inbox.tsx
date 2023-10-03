@@ -87,7 +87,7 @@ const Inbox = () => {
           createOrAccessGroupChatToChatList={createOrAccessGroupChatToChatList}
         />
       </div>
-      <div className="flex w-screen max-h-screen">
+      <div className="flex w-[calc(100vw-0rem)] max-w-[66em] max-h-screen">
         <Message
           fetchAgain={fetchAgain}
           setFetchAgain={setFetchAgain}

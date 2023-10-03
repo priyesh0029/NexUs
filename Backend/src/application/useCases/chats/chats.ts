@@ -197,3 +197,21 @@ export const removeUserFromGroupChat = async (
     return groupChat;
   });
 };
+
+//to handle leave User From GroupChat
+
+export const leaveUserFromGroupChat = async (
+  chatId: string,
+  userId: string,
+  repository: ReturnType<chatRepositoryInterfaceType>
+) => {
+  return await repository.handleLeaveUserFromChat(chatId,userId).then((groupChat) => {
+    if (!groupChat) {
+      throw new AppError(
+        "Error occured while leaving the group chat.please refresh the page and try again..!",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return groupChat;
+  });
+};

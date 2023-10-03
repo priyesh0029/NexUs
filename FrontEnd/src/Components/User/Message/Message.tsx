@@ -135,10 +135,6 @@ const Message: React.FC<ImessageProps> = ({
     };
   }, [notification]);
 
-  useEffect(() => {
-    console.log("Updated notification:", typeof notification[0]);
-    // Rest of your code
-  }, [notification]);
 
   // to handle Save Notification
 
@@ -217,7 +213,7 @@ const Message: React.FC<ImessageProps> = ({
   };
 
   return (
-    <div className="flex w-full min-h-screen flex-col">
+    <div className="flex w-full min-h-screen max-h-screen flex-col">
       {selectedChat._id.length > 0 ? (
         selectedChat.users
           .filter((chatUser: UserInfo) => chatUser.userName !== user.userName)
@@ -225,7 +221,7 @@ const Message: React.FC<ImessageProps> = ({
           .map((chatUser: UserInfo) => (
             <div
               key={`${chatUser._id}user`}
-              className="flex flex-col min-h-screen justify-between"
+              className="flex flex-col min-h-screen max-h-screen justify-between"
             >
               <div className="flex  justify-between px-8 py-4 items-center border-b-2 border-gray-300">
                 <div className="flex justify-start items-center gap-3">
@@ -335,11 +331,11 @@ const Message: React.FC<ImessageProps> = ({
                 )}
 
                 {/* view messages here */}
-                <div className="pt-20 px-1">
+                <div className="pt-20 px-1 flex flex-col ">
                   {messages &&
                     messages.map((message: Imessage, index) => (
                       <div
-                        className="flex px-8"
+                        className="flex px-8 "
                         key={`${message._id}messageId`}
                       >
                         {(isSameSender(
@@ -369,7 +365,7 @@ const Message: React.FC<ImessageProps> = ({
                             message.sender.userName === user.userName
                               ? "bg-blue-500 text-white rounded-xl p-1  px-4 "
                               : "bg-gray-300 text-black rounded-xl p-1  px-4"
-                          } max-w-[75%] ml-${sameCenterMargin(
+                          } max-w-[60%] break-words ml-${sameCenterMargin(
                             messages,
                             message,
                             index,
@@ -431,7 +427,7 @@ const Message: React.FC<ImessageProps> = ({
         />
       )}
       {openInfoDrawer && (
-        <MessageInfoDrawer open={openInfoDrawer} setOpen={SetOpenInfoDrawer}/>
+        <MessageInfoDrawer open={openInfoDrawer} setOpen={SetOpenInfoDrawer} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 
+import { toast } from "react-toastify";
 import baseURL from "../../api";
 
 //to create or access a single chat
@@ -246,6 +247,29 @@ export const handleRemoveFromChat = async(chatId:string,chatUserId:string)=>{
       "something went wrong! try again.";
     console.log("response error : ", errorMessage);
     return errorMessage;
+    // throw new Error(errorMessage);
+    //Throw the error to be caught by the caller
+  }
+}
+
+// to leave a group chat
+
+export const leaveGroupChat = async(chatId:string)=>{
+  try {
+    console.log("handle Remove From Chat : ",chatId);
+    const response: any = await baseURL.patch("/chat/leaveGroupChat",{chatId});
+    console.log("response handle Remove From Chat : ", response);
+    if (response.data.status === "success") {
+      const chat = response.data.chat;
+      return chat;
+    }
+  } catch (error) {
+    console.log("error inside the api acall catch createOrAccessChat :", error);
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
     // throw new Error(errorMessage);
     //Throw the error to be caught by the caller
   }

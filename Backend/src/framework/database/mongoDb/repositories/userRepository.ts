@@ -307,6 +307,48 @@ export const userRepositoryMongoDB = () => {
     return false;
   };
 
+  //to report a user 
+
+  const userReportDb  = async (
+    loggedUser: string,
+    reportComment: string,
+    userId: string
+  ) => {
+    
+    const user = await User.findOne({ _id: loggedUser }, { _id: 0, userName: 1 });
+    if (user !== null) {
+      const reportObj = {
+        reportedUser: user.userName,
+        report: reportComment,
+      };
+      const checkReport = await User.findOne({
+        _id: userId,
+        reports: {
+          $elemMatch: {
+            reportedUser: user.userName,
+            report: reportComment,
+          },
+        },
+      });
+
+      if (checkReport === null) {
+        const updatedReport = await User.updateOne(
+          { _id: userId },
+          { $push: { reports: reportObj } }
+        );
+        if (updatedReport.modifiedCount === 1) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  };
+
   return {
     findByProperty,
     findById,
@@ -323,6 +365,7 @@ export const userRepositoryMongoDB = () => {
     handleAccountDeactivate,
     handleAccountDelete,
     handleAccountActivate,
+    userReportDb
   };
 };
 

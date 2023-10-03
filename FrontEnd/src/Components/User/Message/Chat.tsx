@@ -53,7 +53,7 @@ const Chat: React.FC<Ichat> = ({
   };
 
   return (
-    <div className="flex flex-col w-full h-full  border-r-2 border-gray-300 ">
+    <div className="flex flex-col w-full h-full min-w-fit border-r-2 border-gray-300 ">
       <div className="p-4 flex border-b-2 border-gray-300 justify-between ">
         {user.dp ? (
           <div className="md:flex hidden items-center gap-3">
@@ -77,7 +77,7 @@ const Chat: React.FC<Ichat> = ({
             placement="bottom"
           >
             <PencilSquareIcon
-              className="h-10 w-10 text-black"
+              className="h-10 w-10 text-black flex"
               onClick={handleNewChatSearch}
             />
           </Tooltip>
@@ -117,7 +117,7 @@ const Chat: React.FC<Ichat> = ({
               )
               .map((chatUser: UserInfo) => (
                 <div
-                  className="flex p-4 gap-4  hover:bg-gray-100 cursor-pointer"
+                  className="flex p-4 gap-4  hover:bg-gray-100 cursor-pointer "
                   key={`${chat._id}chat`}
                   onClick={() => handleMessage(chat)}
                 >
@@ -136,7 +136,7 @@ const Chat: React.FC<Ichat> = ({
                         }`}
                       >
                         <p className="text-lg">{chatUser.userName}</p>
-                        <p className="text-md">{chat.latestMessage.content}</p>
+                        {chat.latestMessage?<p className="text-md">{chat.latestMessage.content.slice(0,12)}{chat.latestMessage.content.length > 12 ? "...":''}</p>:<></>}
                       </div>
                     </>
                   ) : (

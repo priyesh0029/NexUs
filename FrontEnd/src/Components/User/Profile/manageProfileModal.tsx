@@ -7,34 +7,21 @@ import ReportModal from "../Post/ReportModal";
 import { reportUser } from "../../../api/apiConnections/User/userConnections";
 import { ToastContainer } from "react-toastify";
 
-interface ManageGroupChatModalProps {
+interface ManageProfileModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  chatUserId : string
-  chatUserName :string
+  userId : string
+  userName :string
 }
 
-const ManageGroupChatModal: React.FC<ManageGroupChatModalProps> = ({
+const ManageProfileModal: React.FC<ManageProfileModalProps> = ({
   open,
   setOpen,
-  chatUserId,
-  chatUserName
+  userId,
+  userName
 }) => {
-  const user = useSelector(
-    (store: { home: { userInfo: UserInfo } }) => store.home.userInfo
-  );
-
-  const selectedChat = useSelector(
-    (store: { chat: { userChat: IuserChatList } }) => store.chat.userChat
-  );
   const handleOpen = () => setOpen(!open);
-  const dispatch = useDispatch()
 
-  const removeFromChat = async()=>{
-    const response = await handleRemoveFromChat(selectedChat._id,chatUserId)
-    dispatch(setSelectedChat(response));
-    handleOpen()
-  }
 
   //report user
   const [reportPageOpen, setReportPageOpen] = useState(false);
@@ -44,7 +31,7 @@ const ManageGroupChatModal: React.FC<ManageGroupChatModalProps> = ({
 
   //handle report user
   const handleReportUser = async(report:string)=>{
-    const response = await reportUser(chatUserId,report)
+    const response = await reportUser(userId,report)
     if(response){
         handleOpen()
     }
@@ -54,14 +41,6 @@ const ManageGroupChatModal: React.FC<ManageGroupChatModalProps> = ({
     <Dialog open={open} handler={handleOpen} size="xs" className="w-full">
         <ToastContainer position="bottom-center" />
       <div className="flex flex-col items-center w-full cursor-pointer">
-        {selectedChat.groupAdmin !== undefined &&
-        selectedChat.groupAdmin.userName === user.userName ? (
-          <div className="border-b-2 border-gray-400 w-full flex justify-center">
-            <p className="text-red-600 font-semibold" onClick={removeFromChat}>Remove</p>
-          </div>
-        ) : (
-          <></>
-        )}
         <div className="border-b-2 border-gray-400 w-full flex justify-center">
           <p className="text-red-600 font-semibold" onClick={handleReportPage}>Report</p>
         </div>
@@ -76,7 +55,7 @@ const ManageGroupChatModal: React.FC<ManageGroupChatModalProps> = ({
           <ReportModal
             open={reportPageOpen}
             setOpen={setReportPageOpen}
-            item={chatUserName}
+            item={userName}
             handleReport={handleReportUser}
           />
         )}
@@ -84,4 +63,4 @@ const ManageGroupChatModal: React.FC<ManageGroupChatModalProps> = ({
   );
 };
 
-export default ManageGroupChatModal;
+export default ManageProfileModal;

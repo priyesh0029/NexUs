@@ -7,8 +7,13 @@ import {
   handleFollows,
 } from "../../../api/apiConnections/User/userConnections";
 import { useRef, useState } from "react";
-import { SetHandlefollows, SetUserDp } from "../../../features/redux/slices/user/homeSlice";
+import {
+  SetHandlefollows,
+  SetUserDp,
+} from "../../../features/redux/slices/user/homeSlice";
 import { Link } from "react-router-dom";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import ManageProfileModal from "./manageProfileModal";
 interface ProfileHeaderProps {
   totalPosts: number;
   userInfo: UserInfo;
@@ -44,10 +49,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
     const response = await handleDp(formData);
     if (response.length !== 0) {
-
-      console.log("response: ",response,"response type: ",typeof response);
-        dispatch(SetUserDp(response))
-       
+      console.log("response: ", response, "response type: ", typeof response);
+      dispatch(SetUserDp(response));
     }
   };
 
@@ -64,23 +67,33 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     if (response.status) {
       if (response.state === "added") {
         setFollower((prevFollower) => [response.user, ...prevFollower]);
-        dispatch(SetHandlefollows(userInfo.userName))
+        dispatch(SetHandlefollows(userInfo.userName));
       } else if (response.state === "removed") {
         const updatedFollowedArr = follower.filter(
           (person) => person !== user.userName
         );
         setFollower(updatedFollowedArr);
-        dispatch(SetHandlefollows(userInfo.userName))
+        dispatch(SetHandlefollows(userInfo.userName));
       }
     }
   };
+
+  //to handle manage user 
+  const [manageUser, setManageUser] = useState<boolean>(false);
+  const handleMangeUser = ()=>{
+    setManageUser(!manageUser)
+  }
 
   return (
     <div className="flex justify-between pe-8 sm:ps-8 sm:pe-8 md:ps-28 md:pe-32 lg:ps-28 lg:pe-32 xl:ps-56 xl:pe-48 2xl:ps-72 2xl:pe-[19rem]">
       <div className="w-[9rem] h-[9rem] rounded-full group relative flex justify-center items-center">
         {userInfo.dp ? (
           <Avatar
-            src={userInfo.userName === user.userName ? POST_URL + `${user.dp}.jpg`: POST_URL + `${userInfo.dp}.jpg`}
+            src={
+              userInfo.userName === user.userName
+                ? POST_URL + `${user.dp}.jpg`
+                : POST_URL + `${userInfo.dp}.jpg`
+            }
             alt="avatar"
             className="w-[9rem] h-[9rem] relative group-hover:opacity-40"
           />
@@ -115,11 +128,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <div className="flex flex-row items-center pt-4 pb-2 gap-4">
           <p className="text-2xl">{userInfo.userName}</p>
           {userInfo.userName === user.userName ? (
-            <Link to={'/settings'}><button className="text-lg border-1 bg-blue-gray-200 p-1 rounded-lg">
-              Edit profile
-            </button></Link>
+            <Link to={"/settings"}>
+              <button className="text-lg border-1 bg-blue-gray-200 p-1 rounded-lg">
+                Edit profile
+              </button>
+            </Link>
           ) : (
-            ""
+            <div>
+              <EllipsisHorizontalIcon
+                className="h-6 w-6 text-gray-500"
+                onClick={handleMangeUser}
+              />
+            </div>
           )}
         </div>
         <div className="flex  flex-row items-center gap-5 text-lg">
@@ -157,6 +177,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           ""
         )}
       </div>
+      {manageUser && (
+        <ManageProfileModal
+          open={manageUser}
+          setOpen={setManageUser}
+          userId ={userInfo._id}
+          userName ={userInfo.userName}
+        />
+      )}
     </div>
   );
 };

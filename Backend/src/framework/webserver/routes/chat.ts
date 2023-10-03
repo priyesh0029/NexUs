@@ -31,6 +31,9 @@ const chatRouter = (router: Router) => {
 
   router.patch('/removeFromGroupChat',controllers.removeFromChat) 
 
+  router.patch('/leaveGroupChat',controllers.leaveGroupChat) 
+
+
 
 
 

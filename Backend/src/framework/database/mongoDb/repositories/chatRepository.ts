@@ -290,6 +290,38 @@ export const chatRepositoryMongoDb = () => {
     }
   };
 
+  //to Handle leave User From Chat 
+
+  const leaveUserFromChatHandle = async (
+    chatId: string,
+    userId: string
+  ) => {
+    console.log(" remove User From group Chat  : ", userId);
+    try {
+      const leaveUserFromGrpChat = await Chat.findOneAndUpdate(
+        { _id: chatId },
+        { $pull: { users: userId } },
+        { new: true }
+      );
+      if (leaveUserFromGrpChat  !== null){
+
+        console.log(" remove User From group Chat : ", leaveUserFromGrpChat.users);
+        const newGroupAdmin = await Chat.updateOne(
+          { _id: chatId,groupAdmin :userId },
+          { $set: { groupAdmin: leaveUserFromGrpChat.users[0] } }
+        );
+  
+          return true;
+      }else{
+        return false
+      }
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+
   return {
     accessOrCreateChatHandle,
     accessOrCreateGroupChatHandle,
@@ -302,6 +334,7 @@ export const chatRepositoryMongoDb = () => {
     addNewMembersToGroupChat,
     newChatName,
     removeUserFromChatHandle,
+    leaveUserFromChatHandle
   };
 };
 

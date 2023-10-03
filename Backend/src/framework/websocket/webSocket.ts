@@ -2,6 +2,9 @@ import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import  {ChatUsers, Imessage}  from "../../types/socketTypes/socketTypes";
 
+
+// let activeUsers:string[] = []
+
 const socketConfig = (io: Server<DefaultEventsMap>) => {
     io.on("connection",(socket)=>{
         console.log("connected to socket.io");
@@ -9,12 +12,15 @@ const socketConfig = (io: Server<DefaultEventsMap>) => {
         socket.on("setup",(userData)=>{
             socket.join(userData)
             console.log("userData",userData);
+            // activeUsers = activeUsers.filter((user)=>user!==userData)
+            // console.log("active users of the app : ",activeUsers);
             socket.emit("connected")
         })
 
         socket.on("join chat",(room)=>{
             socket.join(room)
             console.log("user joined room : ",room);
+
             
         })
 

@@ -38,6 +38,9 @@ const user = (router: Router) => {
 
   router.patch("/deleteAccount", controllers.deleteAccount);
 
+  router.patch("/reportUser", controllers.reportUser);
+
+
 
 
 

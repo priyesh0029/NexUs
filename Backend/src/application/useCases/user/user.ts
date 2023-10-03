@@ -254,3 +254,24 @@ export const handleDeleteAccount = async (
     });
       
 };
+
+
+//to report a user 
+
+export const handleReportUser =  async (
+  loggedUser: string,
+  report:string,
+  userId:string,
+  repository: ReturnType<userTypeDbRepository>
+) => {
+  return await repository.reportUserHandle(loggedUser,report,userId).then((response) => {
+    if (!response) {
+      throw new AppError(
+        ` Error occured while reporting user.please try again..!`,
+        HttpStatus.BAD_REQUEST
+      );
+    } else {
+      return response;
+    }
+  });
+};
