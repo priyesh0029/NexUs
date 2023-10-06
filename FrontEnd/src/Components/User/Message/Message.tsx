@@ -41,7 +41,9 @@ interface ImessageProps {
 }
 
 // let ENDPOINT = process.env.SERVER_URL
-let ENDPOINT = process.env.BASE_URL;
+let ENDPOINT = "http://localhost:5000";
+// let ENDPOINT = process.env.SERVER_URL;
+
 let socket: Socket, selectedChatCompare: IuserChatList;
 
 const Message: React.FC<ImessageProps> = ({
@@ -88,7 +90,7 @@ const Message: React.FC<ImessageProps> = ({
   const[otherUserPeerId,SetOtherUserPeerId] = useState<string>('')
   //socket io connection
   useEffect(() => {
-      socket = io(ENDPOINT as string);
+      socket = io(ENDPOINT);
       socket.emit("setup", user.userName);
       socket.on("connected", () => setSocketConnected(true));
       socket.on(
