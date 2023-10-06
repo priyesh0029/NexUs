@@ -8,6 +8,7 @@ const loadUserFromLocalStorage = (): IuserHomeSlice => {
       return userInfo;
     }
     return {
+      _id:"",
       name: "",
       userName: "",
       dp: "",
@@ -18,6 +19,7 @@ const loadUserFromLocalStorage = (): IuserHomeSlice => {
   } catch (error) {
     console.log("Error loading user info from local storage:", error);
     return {
+      _id:"",
       name: "",
       userName: "",
       dp: "",
@@ -57,6 +59,7 @@ const homeSlice = createSlice({
           localStorage.setItem("userInfo", JSON.stringify(userInfo));
         } else {
           const userInfo = {
+            _id:"",
             name: "",
             userName: "",
             dp: action.payload,
@@ -80,6 +83,7 @@ const homeSlice = createSlice({
           localStorage.setItem("userInfo", JSON.stringify(userInfo));
         } else {
           const userInfo = {
+            _id:"",
             name: "",
             userName: "",
             dp: action.payload,
@@ -103,6 +107,7 @@ const homeSlice = createSlice({
           localStorage.setItem("userInfo", JSON.stringify(userInfo));
         } else {
           const userInfo = {
+            _id:"",
             name: "",
             userName: "",
             dp: "",
@@ -192,6 +197,7 @@ const homeSlice = createSlice({
     //to clear local storage  while logout
     clearUserInfo: (state) => {
       state.userInfo = {
+        _id:"",
         name: "",
         userName: "",
         dp: "",

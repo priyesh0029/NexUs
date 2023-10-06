@@ -53,6 +53,7 @@ interface Imessage {
 }
 
 interface IuserHomeSlice {
+  _id:string,
   name: string;
   userName: string;
   dp: string;

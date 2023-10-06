@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { VideoCameraIcon } from "@heroicons/react/20/solid";
 import ChatboxTextarea from "./ChatTextArea";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import ChatSearch from "./chatSearch";
 import {
@@ -30,6 +30,8 @@ import {
 import Lottie from "react-lottie";
 import animationData from "../../../Animaitons/typing.json";
 import MessageInfoDrawer from "./MessageInfo";
+import Peer from "peerjs";
+import VideoPlayer from "./videoCall";
 
 interface ImessageProps {
   fetchAgain: boolean;
@@ -69,7 +71,6 @@ const Message: React.FC<ImessageProps> = ({
     (store: { chat: { notification: string[] } }) => store.chat.notification
   );
 
-
   const dispatch = useDispatch();
 
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
@@ -81,25 +82,63 @@ const Message: React.FC<ImessageProps> = ({
   const [isTyping, setIstyping] = useState(false);
   const [room, setRoom] = useState<string>("");
   const [openInfoDrawer, SetOpenInfoDrawer] = useState<boolean>(false);
+  //peer connection state
+  const [me, setMe] = useState<Peer>();
+  const [stream, setStream] = useState<MediaStream>();
+  const[otherUserPeerId,SetOtherUserPeerId] = useState<string>('')
   //socket io connection
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user.userName);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on(
-      "typing",
-      (room) => (setRoom(() => room), setIstyping(() => true))
-    );
-    socket.on("stop typing", () => setIstyping(() => false));
+      socket = io(ENDPOINT);
+      socket.emit("setup", user.userName);
+      socket.on("connected", () => setSocketConnected(true));
+      socket.on(
+        "typing",
+        (room) => (setRoom(() => room), setIstyping(() => true))
+      );
+      socket.on("stop typing", () => setIstyping(() => false));
+
+      return () => {
+        socket.off("connected");
+        socket.off("setup");
+      };
   }, []);
 
+
+  useEffect(()=>{
+    if (selectedChat._id.length > 0) {
+      const meId = user._id;
+       const peer = new Peer(meId);
+        setMe(peer);
+    }
+  
+  },[selectedChat])
+  //to fetch messages of the chat using selectedChat._id
   useEffect(() => {
     if (selectedChat._id.length > 0) {
       fetchallMessages();
       selectedChatCompare = selectedChat;
     }
-  }, [selectedChat]);
+    if (me) {
+      console.log("me : ", me);
 
+      socket.emit("join chat", {
+        room: selectedChat._id,
+        user: user.userName,
+        peerId: user._id,
+      });
+      // socket.on("user-joined", ({ peerId }) => {
+      //   SetOtherUserPeerId(peerId)
+      // });
+      // socket.on("get-users", ({ participants }: { participants: string[] }) => {
+      //   console.log({ participants });
+      //   socket.on("user-disconnected", (peerId: string) => {
+      //     // dispatch(removePeerAction(peerId));
+      //   });
+      //  });
+    }
+  }, [selectedChat, me]);
+
+  //handle new mesaagess event using socket.on("message received", (newMesageReceived)
   useEffect(() => {
     socket.on("message received", (newMesageReceived) => {
       // dispatch(SetNewMessage("message received"))
@@ -135,7 +174,6 @@ const Message: React.FC<ImessageProps> = ({
     };
   }, [notification]);
 
-
   // to handle Save Notification
 
   const handleSaveChatNotification = async (chatId: string) => {
@@ -152,7 +190,6 @@ const Message: React.FC<ImessageProps> = ({
     const response: Imessage[] = await fetchallMessagesOfChat(selectedChat._id);
     console.log("fetch all Messages Of Chat response : ", response);
     setMessages(response);
-    socket.emit("join chat", selectedChat._id);
     scrollToBottom();
   };
 
@@ -212,8 +249,95 @@ const Message: React.FC<ImessageProps> = ({
     SetOpenInfoDrawer(true);
   };
 
+  //to handle video call
+  //------------------------------------------------------------//
+  // const navigate = useNavigate();
+
+  
+  const [videocall, setVideoCall] = useState<boolean>(false);
+  const[connectedUsesrs,SetConnectedUsesrs] = useState<string[]>([])
+
+  const handleVideocall = () => {
+    setVideoCall(!videocall);
+  };
+
+  // const [peers, dispatch] = useReducer(peersReducer, {});
+
+  // console.log({ peers });
+
+  useEffect(() => {
+    //for video  chat strat
+    if (videocall) {
+      try {
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            console.log("stream navigator.mediaDevices.then : ", stream); 
+            setStream(stream);
+          });
+      } catch (error) {
+        console.error(error);
+      }
+     
+    }
+    socket.emit("join videoChat", selectedChat._id)
+    socket.on("get-users", ({ participants }: { participants: string[] }) => {
+      console.log("socket.on(=get-users  : ", participants );
+      SetConnectedUsesrs(participants)
+     });
+     const peerId = connectedUsesrs.filter((peerId)=> peerId !== user._id)
+     SetOtherUserPeerId(peerId[0])
+    //for video chat end
+  }, [videocall]);
+
+  // useEffect(() => {
+  //   console.log("set me value showing in useeffect : ", me);
+  //   if (me)
+  //     socket.emit("join videoChat", {
+  //       room: selectedChat._id,
+  //       user: user.userName,
+  //       peerId: user._id,
+  //     });
+  // }, [me]);
+
+  const[usersSteam,setUsersStream] = useState<MediaStream>()
+  const [callStatus, setCallStatus] = useState<string>("idle"); // States: "idle", "outgoing", "incoming", "connected"
+  const [incomingCallPeerId, setIncomingCallPeerId] = useState(null);
+
+
+  useEffect(() => {
+    if (!me) return;
+    if (!stream) return;
+    if (!videocall) return;
+   
+      const call = me.call(otherUserPeerId, stream);
+      call.on("stream", (peerStream) => {
+        console.log("call.on(stream) : ", peerStream);
+        // dispatch((peerId, peerStream));
+        setCallStatus("outgoing")
+        setUsersStream(peerStream)
+      });
+   
+   
+      me.on("call", (incomingCall) => {
+        incomingCall.answer(stream);
+        incomingCall.on("stream", (peerStream) => {
+        console.log("call.answer(stream) : ", peerStream);
+        // dispatch(addPeerAction(call.peer, peerStream));
+        setUsersStream(peerStream)
+      });
+    });
+
+  }, [me,stream]);
+
   return (
     <div className="flex w-full min-h-screen max-h-screen flex-col">
+      {usersSteam && stream &&(
+        <VideoPlayer
+        //  stream={stream}
+         open={videocall} setOpen={setVideoCall} usersSteam={usersSteam} myStream ={stream}
+          />
+      )}
       {selectedChat._id.length > 0 ? (
         selectedChat.users
           .filter((chatUser: UserInfo) => chatUser.userName !== user.userName)
@@ -266,7 +390,14 @@ const Message: React.FC<ImessageProps> = ({
                   )}
                 </div>
                 <div className="flex gap-4">
-                  <VideoCameraIcon className="h-6 w-6 text-black" />
+                  {!selectedChat.isGroupChat ? (
+                    <VideoCameraIcon
+                      className="h-6 w-6 text-black"
+                      onClick={handleVideocall}
+                    />
+                  ) : (
+                    <></>
+                  )}
                   <InformationCircleIcon
                     className="h-6 w-6 text-black"
                     onClick={handleInfoDrawer}
@@ -427,7 +558,12 @@ const Message: React.FC<ImessageProps> = ({
         />
       )}
       {openInfoDrawer && (
-        <MessageInfoDrawer open={openInfoDrawer} setOpen={SetOpenInfoDrawer} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
+        <MessageInfoDrawer
+          open={openInfoDrawer}
+          setOpen={SetOpenInfoDrawer}
+          fetchAgain={fetchAgain}
+          setFetchAgain={setFetchAgain}
+        />
       )}
     </div>
   );
