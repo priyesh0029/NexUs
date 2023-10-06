@@ -9,7 +9,7 @@ import errorHandlingMiddleware from './framework/webserver/middleware/errorHandl
 import AppError from './utilities/appError';
 import routes from './framework/webserver/routes/indexRoutes';
 
-import { Server } from 'socket.io';
+import { Server } from 'socket.io'
 import socketConfig from './framework/websocket/webSocket';
 
 const app : express.Application = express()
