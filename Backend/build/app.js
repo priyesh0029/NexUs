@@ -18,7 +18,7 @@ const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     pingTimeout: 60000,
     cors: {
-        origin: "*",
+        origin: process.env.SOCKET_SERVER,
         methods: ["GET", "POST"]
     }
 });
