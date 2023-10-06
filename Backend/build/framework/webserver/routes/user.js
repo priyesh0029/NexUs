@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const userControllers_1 = require("../../../adapters/controllers/userControllers");
+const multer_1 = require("../middleware/multer");
+const userDbRepositories_1 = require("../../../application/repositories/userDbRepositories");
+const userRepository_1 = require("../../database/mongoDb/repositories/userRepository");
+const authServiceInterface_1 = require("../../../application/services/authServiceInterface");
+const authServices_1 = require("../../services/authServices");
+const user = (router) => {
+    const controllers = (0, userControllers_1.userControllers)(userDbRepositories_1.userDbRepository, userRepository_1.userRepositoryMongoDB, authServiceInterface_1.authServiceInterface, authServices_1.authServices);
+    router.post("/changedp", multer_1.uploadsProfilePictureMulter, controllers.changedp);
+    router.get("/user/:user", controllers.getUser);
+    router.get("/search", controllers.searchUser);
+    router.get("/usersList", controllers.getUsersList);
+    router.post("/followhandle", controllers.handleFollows);
+    router.post("/savepost", controllers.savePost);
+    router.patch("/changeGender", controllers.changeGender);
+    router.patch("/updateProfile", controllers.updateProfile);
+    router.patch("/checkPassword", controllers.checkPassword);
+    router.patch("/newPassword", controllers.newPassword);
+    router.patch("/deactivateAccount", controllers.deactivateAccount);
+    router.patch("/deleteAccount", controllers.deleteAccount);
+    router.patch("/reportUser", controllers.reportUser);
+    return router;
+};
+exports.default = user;
