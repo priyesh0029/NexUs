@@ -32,6 +32,8 @@ import animationData from "../../../Animaitons/typing.json";
 import MessageInfoDrawer from "./MessageInfo";
 import Peer from "peerjs";
 import VideoPlayer from "./videoCall";
+import CallNotify from "./CallNotifyModal";
+import Swal from "sweetalert2";
 
 interface ImessageProps {
   fetchAgain: boolean;
@@ -40,8 +42,6 @@ interface ImessageProps {
   createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
 
-// let ENDPOINT = process.env.SERVER_URL
-// let ENDPOINT = "http://localhost:5000";
 let ENDPOINT = process.env.SERVER_URL;
 
 let socket: Socket, selectedChatCompare: IuserChatList;
@@ -87,33 +87,37 @@ const Message: React.FC<ImessageProps> = ({
   //peer connection state
   const [me, setMe] = useState<Peer>();
   const [stream, setStream] = useState<MediaStream>();
-  const[otherUserPeerId,SetOtherUserPeerId] = useState<string>('')
+  const [otherUserPeerId, SetOtherUserPeerId] = useState<string>("");
+  const [connectedUsers, SetConnectedUsers] = useState<string[]>([]);
+  const [callNotification, setCallNotification] = useState<boolean>(false);
+  const [answerCall, setAnswerCall] = useState<boolean>(false);
+
   //socket io connection
   useEffect(() => {
-      socket = io(ENDPOINT as string);
-      socket.emit("setup", user.userName);
-      socket.on("connected", () => setSocketConnected(true));
-      socket.on(
-        "typing",
-        (room) => (setRoom(() => room), setIstyping(() => true))
-      );
-      socket.on("stop typing", () => setIstyping(() => false));
+    socket = io(ENDPOINT as string);
+    socket.emit("setup", user._id);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on(
+      "typing",
+      (room) => (setRoom(() => room), setIstyping(() => true))
+    );
+    socket.on("stop typing", () => setIstyping(() => false));
 
-      return () => {
-        socket.off("connected");
-        socket.off("setup");
-      };
+    return () => {
+      socket.off("connected");
+      socket.off("setup");
+      socket.off("typing");
+      socket.off("stop typing");
+    };
   }, []);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     if (selectedChat._id.length > 0) {
       const meId = user._id;
-       const peer = new Peer(meId);
-        setMe(peer);
+      const peer = new Peer(meId);
+      setMe(peer);
     }
-  
-  },[selectedChat])
+  }, [selectedChat]);
   //to fetch messages of the chat using selectedChat._id
   useEffect(() => {
     if (selectedChat._id.length > 0) {
@@ -128,22 +132,12 @@ const Message: React.FC<ImessageProps> = ({
         user: user.userName,
         peerId: user._id,
       });
-      // socket.on("user-joined", ({ peerId }) => {
-      //   SetOtherUserPeerId(peerId)
-      // });
-      // socket.on("get-users", ({ participants }: { participants: string[] }) => {
-      //   console.log({ participants });
-      //   socket.on("user-disconnected", (peerId: string) => {
-      //     // dispatch(removePeerAction(peerId));
-      //   });
-      //  });
     }
   }, [selectedChat, me]);
 
   //handle new mesaagess event using socket.on("message received", (newMesageReceived)
   useEffect(() => {
     socket.on("message received", (newMesageReceived) => {
-      // dispatch(SetNewMessage("message received"))
       console.log("--------------newMesageReceived : ", newMesageReceived);
 
       if (
@@ -236,7 +230,7 @@ const Message: React.FC<ImessageProps> = ({
     socket.emit("new message", response);
     setMessages([...messages, response]);
     scrollToBottom();
-    // dispatch(SetNewMessage("message received"))
+   
   };
 
   //scroll to bottom function for messages
@@ -253,92 +247,200 @@ const Message: React.FC<ImessageProps> = ({
 
   //to handle video call
   //------------------------------------------------------------//
-  // const navigate = useNavigate();
 
-  
   const [videocall, setVideoCall] = useState<boolean>(false);
-  const[connectedUsesrs,SetConnectedUsesrs] = useState<string[]>([])
+  const [calledUser, setCalledUser] = useState<string>("");
+  const [usersSteam, setUsersStream] = useState<MediaStream>();
+
 
   const handleVideocall = () => {
-    setVideoCall(!videocall);
+    setVideoCall(true);
   };
 
-  // const [peers, dispatch] = useReducer(peersReducer, {});
 
-  // console.log({ peers });
+
+  useEffect(() => {
+    socket.on("received call", (caller, room) => {
+      console.log("id ......./", caller, room);
+      setCalledUser(caller);
+      if (!selectedChatCompare || selectedChatCompare._id !== room) {
+        //notification
+        console.log("do not take this calll");
+      } else {
+        console.log("take this calll");
+        // setCallNotification(true);
+        // setAnswerCall(() => true);
+        //  handleVideocall()
+
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            popup: "bg-white rounded-xl shadow-xl",
+            confirmButton:
+              "bg-green-700 text-white px-10 mr-10 py-2 rounded hover:bg-green-900",
+            cancelButton:
+              "bg-red-700 text-white px-10 ml-10 py-2 rounded hover:bg-red-900",
+          },
+           buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons
+          .fire({
+            text:  `${caller} is calling...`,
+            showCancelButton: true,
+            confirmButtonText: "Accept",
+            cancelButtonText: "Reject",
+          })
+          .then((result) => {
+            console.log(result);
+            if (result.isConfirmed) {
+              console.log("accepted");
+              setAnswerCall(() => true);
+            } else if (
+              /* Read more about handling dismissals below */
+              result.dismiss === Swal.DismissReason.cancel
+            ) {
+              console.log("rejected");
+              me?.disconnect()
+              socket.emit("disconnect")
+            }
+          });
+      }
+    });
+  }, []);
+
+  // const handleAnswerCall = ()=>{
+  //    setAnswerCall(()=>true);
+  // }
+  useEffect(() => {
+    if (!me) return;
+    if (!stream) return;
+    // if (!otherUserPeerId) return;
+
+    try {
+      //  if(!answerCall){
+      const call = me.call(otherUserPeerId, stream);
+      socket.emit(
+        "start calling",
+        selectedChat._id,
+        user.userName,
+        otherUserPeerId
+      );
+
+      call.on("stream", (peerStream) => {
+        console.log("call.on(stream) : ", peerStream);
+        setUsersStream(peerStream);
+      });
+      //  }
+
+      console.log("call.incomingCall form peer : ", answerCall);
+      me.on("call", (incomingCall) => {
+        console.log("call.incomingCall form peer : ", incomingCall);
+        incomingCall.answer(stream);
+        incomingCall.on("stream", (peerStream) => {
+          console.log("call.answer(stream) : ", peerStream);
+          setUsersStream(peerStream);
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [me, stream]);
 
   useEffect(() => {
     //for video  chat strat
-    if (videocall) {
+    if (videocall || answerCall) {
       try {
         navigator.mediaDevices
           .getUserMedia({ video: true, audio: true })
           .then((stream) => {
-            console.log("stream navigator.mediaDevices.then : ", stream); 
+            console.log("stream navigator.mediaDevices.then : ", stream);
             setStream(stream);
           });
       } catch (error) {
         console.error(error);
       }
-     
     }
-    socket.emit("join videoChat", selectedChat._id)
+
+    // if (!answerCall) {
+    // socket.emit("start videocall", selectedChat._id);
+    socket.emit("join videoChat", selectedChat._id);
     socket.on("get-users", ({ participants }: { participants: string[] }) => {
-      console.log("socket.on(=get-users  : ", participants );
-      SetConnectedUsesrs(participants)
-     });
-     const peerId = connectedUsesrs.filter((peerId)=> peerId !== user._id)
-     SetOtherUserPeerId(peerId[0])
+      console.log("socket.on(=get-users  : ", participants);
+      SetConnectedUsers(participants);
+      const peerId = participants.filter((peerId) => peerId !== user._id);
+      SetOtherUserPeerId(peerId[0]);
+    });
+    //  }
+
     //for video chat end
-  }, [videocall]);
+  }, [videocall, answerCall]);
+
+  //handle hangup
+  const handleHangup = ()=>{
+  //   me?.socket.close();
+  // me?.destroy();
+  if (stream) {
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => {
+      track.stop();
+    });
+    setStream(undefined);
+    setVideoCall(false)
+  }
+  if (usersSteam) {
+    const tracks = usersSteam.getTracks();
+    tracks.forEach((track) => {
+      track.stop();
+    });
+    setStream(undefined);
+    setAnswerCall(false)
+  }
+  }
 
   // useEffect(() => {
-  //   console.log("set me value showing in useeffect : ", me);
-  //   if (me)
-  //     socket.emit("join videoChat", {
-  //       room: selectedChat._id,
-  //       user: user.userName,
-  //       peerId: user._id,
-  //     });
-  // }, [me]);
-
-  const[usersSteam,setUsersStream] = useState<MediaStream>()
-  const [callStatus, setCallStatus] = useState<string>("idle"); // States: "idle", "outgoing", "incoming", "connected"
-  const [incomingCallPeerId, setIncomingCallPeerId] = useState(null);
-
-
-  useEffect(() => {
-    if (!me) return;
-    if (!stream) return;
-    if (!videocall) return;
-   
-      const call = me.call(otherUserPeerId, stream);
-      call.on("stream", (peerStream) => {
-        console.log("call.on(stream) : ", peerStream);
-        // dispatch((peerId, peerStream));
-        setCallStatus("outgoing")
-        setUsersStream(peerStream)
-      });
-   
-   
-      me.on("call", (incomingCall) => {
-        incomingCall.answer(stream);
-        incomingCall.on("stream", (peerStream) => {
-        console.log("call.answer(stream) : ", peerStream);
-        // dispatch(addPeerAction(call.peer, peerStream));
-        setUsersStream(peerStream)
-      });
-    });
-
-  }, [me,stream]);
+  //   socket.on("stop call", ( room,caller, calledUser) => {
+  //     console.log("stop call");
+      
+  //     // Turn off camera and microphone
+  //     if (stream) {
+  //       const tracks = stream.getTracks();
+  //       tracks.forEach((track) => {
+  //         track.stop();
+  //       });
+  //       setStream(undefined);
+  //       setVideoCall(false)
+  //     }
+  //     if (usersSteam) {
+  //       const tracks = usersSteam.getTracks();
+  //       tracks.forEach((track) => {
+  //         track.stop();
+  //       });
+  //       setStream(undefined);
+  //       setAnswerCall(false)
+  //     }
+  //   })
+  // }, []);
 
   return (
     <div className="flex w-full min-h-screen max-h-screen flex-col">
-      {usersSteam && stream &&(
+      {callNotification && (
+        <CallNotify
+          open={callNotification}
+          setOpen={setCallNotification}
+          setAnswerCall={setAnswerCall}
+          // handleAnswerCall={handleAnswerCall}
+          calledUser={calledUser}
+          handleVideocall={handleVideocall}
+        />
+      )}
+      {(videocall || answerCall) && (
         <VideoPlayer
-        //  stream={stream}
-         open={videocall} setOpen={setVideoCall} usersSteam={usersSteam} myStream ={stream}
-          />
+          open={videocall || answerCall}
+          setOpen={setVideoCall || setAnswerCall}
+          usersSteam={usersSteam}
+          myStream={stream}
+          handleHangup={handleHangup}
+        />
       )}
       {selectedChat._id.length > 0 ? (
         selectedChat.users

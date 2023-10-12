@@ -32,7 +32,18 @@
   z-index: 100000; /* Set the desired z-index value */
 }
 
+.hang-up-button {
+  position: absolute;
+  bottom: 10px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(64%);
+  display: none; /* Initially hidden */
 
+  /* Add a hover effect */
+  .group:hover & {
+    display: block;
+  }
+}
 
 
 
