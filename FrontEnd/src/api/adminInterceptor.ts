@@ -1,14 +1,14 @@
 import axios from "axios";
 
 
-const baseURL = axios.create({
+const adminBaseURL = axios.create({
   baseURL: process.env.BASE_URL,
 });
 
-baseURL.interceptors.request.use(
+adminBaseURL.interceptors.request.use(
   (config) => {
-    console.log("Entered to interceptor");
-    const token = localStorage.getItem("token");
+    console.log("Entered to interceptor of admin");
+    const token = localStorage.getItem("adminToken");
 
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -22,4 +22,4 @@ baseURL.interceptors.request.use(
   }
 );
 
-export default baseURL;
+export default adminBaseURL;

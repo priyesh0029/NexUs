@@ -3,6 +3,7 @@ import { authServiceInterfaceType } from "../../services/authServiceInterface";
 import { user } from "../../../entities/user";
 import AppError from "../../../utilities/appError";
 import { HttpStatus } from "../../../types/httpStatus";
+import { UserInfoLogin } from "../../../types/userTypes/userTypes";
 
 //userRegister
 
@@ -59,7 +60,7 @@ export const registerUser = async (
       }
       return userRepository.RegisterUser(newUser).then(async (user) => {
         console.log("userdetailds after then :", user);
-        const token = await authService.generateToken(user._id.toString());
+        const token = await authService.generateToken({id:user._id.toString(),role:"user"});
         return { token, user };
       });
     });
@@ -77,7 +78,7 @@ export const loginUser = async (
 ) => {
   const { username, password } = userData;
 
-  return await userRepository.findByProperty(username).then((user) => {
+  return await userRepository.findByProperty(username).then((user:UserInfoLogin[]) => {
     if (user.length === 0) {
       throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
     }
@@ -102,14 +103,14 @@ export const loginUser = async (
                 );
               }else {
                 return {
-                  token: await authService.generateToken(user[0]._id),
+                  token: await authService.generateToken({id:user[0]._id,role:"user"}),
                   user,
                 };
               }
             });
         } else {
           return {
-            token: await authService.generateToken(user[0]._id),
+            token: await authService.generateToken({id:user[0]._id,role:"user"}),
             user,
           };
         }

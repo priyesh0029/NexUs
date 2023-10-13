@@ -1,4 +1,5 @@
 import { authServiceType } from "../../framework/services/authServices";
+import { Ipayload } from "../../types/userTypes/userTypes";
 
 export const authServiceInterface = (services: ReturnType<authServiceType>) => {
   //password encryption
@@ -8,7 +9,7 @@ export const authServiceInterface = (services: ReturnType<authServiceType>) => {
 
   //generate token
 
-  const generateToken = async (payload: string) => {
+  const generateToken = async (payload: Ipayload) => {
     return await services.generateToken(payload);
   };
 

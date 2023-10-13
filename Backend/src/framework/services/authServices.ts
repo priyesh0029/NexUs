@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import configKeys from "../../config";
+import { Ipayload } from "../../types/userTypes/userTypes";
 
 export const authServices = () => {
   //passwordEncryption
@@ -13,7 +14,7 @@ export const authServices = () => {
 
   //generate token
 
-  const generateToken = async (payload: string) => {
+  const generateToken = async (payload: Ipayload) => {
     if (configKeys.JWT_SECRET) {
       const token = await jwt.sign({ payload }, configKeys.JWT_SECRET, {
         expiresIn: "5d",

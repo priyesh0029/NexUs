@@ -113,11 +113,11 @@ const DefaultSidebar = () => {
               </ListItemPrefix>
               Messages
               <ListItemSuffix>
-                {notification.length === 0 ? (
+                {!notification || notification.length === 0 ? (
                   ""
                 ) : (
                   <Chip
-                    value={notification.length}
+                    value={notification?.length}
                     size="sm"
                     color="red"
                     className="rounded-full"
@@ -207,7 +207,7 @@ const DefaultSidebar = () => {
               content="Message"
               placement="right"
             >
-              {notification.length === 0 ? (
+              {!notification || notification.length === 0 ? (
                 <EnvelopeIcon className="h-10 w-10 text-black" />
               ) : (
                 <Badge content={notification.length} className="">
@@ -286,7 +286,7 @@ const DefaultSidebar = () => {
             onClick={handleSearchTab}
           />
           <Link to={"/messages"} className="flex items-center">
-            {notification.length === 0 ? (
+            {!notification || notification.length === 0  ? (
               <EnvelopeIcon className="h-7 w-7 text-black" />
             ) : (
               <Badge content={notification.length} className="">
