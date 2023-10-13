@@ -27,7 +27,7 @@ const RightSideBar = () => {
     setUsersList(response);
   };
 
-  const initialFollowStates = usersList.map(() => false);
+  const initialFollowStates = usersList?.map(() => false);
   const [followStates, setFollowStates] = useState(initialFollowStates);
 
   const handleFollow = async (searchedUser:string,index :number) => {
