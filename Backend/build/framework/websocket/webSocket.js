@@ -8,7 +8,6 @@ const socketConfig = (io) => {
         socket.on("setup", (userData) => {
             socket.join(userData);
             console.log("userData", userData);
-            // rooms[userData] = []; //for video chat
             socket.emit("connected");
         });
         socket.on("join chat", ({ room, user, peerId }) => {
@@ -24,11 +23,6 @@ const socketConfig = (io) => {
             }
             console.log("user joined the room for video chat", rooms);
             socket.join(room);
-            // socket.to(room).emit("user-joined", { peerId });
-            // socket.emit("get-users", {
-            //   room,
-            //     participants: rooms[room],
-            // });
             socket.on("disconnect", () => {
                 console.log("user left the room", peerId);
                 leaveRoom({ room, user, peerId });
@@ -44,6 +38,14 @@ const socketConfig = (io) => {
         });
         socket.on("typing", (room) => socket.in(room).emit("typing", room));
         socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+        socket.on("start calling", (room, caller, calledUser) => {
+            console.log("start calling console : ", room, caller, calledUser);
+            socket.in(calledUser).emit("received call", caller, room);
+        });
+        socket.on("stop calling", (room, calledUser, caller) => {
+            console.log("start calling console : ", room, caller, calledUser);
+            socket.in(calledUser).emit("stop call ", caller, room);
+        });
         socket.on("new message", (newMesageReceived) => {
             const chat = newMesageReceived.chatId;
             if (!chat.users)
@@ -51,26 +53,9 @@ const socketConfig = (io) => {
             chat.users.forEach((user) => {
                 if (user.userName === newMesageReceived.sender.userName)
                     return;
-                socket.in(user.userName).emit("message received", newMesageReceived);
+                socket.in(user._id).emit("message received", newMesageReceived);
             });
         });
-        // for video chat
-        // socket.on("join videoChat", ({ room,user, peerId }: IvideoChatRoom) => {
-        //     if (rooms[user]) {
-        //         console.log("user joined the room for video chat", room,user, peerId);
-        //         rooms[user].push(peerId);
-        //         socket.join(room);
-        //         socket.to(room).emit("user-joined", { peerId });
-        //         socket.emit("get-users", {
-        //           room,
-        //             participants: rooms[user],
-        //         });
-        //     }
-        //     socket.on("disconnect", () => {
-        //         console.log("user left the room", peerId);
-        //         leaveRoom({ room,user, peerId });
-        //     });
-        // });
         const leaveRoom = ({ peerId, user, room }) => {
             rooms[room] = rooms[room]?.filter((id) => id !== peerId);
             socket.to(room).emit("user-disconnected", peerId);

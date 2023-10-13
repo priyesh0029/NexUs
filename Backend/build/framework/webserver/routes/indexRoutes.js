@@ -9,11 +9,13 @@ const authMiddleware_1 = __importDefault(require("../middleware/authMiddleware")
 const home_1 = __importDefault(require("./home"));
 const user_1 = __importDefault(require("./user"));
 const chat_1 = __importDefault(require("./chat"));
+const admin_1 = __importDefault(require("./admin"));
 const routes = (app, router) => {
     app.use("/api/auth", (0, auth_1.default)(router));
-    app.use("/api/post", authMiddleware_1.default, (0, post_1.default)(router));
-    app.use("/api/home", authMiddleware_1.default, (0, home_1.default)(router));
-    app.use("/api/user", authMiddleware_1.default, (0, user_1.default)(router));
-    app.use("/api/chat", authMiddleware_1.default, (0, chat_1.default)(router));
+    app.use("/api/post", (0, authMiddleware_1.default)("user"), (0, post_1.default)(router));
+    app.use("/api/home", (0, authMiddleware_1.default)("user"), (0, home_1.default)(router));
+    app.use("/api/user", (0, authMiddleware_1.default)("user"), (0, user_1.default)(router));
+    app.use("/api/chat", (0, authMiddleware_1.default)("user"), (0, chat_1.default)(router));
+    app.use("/api/admin", (0, admin_1.default)(router));
 };
 exports.default = routes;

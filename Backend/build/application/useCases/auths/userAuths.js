@@ -33,7 +33,7 @@ const registerUser = async (userData, userRepository, authService) => {
         }
         return userRepository.RegisterUser(newUser).then(async (user) => {
             console.log("userdetailds after then :", user);
-            const token = await authService.generateToken(user._id.toString());
+            const token = await authService.generateToken({ id: user._id.toString(), role: "user" });
             return { token, user };
         });
     });
@@ -62,7 +62,7 @@ const loginUser = async (userData, userRepository, authService) => {
                     }
                     else {
                         return {
-                            token: await authService.generateToken(user[0]._id),
+                            token: await authService.generateToken({ id: user[0]._id, role: "user" }),
                             user,
                         };
                     }
@@ -70,7 +70,7 @@ const loginUser = async (userData, userRepository, authService) => {
             }
             else {
                 return {
-                    token: await authService.generateToken(user[0]._id),
+                    token: await authService.generateToken({ id: user[0]._id, role: "user" }),
                     user,
                 };
             }
