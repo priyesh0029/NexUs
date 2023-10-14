@@ -18,8 +18,7 @@ const server = http.createServer(app)
 const io = new Server(server, {
     pingTimeout : 60000,
     cors: {
-        // origin: process.env.SOCKET_SERVER,
-        origin: "http://localhost:5173",
+        origin: process.env.SOCKET_SERVER,
         methods: ["GET", "POST"]
     }
 })
