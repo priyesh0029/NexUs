@@ -106,3 +106,30 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
     throw new Error(errorMessage); // Throw the error to be caught by the caller
   }
 };
+
+
+
+//login Through Email Check
+export const loginThroughEmailCheck = async (email: string): Promise<any> => {
+  try {
+    const response: any = await baseURL.post<RegisterResponse>(
+      "/auth/checkEmail",
+      {email}
+    );
+
+    console.log("response checkEmail : ", response);
+    if (response.data.status === "success") {
+        return response.data.user[0]
+    } else {
+      toast.error("failed to login.. try again");
+      return false;
+    }
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};

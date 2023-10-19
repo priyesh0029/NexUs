@@ -135,11 +135,12 @@ export const amendGender = async (
 export const updateProfileHandle = async (
   name: string,
   bio: string,
+  dob: string,
   userId: string,
   repository: ReturnType<userTypeDbRepository>
 ) => {
   return await repository
-    .handleUpdateProfile(name, bio, userId)
+    .handleUpdateProfile(name, bio,dob, userId)
     .then((response) => {
       if (!response) {
         throw new AppError(

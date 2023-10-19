@@ -9,6 +9,7 @@ const authRouter = (router) => {
     const controllers = (0, authControllers_1.authControllers)(authServiceInterface_1.authServiceInterface, authServices_1.authServices, userDbRepositories_1.userDbRepository, userRepository_1.userRepositoryMongoDB);
     router.post('/register', controllers.userRegister);
     router.post('/login', controllers.userLogin);
+    router.post('/checkEmail', controllers.checkEmail);
     return router;
 };
 exports.default = authRouter;

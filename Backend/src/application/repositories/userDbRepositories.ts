@@ -31,8 +31,9 @@ export const userDbRepository = (
   const handleUpdateProfile = async (
     name: string,
     bio: string,
+    dob : string,
     userId: string
-  ) => await repository.handleProfileUpdate(name, bio, userId);
+  ) => await repository.handleProfileUpdate(name, bio,dob, userId);
   //to change password
   const changePassword = async (userId: string, password: string) =>
     await repository.handleChangePassword(userId, password);

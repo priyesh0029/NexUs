@@ -15,10 +15,18 @@ const adminRouter = (router:Router)=>{
     )
 
 
-    router.post('/adminlogin',controllers.getAdminLogin)
-    
-    
-
+    router.get('/dashboard',controllers.getAdminDashboard)
+    router.get('/getUserRegPerWeeek',controllers.getUserRegPerWeeek)
+    router.get('/getGenders',controllers.getGenders)
+    router.get('/getUserAgeGraph',controllers.getUserAgeGraph)
+    router.get('/getusersListDetails',controllers.getusersListDetails)
+    router.patch('/blockUser',controllers.blocUnblockUser)
+    router.get('/getReportsOfUser',controllers.getReportsOfUser)
+    router.get('/getPostListDetails',controllers.getPostListDetails)
+    router.patch('/managePostStatus',controllers.managePostStatus)
+    router.get('/getReportsOfPost',controllers.getReportsOfPost)
+    router.get('/getReportedComments',controllers.getReportedComments)
+    router.patch('/manageCommnetStatus',controllers.manageCommnetStatus)
 
 
 return router

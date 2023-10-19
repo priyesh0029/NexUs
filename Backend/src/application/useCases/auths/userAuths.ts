@@ -117,3 +117,25 @@ export const loginUser = async (
       });
   });
 };
+
+
+//to check email for google login
+
+export const handleCheckEmail = async (
+  email:string,
+  userRepository: ReturnType<userTypeDbRepository>,
+) => {
+  
+
+  return await userRepository.findByProperty(email).then((user) => {
+    if (!user) {
+      throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+    }else{
+
+      return user
+    }
+     
+  });
+};
+
+

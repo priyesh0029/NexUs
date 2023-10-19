@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
+exports.handleCheckEmail = exports.loginUser = exports.registerUser = void 0;
 const user_1 = require("../../../entities/user");
 const appError_1 = __importDefault(require("../../../utilities/appError"));
 const httpStatus_1 = require("../../../types/httpStatus");
@@ -78,3 +78,15 @@ const loginUser = async (userData, userRepository, authService) => {
     });
 };
 exports.loginUser = loginUser;
+//to check email for google login
+const handleCheckEmail = async (email, userRepository) => {
+    return await userRepository.findByProperty(email).then((user) => {
+        if (!user) {
+            throw new appError_1.default(`User does not exist`, httpStatus_1.HttpStatus.UNAUTHORIZED);
+        }
+        else {
+            return user;
+        }
+    });
+};
+exports.handleCheckEmail = handleCheckEmail;

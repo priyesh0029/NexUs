@@ -2,25 +2,35 @@
 // npm install highcharts
 
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { getGenders } from '../../../api/apiConnections/Admin/adminDashBoardConnections';
+
+interface Igenders {
+  _id: string;
+  count: number;
+}
 
 const GenderGraphPie: React.FC = () => {
+
+  const [genders, setgenders] = useState<Igenders[]>([])
+
+  useEffect(() => {
+    getHandleGenders();
+  }, []);
+
+  const getHandleGenders = async () => {
+    const response = await getGenders();
+    console.log("response of genders : ", response);
+     setgenders(response);
+  };
   // Data for the days of the week
-  const daysOfWeekData = [
-    { day: 'Monday', value: 4 },
-    { day: 'Tuesday', value: 6 },
-    { day: 'Wednesday', value: 3 },
-    { day: 'Thursday', value: 7 },
-    { day: 'Friday', value: 5 },
-    { day: 'Saturday', value: 8 },
-    { day: 'Sunday', value: 9 },
-  ];
+  const daysOfWeekData = genders;
 
   const chartData = daysOfWeekData.map((item) => ({
-    name: item.day,
-    y: item.value,
+    name: item._id,
+    y: item.count,
   }));
 
   const chartOptions = {
@@ -28,7 +38,7 @@ const GenderGraphPie: React.FC = () => {
       type: 'pie',
     },
     title: {
-      text: 'Donut Chart of Days of the Week',
+      text: 'User Demographics - Gender',
     },
     plotOptions: {
       pie: {

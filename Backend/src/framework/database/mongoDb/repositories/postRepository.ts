@@ -106,7 +106,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$likedUsers.userName",
               dp: "$likedUsers.dp",
-              deactive : "$likedUsers.accountDeactive"
+              deactive: "$likedUsers.accountDeactive",
             },
           },
           reports: {
@@ -291,7 +291,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$commentLikedUser.userName",
               dp: "$commentLikedUser.dp",
-              deactive : "$commentLikedUser.accountDeactive"
+              deactive: "$commentLikedUser.accountDeactive",
             },
           },
           reply: {
@@ -431,7 +431,7 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$replyLikedUser.userName",
               dp: "$replyLikedUser.dp",
-              deactive : "$replyLikedUser.accountDeactive"
+              deactive: "$replyLikedUser.accountDeactive",
             },
           },
           createdAt: {
@@ -755,33 +755,29 @@ export const postRepositoryMongoDb = () => {
         },
       },
       {
-        $unwind:
-          {
-            path: "$savedPost",
-          },
+        $unwind: {
+          path: "$savedPost",
+        },
       },
       {
-        $project:
-          {
-            savedPost: {
-              $toObjectId: "$savedPost",
-            },
+        $project: {
+          savedPost: {
+            $toObjectId: "$savedPost",
           },
+        },
       },
       {
-        $lookup:
-          {
-            from: "posts",
-            localField: "savedPost",
-            foreignField: "_id",
-            as: "savedPosts",
-          },
+        $lookup: {
+          from: "posts",
+          localField: "savedPost",
+          foreignField: "_id",
+          as: "savedPosts",
+        },
       },
       {
-        $unwind:
-          {
-            path: "$savedPosts",
-          },
+        $unwind: {
+          path: "$savedPosts",
+        },
       },
       {
         $match: {
@@ -915,7 +911,7 @@ export const postRepositoryMongoDb = () => {
       },
     ]);
     console.log("savedPosts : ", savedPosts);
-    
+
     return savedPosts;
   };
 
@@ -1110,20 +1106,31 @@ export const postRepositoryMongoDb = () => {
       };
       const checkReport = await Comment.findOne({
         _id: commentID,
-        "reply._id": replyID,
-        "reply.$.reports": {
+        reply: {
           $elemMatch: {
-            reportedUser: user.userName,
-            report: reportComment,
+            _id: replyID,
+            reports: {
+              $elemMatch: {
+                reportedUser: user.userName,
+                report: reportComment,
+              },
+            },
           },
         },
       });
 
       console.log("check report of reply : ", checkReport);
 
-      if (checkReport !== null && checkReport.reply[0].reports.length === 0) {
+      if (checkReport === null ) {
         const updatedReport = await Comment.updateOne(
-          { _id: commentID, "reply._id": replyID },
+          {
+            _id: commentID,
+            reply: {
+              $elemMatch: {
+                _id: replyID,
+              },
+            },
+          },
           { $push: { "reply.$.reports": reportObj } }
         );
         if (updatedReport.modifiedCount === 1) {

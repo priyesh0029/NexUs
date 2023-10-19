@@ -29,6 +29,9 @@ const userSchema = new Schema(
     bio: {
       type: String,
     },
+    dob: {
+      type: String,
+    },
     gender: {
       type: String,
     },
@@ -56,6 +59,10 @@ const userSchema = new Schema(
       report : {
         type: String,
         required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
       }
     }],
   },

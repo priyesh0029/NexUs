@@ -15,6 +15,10 @@ const replySchema = new mongoose_1.Schema({
         default: false,
         required: true
     },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
     reports: [{
             reportedUser: {
                 type: String,
@@ -23,6 +27,10 @@ const replySchema = new mongoose_1.Schema({
             report: {
                 type: String,
                 required: true,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
             }
         }],
     liked: [String], // Specify the type as an array of strings
@@ -46,6 +54,10 @@ const commentSchema = new mongoose_1.Schema({
         default: false,
         required: true
     },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
     reports: [{
             reportedUser: {
                 type: String,
@@ -54,6 +66,10 @@ const commentSchema = new mongoose_1.Schema({
             report: {
                 type: String,
                 required: true,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
             }
         }],
     liked: [String],

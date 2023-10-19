@@ -9,12 +9,18 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const postModel_1 = __importDefault(require("../models/postModel"));
 const userRepositoryMongoDB = () => {
     const findByProperty = async (params) => {
-        console.log("user111111111 : ", params);
-        const user = await userModel_1.default.find({
-            $or: [{ userName: params }, { email: params }],
-        });
-        console.log("user : ", user.length);
-        return user;
+        try {
+            console.log("user111111111 : ", params);
+            const user = await userModel_1.default.find({
+                $or: [{ userName: params }, { email: params }],
+            });
+            console.log("user : ", user.length);
+            return user;
+        }
+        catch (error) {
+            console.log(error);
+            return false;
+        }
     };
     const findById = async (userId) => {
         console.log("user111111111 : ", userId);
@@ -147,9 +153,9 @@ const userRepositoryMongoDB = () => {
         }
     };
     //to handle Profile Update
-    const handleProfileUpdate = async (name, bio, userId) => {
+    const handleProfileUpdate = async (name, bio, dob, userId) => {
         const userID = new mongoose_1.default.Types.ObjectId(userId);
-        const updateGender = await userModel_1.default.updateOne({ _id: userID }, { $set: { name: name, bio: bio } });
+        const updateGender = await userModel_1.default.updateOne({ _id: userID }, { $set: { name: name, bio: bio, dob: dob } });
         if (updateGender.modifiedCount === 1) {
             return true;
         }

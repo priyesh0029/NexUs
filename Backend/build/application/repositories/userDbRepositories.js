@@ -15,7 +15,7 @@ const userDbRepository = (repository) => {
     //to handle xcahnge gender
     const genderAmend = async (gender, userId) => await repository.handleChangeGender(gender, userId);
     //to handle update profile
-    const handleUpdateProfile = async (name, bio, userId) => await repository.handleProfileUpdate(name, bio, userId);
+    const handleUpdateProfile = async (name, bio, dob, userId) => await repository.handleProfileUpdate(name, bio, dob, userId);
     //to change password
     const changePassword = async (userId, password) => await repository.handleChangePassword(userId, password);
     //to deactivateAccount

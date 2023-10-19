@@ -136,11 +136,11 @@ const userControllers = (userDbRepo, userDbRepoImpl, authServiceInterfaceApp, au
     });
     //update profile
     const updateProfile = (0, express_async_handler_1.default)(async (req, res) => {
-        const { name, bio } = req.body.userData;
+        const { name, bio, dob } = req.body.userData;
         const userId = req.query.userId;
         console.log("contollersupdateProfile : ", req.body.userData);
-        if (typeof name === "string" && typeof bio === "string" && typeof userId === "string") {
-            await (0, user_1.updateProfileHandle)(name, bio, userId, postRepo).then((profileupdate) => {
+        if (typeof name === "string" && typeof dob === "string" && typeof bio === "string" && typeof userId === "string") {
+            await (0, user_1.updateProfileHandle)(name, bio, dob, userId, postRepo).then((profileupdate) => {
                 console.log("contollers gender response  1111111222222222222222222222222222222: ", profileupdate);
                 res.status(200).json({
                     status: "success",

@@ -12,14 +12,26 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { setToken } from "../../../features/redux/slices/user/tokenSlice";
-import { login } from "../../../api/apiConnections/User/authConnections";
+import {
+  login,
+  loginThroughEmailCheck,
+} from "../../../api/apiConnections/User/authConnections";
 import { SetUserInfo } from "../../../features/redux/slices/user/homeSlice";
 import { useState } from "react";
 import { POST_URL } from "../../../constants/constants";
+import { auth, provider } from "../../../constants/firebaseAuth";
+import { signInWithPopup } from "firebase/auth";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [userData, setuserData] = useState<IgoogleLoginResponse>({
+    name: "",
+    email: "",
+  });
+  const [notify, setnotify] = useState(false)
+
+  const [accountExist, setaccountExist] = useState<{name:string,userName:string}>({name:'',userName:""})
 
   const submitHandler = async (userData: any) => {
     let response = await login(userData);
@@ -56,6 +68,36 @@ const LoginForm = () => {
     },
   });
 
+  const handleGoogleSignIn =  () => {
+    provider.setCustomParameters({ prompt: "select_account" }); // Force account 
+     signInWithPopup(auth, provider).then((data) => {
+      console.log(
+        "email: ",
+        data.user.displayName,
+        data.user.phoneNumber,
+        data.user.email
+      );
+      if (data.user.displayName !== null && data.user.email !== null) {
+        const userDetails = {
+          name: data.user.displayName,
+          email: data.user.email,
+        };
+        setuserData(userDetails);
+        handleLoginThroughEmail(data.user.email);
+      }
+    });
+  };
+
+  const handleLoginThroughEmail = async (email:string) => {
+    const response = await loginThroughEmailCheck(email);
+    if(response !== null){
+      setnotify(!notify)
+      setaccountExist({name:response.name,userName:response.userName})
+    }else{
+      
+    }
+  };
+
   return (
     <div className="flex justify-center">
       <div className="flex w-100 mt-16 pt-12 items-center justify-center flex-col border-2 border-gray-400 rounded-xl">
@@ -69,10 +111,10 @@ const LoginForm = () => {
               />
             </div>
             <div className="flex items-center">
-               <p className="text-4xl font-bold font-cursive text-black">
+              <p className="text-4xl font-bold font-cursive text-black">
                 neXus
               </p>
-           </div>
+            </div>
           </div>
           <ToastContainer position="bottom-left" />
         </div>
@@ -81,6 +123,10 @@ const LoginForm = () => {
             <Typography variant="h3" color="blue" className="text-center ">
               Login
             </Typography>
+
+            {notify && (<>
+              <p className="text-blue-700 text-md mt-4">Hi {accountExist.name},enter your password to login..</p>
+            </>)}
 
             <CardBody className="flex flex-col gap-2">
               <Input
@@ -129,6 +175,7 @@ const LoginForm = () => {
                   variant="outlined"
                   color="blue"
                   className="flex items-center gap-3"
+                  onClick={handleGoogleSignIn}
                 >
                   <img
                     src="https://www.material-tailwind.com/icons/google.svg"

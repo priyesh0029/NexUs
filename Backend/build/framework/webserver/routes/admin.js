@@ -7,7 +7,18 @@ const adminDbRepository_1 = require("../../../application/repositories/adminDbRe
 const adminRepository_1 = require("../../database/mongoDb/repositories/adminRepository");
 const adminRouter = (router) => {
     const controllers = (0, adminControllers_1.adminAuthControllers)(authServiceInterface_1.authServiceInterface, authServices_1.authServices, adminDbRepository_1.adminDbRepository, adminRepository_1.adminRepositoryMongoDB);
-    router.post('/adminlogin', controllers.getAdminLogin);
+    router.get('/dashboard', controllers.getAdminDashboard);
+    router.get('/getUserRegPerWeeek', controllers.getUserRegPerWeeek);
+    router.get('/getGenders', controllers.getGenders);
+    router.get('/getUserAgeGraph', controllers.getUserAgeGraph);
+    router.get('/getusersListDetails', controllers.getusersListDetails);
+    router.patch('/blockUser', controllers.blocUnblockUser);
+    router.get('/getReportsOfUser', controllers.getReportsOfUser);
+    router.get('/getPostListDetails', controllers.getPostListDetails);
+    router.patch('/managePostStatus', controllers.managePostStatus);
+    router.get('/getReportsOfPost', controllers.getReportsOfPost);
+    router.get('/getReportedComments', controllers.getReportedComments);
+    router.patch('/manageCommnetStatus', controllers.manageCommnetStatus);
     return router;
 };
 exports.default = adminRouter;

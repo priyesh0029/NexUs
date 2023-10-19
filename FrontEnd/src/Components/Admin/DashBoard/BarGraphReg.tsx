@@ -1,44 +1,53 @@
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import { useEffect, useState } from "react";
+import { getUserRegPerWeeek } from "../../../api/apiConnections/Admin/adminDashBoardConnections";
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
+interface IuserRegPerWeek {
+  _id: string;
+  count: number;
+}
 
 const BarGraphReg: React.FC = () => {
+  const [userRegPerWeek, setuserRegPerWeek] = useState<IuserRegPerWeek[]>([]);
+
+  useEffect(() => {
+    getUserRegperWeek();
+  }, []);
+
+  const getUserRegperWeek = async () => {
+    const response = await getUserRegPerWeeek();
+    console.log("response of chart : ", response);
+    setuserRegPerWeek(response);
+  };
+
   // Data for the days of the week
-  const daysOfWeekData = [
-    { day: 'Monday', value: 4 },
-    { day: 'Tuesday', value: 6 },
-    { day: 'Wednesday', value: 3 },
-    { day: 'Thursday', value: 7 },
-    { day: 'Friday', value: 5 },
-    { day: 'Saturday', value: 8 },
-    { day: 'Sunday', value: 9 },
-  ];
+  const daysOfWeekData = userRegPerWeek;
 
   // Prepare data for Highcharts
   const chartData = daysOfWeekData.map((item) => ({
-    name: item.day,
-    y: item.value,
+    name: item._id,
+    y: item.count,
   }));
 
   // Highcharts configuration options
   const options: Highcharts.Options = {
     chart: {
-      type: 'bar',
+      type: "bar",
     },
     title: {
-      text: 'Days of the Week Bar Chart',
+      text: "User Registration per Week",
     },
     xAxis: {
-      categories: daysOfWeekData.map((item) => item.day),
+      categories: daysOfWeekData.map((item) => item._id),
     },
-   series: [
-  {
-    type: 'bar', // Specify the chart type as 'bar'
-    name: 'Values',
-    data: chartData,
-  },
-],
-
+    series: [
+      {
+        type: "bar", // Specify the chart type as 'bar'
+        name: "Users",
+        data: chartData,
+      },
+    ],
   };
 
   return (

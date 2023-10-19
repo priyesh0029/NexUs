@@ -4,12 +4,17 @@ import Post from "../models/postModel";
 
 export const userRepositoryMongoDB = () => {
   const findByProperty = async (params: string) => {
+   try {
     console.log("user111111111 : ", params);
     const user: any = await User.find({
       $or: [{ userName: params }, { email: params }],
     });
     console.log("user : ", user.length);
     return user;
+   } catch (error) {
+    console.log(error);
+    return false
+   }
   };
 
   const findById = async (userId: string) => {
@@ -214,12 +219,13 @@ export const userRepositoryMongoDB = () => {
   const handleProfileUpdate = async (
     name: string,
     bio: string,
+    dob : string,
     userId: string
   ) => {
     const userID = new mongoose.Types.ObjectId(userId);
     const updateGender = await User.updateOne(
       { _id: userID },
-      { $set: { name: name, bio: bio } }
+      { $set: { name: name, bio: bio,dob:dob } }
     );
 
     if (updateGender.modifiedCount === 1) {

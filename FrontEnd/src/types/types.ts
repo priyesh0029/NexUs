@@ -11,6 +11,7 @@ interface UserInfo {
   isBlock?: Boolean;
   blockedUsers?: string[];
   blockingUsers?: string[];
+  reports: string[];
   followers: string[];
   following: string[];
   requests?: string[];
@@ -19,6 +20,23 @@ interface UserInfo {
   createdAt?: string;
   savedPost: string[];
   accountDeactive?: boolean;
+}
+
+interface IgoogleLoginResponse {
+  name :string
+  email:string
+}
+
+interface IAdminUserLise {
+  _id: string;
+  dp: string;
+  userName: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  createdAt: string;
+  reports: string[];
+  isBlock: boolean;
 }
 
 interface IuserChatList {
@@ -53,7 +71,7 @@ interface Imessage {
 }
 
 interface IuserHomeSlice {
-  _id:string,
+  _id: string;
   name: string;
   userName: string;
   dp: string;
@@ -139,4 +157,60 @@ interface Reply {
 interface ISearchTab {
   openSearchTab: boolean;
   setOpenSearchTab: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface IuserReports {
+  _id: string;
+  userName: string;
+  dp: string;
+  name: string;
+  email: string;
+  reports: [
+    {
+      reportedUserUname: string;
+      reportedUserName: string;
+      name: string;
+      dp: string;
+      reason: string;
+      createdAt: string;
+    }
+  ];
+}
+
+interface IallPosts {
+  postId: string;
+  postedUserName: string;
+  postedUserUName: string;
+  postedUserDp: string;
+  postedEmail: string;
+  reports: number;
+  isBlocked: boolean;
+  postContent: string[];
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ICommentReportDetails {
+  reportedUserUname: string;
+  reportedUserName: string;
+  dp: string;
+  reason: string;
+  createdAt: string;
+}
+
+interface IcommentReport {
+  _id: string;
+  comment: string;
+  commentCreated: string;
+  commetedUserDp: string;
+  commetedUserEmail: string;
+  commetedUserName: string;
+  commetedUserUname: string;
+  post: string[];
+  postedUserDp: string;
+  postedUserName: string;
+  postedUserUname: string;
+  isBlocked: boolean;
+  reports: ICommentReportDetails[];
 }

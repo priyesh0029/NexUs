@@ -39,7 +39,7 @@ const App = () => {
           <Route path="/settings" element={token ? <Settings/> :  <LoginForm />} />
 
           <Route path="/messages" element={token ? <Inbox/> :  <LoginForm />} />
-          <Route path="/admin" element={adminToken ? <AdminLogin /> : <Dashboard/>} />
+          <Route path="/admin" element={adminToken ? <Dashboard/> : <AdminLogin />} />
           <Route path="/dashboard" element={adminToken ? <Dashboard/> : <AdminLogin />} />
         </Routes>
       </ThemeProvider>

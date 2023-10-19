@@ -4,7 +4,7 @@ import { userTypeRepositoryMongoDB } from "../../framework/database/mongoDb/repo
 import { userTypeDbRepository } from "../../application/repositories/userDbRepositories";
 import { authServiceInterfaceType } from "../../application/services/authServiceInterface";
 import { authServiceType } from "../../framework/services/authServices";
-import { loginUser, registerUser } from "../../application/useCases/auths/userAuths";
+import { handleCheckEmail, loginUser, registerUser } from "../../application/useCases/auths/userAuths";
 
 export const authControllers = (
   authServiceInterfaceApp: authServiceInterfaceType,
@@ -46,8 +46,26 @@ export const authControllers = (
 
   })
 
+  //check email for google login
+
+  const checkEmail = asyncHandler(async(req:Request,res:Response)=>{
+    const {email} = req.body;
+    console.log("email : ",email,req.body);
+
+    await handleCheckEmail(email,userRepoDb).then((user)=>{
+      console.log("response",user);
+      res.json({
+        status: "success",
+        message: "checked email status successfully",
+        user: user
+      });
+    })
+
+  })
+
   return {
     userRegister,
-    userLogin
+    userLogin,
+    checkEmail
   };
 };

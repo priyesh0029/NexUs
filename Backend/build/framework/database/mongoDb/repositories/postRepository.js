@@ -107,7 +107,7 @@ const postRepositoryMongoDb = () => {
                         $push: {
                             userName: "$likedUsers.userName",
                             dp: "$likedUsers.dp",
-                            deactive: "$likedUsers.accountDeactive"
+                            deactive: "$likedUsers.accountDeactive",
                         },
                     },
                     reports: {
@@ -272,7 +272,7 @@ const postRepositoryMongoDb = () => {
                         $push: {
                             userName: "$commentLikedUser.userName",
                             dp: "$commentLikedUser.dp",
-                            deactive: "$commentLikedUser.accountDeactive"
+                            deactive: "$commentLikedUser.accountDeactive",
                         },
                     },
                     reply: {
@@ -409,7 +409,7 @@ const postRepositoryMongoDb = () => {
                         $push: {
                             userName: "$replyLikedUser.userName",
                             dp: "$replyLikedUser.dp",
-                            deactive: "$replyLikedUser.accountDeactive"
+                            deactive: "$replyLikedUser.accountDeactive",
                         },
                     },
                     createdAt: {
@@ -985,17 +985,28 @@ const postRepositoryMongoDb = () => {
             };
             const checkReport = await commentModel_1.default.findOne({
                 _id: commentID,
-                "reply._id": replyID,
-                "reply.$.reports": {
+                reply: {
                     $elemMatch: {
-                        reportedUser: user.userName,
-                        report: reportComment,
+                        _id: replyID,
+                        reports: {
+                            $elemMatch: {
+                                reportedUser: user.userName,
+                                report: reportComment,
+                            },
+                        },
                     },
                 },
             });
             console.log("check report of reply : ", checkReport);
-            if (checkReport !== null && checkReport.reply[0].reports.length === 0) {
-                const updatedReport = await commentModel_1.default.updateOne({ _id: commentID, "reply._id": replyID }, { $push: { "reply.$.reports": reportObj } });
+            if (checkReport === null) {
+                const updatedReport = await commentModel_1.default.updateOne({
+                    _id: commentID,
+                    reply: {
+                        $elemMatch: {
+                            _id: replyID,
+                        },
+                    },
+                }, { $push: { "reply.$.reports": reportObj } });
                 if (updatedReport.modifiedCount === 1) {
                     return true;
                 }

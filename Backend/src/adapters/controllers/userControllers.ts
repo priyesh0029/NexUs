@@ -202,11 +202,11 @@ export const userControllers = (
   //update profile
 
   const updateProfile = asyncHandler(async (req: Request, res: Response) => {
-    const { name,bio } = req.body.userData
+    const { name,bio,dob } = req.body.userData
     const userId = req.query.userId;
     console.log("contollersupdateProfile : ", req.body.userData);
-    if (typeof name === "string"  && typeof bio === "string" && typeof userId === "string") {
-      await updateProfileHandle(name,bio,userId, postRepo).then((profileupdate) => {
+    if (typeof name === "string" && typeof dob === "string" && typeof bio === "string" && typeof userId === "string") {
+      await updateProfileHandle(name,bio,dob,userId, postRepo).then((profileupdate) => {
         console.log(
           "contollers gender response  1111111222222222222222222222222222222: ",
           profileupdate

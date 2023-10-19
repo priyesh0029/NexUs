@@ -18,7 +18,7 @@ export const adminLoginSubmit = async (adminData: IAdminloginForm): Promise<any>
       console.log(" admin login data : ", adminData);
       
       const response: any = await adminBaseURL.post<IadminLoginResponse>(
-        "/admin/adminlogin",
+        "/adminAuth/adminlogin",
         adminData
       );
   

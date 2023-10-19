@@ -1,49 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BarGraphReg from "./BarGraphReg";
 import GenderGraphPie from "./GenderGraphPie";
-import PostGraph from "./PostGraph";
 import KarasjokWeatherChart from "./newGraph";
+import { dashBoardDetails } from "../../../api/apiConnections/Admin/adminDashBoardConnections";
+import AgeGraph from "./AgeGraph";
 
-const DashBoardComponent = () => {
+interface IdashBoardInfo {
+  totalUsers: number;
+  totalReportedPosts: number;
+  totalReportedComments: number;
+  totalReportedReplies: number;
+  totalReportedUsers: number;
+}
+
+interface IDashBoardComponent{
+  selectedTab : string
+}
+
+const DashBoardComponent:React.FC<IDashBoardComponent> = ({selectedTab}) => {
+  const [dashBoardInfo, setdashBoardInfo] = useState<IdashBoardInfo[]>([]);
+
+  useEffect(() => {
+    handleDashboard();
+  }, [selectedTab]);
+  const handleDashboard = async () => {
+    const response = await dashBoardDetails();
+    setdashBoardInfo(response);
+    
+  };
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-16">
       <div className="flex flex-wrap justify-center gap-4">
-        <div className="flex items-center justify-center rounded-xl min-w-[14em] h-48 bg-blue-500 hover:bg-blue-800 p-4">
-          <div className="flex flex-col items-center">
-            <p className="text-white text-xl font-semibold">Users</p>
-            <p className="text-white text-xl font-semibold">10</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center rounded-xl min-w-[14em] h-48  bg-blue-500 hover:bg-blue-800 p-4">
-          <div className="flex flex-col items-center">
-            <p className="text-white text-xl font-semibold">Post Reports</p>
-            <p className="text-white text-xl font-semibold">10</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center rounded-xl min-w-[14em] h-48  bg-blue-500 hover:bg-blue-800 p-4">
-          <div className="flex flex-col items-center">
-            <p className="text-white text-xl font-semibold">Comment Reports</p>
-            <p className="text-white text-xl font-semibold">10</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center rounded-xl min-w-[14em] h-48  bg-blue-500 hover:bg-blue-800 p-4">
-          <div className="flex flex-col items-center">
-            <p className="text-white text-xl font-semibold">User Reports</p>
-            <p className="text-white text-xl font-semibold">10</p>
-          </div>
-        </div>
+        {dashBoardInfo.map((params,index) =>  (
+            <div className="flex items-center justify-center rounded-xl min-w-[14em] h-48 bg-blue-500 hover:bg-blue-800 p-4" key={index}>
+              <div className="flex flex-col items-center">
+                <p className="text-white text-xl font-semibold">{Object.keys(params)}</p>
+                <p className="text-white text-xl font-semibold">{Object.values(params)}</p>
+              </div>
+            </div>
+          )
+        )}
       </div>
-      <div className="mt-16">
-        <BarGraphReg/>
+      <div className="mt-24 gap-8 ">
+        <BarGraphReg />
       </div>
       <div>
-        <GenderGraphPie/>
+        <GenderGraphPie />
       </div>
       <div>
-        <PostGraph/>
+        <AgeGraph/>
       </div>
-      <div>
-        <KarasjokWeatherChart/>
+      <div className="mb-16">
+        <KarasjokWeatherChart />
       </div>
     </div>
   );

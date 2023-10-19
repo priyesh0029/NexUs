@@ -90,9 +90,9 @@ const amendGender = async (gender, userId, repository) => {
 };
 exports.amendGender = amendGender;
 //to handle update Profile
-const updateProfileHandle = async (name, bio, userId, repository) => {
+const updateProfileHandle = async (name, bio, dob, userId, repository) => {
     return await repository
-        .handleUpdateProfile(name, bio, userId)
+        .handleUpdateProfile(name, bio, dob, userId)
         .then((response) => {
         if (!response) {
             throw new appError_1.default(` Error occured while saving post.please try again..!`, httpStatus_1.HttpStatus.BAD_REQUEST);

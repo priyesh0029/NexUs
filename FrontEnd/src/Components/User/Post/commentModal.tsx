@@ -79,7 +79,8 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
   const handleOpen = () => setOpencomment(!openComment);
   const [openLike, setOpenLike] = useState(false);
   const [comment, setComment] = useState("");
-  const [commentId, setCommentId] = useState("");
+  const [commentId, setCommentId] = useState("");+6
+  
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [managePost, setManagePost] = useState(false);
   const [editOpen, setEditOpen] = useState(false);

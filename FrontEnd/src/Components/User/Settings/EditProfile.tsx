@@ -19,7 +19,10 @@ import {
   getUserDetails,
   handleDp,
 } from "../../../api/apiConnections/User/userConnections";
-import { SetName, SetUserDp } from "../../../features/redux/slices/user/homeSlice";
+import {
+  SetName,
+  SetUserDp,
+} from "../../../features/redux/slices/user/homeSlice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import GenderModal from "./genderModal";
@@ -31,9 +34,11 @@ const EditProfile = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch();
   const [genderOpen, setGenderOpen] = useState<boolean>(false);
-  const [biodata, setBiodata] = useState<string>('');
-  const[name,Setname] = useState<string>('')
+  const [biodata, setBiodata] = useState<string>("");
+  const [name, Setname] = useState<string>("");
   const [gender, setGender] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+
 
   const handleGenderModal = () => {
     setGenderOpen(!genderOpen);
@@ -50,21 +55,19 @@ const EditProfile = () => {
   }, []);
 
   const getProfileDetails = async (proId: string) => {
-    const response  = await getUserDetails(proId);
-    if (typeof response.gender === "string") 
-    setGender(response.gender);
-    if (typeof response.bio === "string") 
-    setBiodata(response.bio);
-    if (typeof response.name === "string") 
-    Setname(response.name);
+    const response = await getUserDetails(proId);
+    if (typeof response.gender === "string") setGender(response.gender);
+    if (typeof response.bio === "string") setBiodata(response.bio);
+    if (typeof response.dob === "string") setDob(response.dob);
+    if (typeof response.name === "string") Setname(response.name);
   };
 
   const submitHandler = async (userData: any) => {
-    await editProfileHandle(userData).then((response)=>{
-      if(response){
-        dispatch(SetName(name))
+    await editProfileHandle(userData).then((response) => {
+      if (response) {
+        dispatch(SetName(name));
       }
-    })
+    });
   };
   const changePropic = async (file: File) => {
     console.log("Selected file:", file);
@@ -90,6 +93,7 @@ const EditProfile = () => {
     initialValues: {
       name: name,
       bio: biodata,
+      dob : dob
     },
 
     validationSchema: Yup.object({
@@ -97,6 +101,8 @@ const EditProfile = () => {
         .max(20, "Must be less than 20 characters")
         .required("Required"),
       bio: Yup.string().max(150, "Must be less than 150 characters"),
+      dob: Yup.string() .required("Required"),
+      
     }),
     onSubmit: async (values, { setSubmitting }) => {
       submitHandler(values);
@@ -189,6 +195,25 @@ const EditProfile = () => {
                     : null}
                 </p>
               </div>
+              <div className="mb-4">
+                <Input
+                  id="dob"
+                  type="date"
+                  label="date of birth"
+                  size="lg"
+                  className="px-4 py-2"
+                  value={dob}
+                  onChange={(e) => {
+                    setDob(e.target.value);
+                    formik.handleChange(e);
+                  }}
+                />
+              </div>
+              <p className="h-6 ml-2 text-xs text-red-800">
+                  {formik.touched.dob && formik.errors.dob
+                    ? formik.errors.dob
+                    : null}
+                </p>
               <div>
                 <Input
                   type="text"

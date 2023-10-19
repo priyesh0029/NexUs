@@ -34,9 +34,23 @@ const authControllers = (authServiceInterfaceApp, authService, userDbRepo, userD
             });
         });
     });
+    //check email for google login
+    const checkEmail = (0, express_async_handler_1.default)(async (req, res) => {
+        const { email } = req.body;
+        console.log("email : ", email, req.body);
+        await (0, userAuths_1.handleCheckEmail)(email, userRepoDb).then((user) => {
+            console.log("response", user);
+            res.json({
+                status: "success",
+                message: "checked email status successfully",
+                user: user
+            });
+        });
+    });
     return {
         userRegister,
-        userLogin
+        userLogin,
+        checkEmail
     };
 };
 exports.authControllers = authControllers;

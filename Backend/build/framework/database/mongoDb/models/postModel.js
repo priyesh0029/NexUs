@@ -29,6 +29,10 @@ const postSchema = new mongoose_1.Schema({
             report: {
                 type: String,
                 required: true,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
             }
         }],
 }, { timestamps: true });
