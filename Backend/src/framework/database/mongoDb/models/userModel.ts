@@ -21,7 +21,6 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      minlength: 3,
     },
     dp: {
       type: String,

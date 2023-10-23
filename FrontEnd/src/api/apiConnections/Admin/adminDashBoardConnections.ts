@@ -265,3 +265,25 @@ export const manageCommnetStatus = async (commentId: string): Promise<any> => {
     throw new Error(errorMessage); // Throw the error to be caught by the caller
   }
 };
+
+//to get all reports of replies 
+
+export const getAllRepliesReport = async (): Promise<any> => {
+  try {
+    const response: any = await adminBaseURL.get("/admin/getAllRepliesReport");
+
+    console.log("response getusersListDetails : ", response);
+    if (response.data.status === "success") {
+      const allReportedReplies = response.data.allReportedReplies;
+
+      return allReportedReplies;
+    } 
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};

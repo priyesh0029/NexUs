@@ -228,7 +228,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
               <hr />
               <div className="flex flex-col overflow-y-auto max-h-96">
                 {commentArr.map((comment, index) => (
-                  <SingleComment
+                !comment.isBlocked ?<SingleComment
                     postedComment={comment}
                     postedUser={postedUser}
                     focusInput={focusInput}
@@ -238,7 +238,7 @@ const CommentModal: React.FC<CommentModalProps> = (props) => {
                     setOpencomment={setOpencomment}
                     commentArr={commentArr}
                     setCommentArr={setCommentArr}
-                  />
+                  />:<></>
                 ))}
               </div>
             </div>

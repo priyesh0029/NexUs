@@ -19,6 +19,7 @@ const adminRouter = (router) => {
     router.get('/getReportsOfPost', controllers.getReportsOfPost);
     router.get('/getReportedComments', controllers.getReportedComments);
     router.patch('/manageCommnetStatus', controllers.manageCommnetStatus);
+    router.get('/getAllRepliesReport', controllers.getAllRepliesReport);
     return router;
 };
 exports.default = adminRouter;

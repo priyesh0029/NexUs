@@ -548,6 +548,9 @@ export const adminRepositoryMongoDB = () => {
     }
   };
 
+
+  //to get all comments reports
+
   const getallCommentReports = async()=>{
     try {
 
@@ -717,6 +720,212 @@ export const adminRepositoryMongoDB = () => {
     }
   }
 
+  // to get all reports of replies
+
+  const getallReplyReports = async()=>{
+    try {
+
+     const allReportedReplies = await Comment.aggregate([
+      {
+        $unwind:
+          /**
+           * path: Path to the array field.
+           * includeArrayIndex: Optional name for index.
+           * preserveNullAndEmptyArrays: Optional
+           *   toggle to unwind null and empty values.
+           */
+          {
+            path: "$reply",
+          },
+      },
+      {
+        $match:
+          /**
+           * query: The query in MQL.
+           */
+          {
+            $expr: {
+              $gt: [
+                {
+                  $size: "$reply.reports",
+                },
+                0,
+              ],
+            },
+          },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "reply.userName",
+          foreignField: "userName",
+          as: "repliedUsers",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userName",
+          foreignField: "userName",
+          as: "commenteUsers",
+        },
+      },
+      {
+        $unwind: {
+          path: "$commenteUsers",
+        },
+      },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "postId",
+          foreignField: "_id",
+          as: "posts",
+        },
+      },
+      {
+        $unwind: {
+          path: "$posts",
+        },
+      },
+      // {
+      //   $unwind: {
+      //     path: "$reports",
+      //   },
+      // }
+      {
+        $lookup: {
+          from: "users",
+          localField: "posts.postedUser",
+          foreignField: "userName",
+          as: "postedUsers",
+        },
+      },
+      {
+        $unwind: {
+          path: "$postedUsers",
+        },
+      },
+      {
+        $unwind: {
+          path: "$repliedUsers",
+        },
+      },
+      {
+        $unwind:
+          /**
+           * path: Path to the array field.
+           * includeArrayIndex: Optional name for index.
+           * preserveNullAndEmptyArrays: Optional
+           *   toggle to unwind null and empty values.
+           */
+          {
+            path: "$reply.reports",
+          },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "reply.reports.reportedUser",
+          foreignField: "userName",
+          as: "replyReportedUsers",
+        },
+      },
+      {
+        $unwind:
+          /**
+           * path: Path to the array field.
+           * includeArrayIndex: Optional name for index.
+           * preserveNullAndEmptyArrays: Optional
+           *   toggle to unwind null and empty values.
+           */
+          {
+            path: "$replyReportedUsers",
+          },
+      },
+      {
+        $project: {
+          commenteUsers: 1,
+          posts: 1,
+          postedUsers: 1,
+          replyReportedUsers: 1,
+          repliedUsers: 1,
+          comment: 1,
+          "reply.isBlocked": 1,
+          "reply.comment": 1,
+          "reply.reports.report": 1,
+          "reply.reports.createdAt": 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          post: {
+            $first: "$posts.imgNames",
+          },
+          postedUserUname: {
+            $first: "$postedUsers.userName",
+          },
+          postedUserName: {
+            $first: "$postedUsers.name",
+          },
+          postedUserDp: {
+            $first: "$postedUsers.dp",
+          },
+          comment: {
+            $first: "$comment",
+          },
+          commetedUserUname: {
+            $first: "$commenteUsers.userName",
+          },
+          commetedUserName: {
+            $first: "$commenteUsers.name",
+          },
+          commetedUserDp: {
+            $first: "$commenteUsers.dp",
+          },
+          repliedUserName: {
+            $first: "$repliedUsers.name",
+          },
+          repliedUserUname: {
+            $first: "$repliedUsers.userName",
+          },
+          repliedUserDp: {
+            $first: "$repliedUsers.dp",
+          },
+          repliedUserEmail: {
+            $first: "$repliedUsers.email",
+          },
+          replyCreatedAt: {
+            $first: "$reply.reports.createdAt",
+          },
+          isBlocked: {
+            $first: "$reply.isBlocked",
+          },
+          replyComment: {
+            $first: "$reply.comment",
+          },
+          reports: {
+            $push: {
+              reportedUserUname:
+                "$replyReportedUsers.name",
+              reportedUserName:
+                "$replyReportedUsers.userName",
+              dp: "$replyReportedUsers.dp",
+              reason: "$reply.reports.report",
+              createdAt: "$reply.reports.createdAt",
+            },
+          },
+        },
+      },
+    ])
+      return allReportedReplies
+    } catch (error) {
+      console.log(error);
+      return false
+    }
+  }
+
   return {
     findByProperty,
     adminDashBoardDetails,
@@ -730,7 +939,8 @@ export const adminRepositoryMongoDB = () => {
     handleBlockUnblockPost,
     getPostAllReports,
     getallCommentReports,
-    handleBlockUnblockComment
+    handleBlockUnblockComment,
+    getallReplyReports
   };
 };
 

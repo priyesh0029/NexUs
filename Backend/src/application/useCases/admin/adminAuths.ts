@@ -242,3 +242,21 @@ export const loginAdmin = async (
       return blockResponse;
     });
   };
+
+
+   //to get all reported replies
+
+   export const handlegetallReportedReplies = async (
+    adminRepository: ReturnType<adminTypeDbRepository>,
+  ) => {
+  
+    return await adminRepository.getallReportedReplies().then((allReportedReplies) => {
+      if (!allReportedReplies) {
+        throw new AppError(
+          "Error occured fetching all posts.try again..!",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return allReportedReplies;
+    });
+  };

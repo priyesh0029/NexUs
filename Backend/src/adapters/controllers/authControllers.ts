@@ -52,12 +52,12 @@ export const authControllers = (
     const {email} = req.body;
     console.log("email : ",email,req.body);
 
-    await handleCheckEmail(email,userRepoDb).then((user)=>{
-      console.log("response",user);
+    await handleCheckEmail(email,userRepoDb,authServices).then((token)=>{
+      console.log("response",token);
       res.json({
         status: "success",
-        message: "checked email status successfully",
-        user: user
+        message: "User registered",
+        token: token
       });
     })
 

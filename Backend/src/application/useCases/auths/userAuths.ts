@@ -26,7 +26,7 @@ export const registerUser = async (
     username,
     number,
     email,
-    await authService.encryptPassword(password)
+    password ? await authService.encryptPassword(password):""
   );
 
   return await userRepository
@@ -81,6 +81,8 @@ export const loginUser = async (
   return await userRepository.findByProperty(username).then((user:UserInfoLogin[]) => {
     if (user.length === 0) {
       throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+    }else if(!user){
+      throw new AppError(`an error occured while login.please try again after refreshing the page..!`, HttpStatus.UNAUTHORIZED);
     }
     return authService
       .comparePassword(password, user[0].password)
@@ -121,21 +123,64 @@ export const loginUser = async (
 
 //to check email for google login
 
+// export const handleCheckEmail = async (
+//   email:string,
+//   userRepository: ReturnType<userTypeDbRepository>,
+// ) => {
+  
+
+//   return await userRepository.findByProperty(email).then((user) => {
+//     if (!user) {
+//       throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
+//     }else{
+
+//       return user
+//     }
+     
+//   });
+// };
+
+
 export const handleCheckEmail = async (
   email:string,
   userRepository: ReturnType<userTypeDbRepository>,
+  authService: ReturnType<authServiceInterfaceType>
 ) => {
   
 
-  return await userRepository.findByProperty(email).then((user) => {
-    if (!user) {
-      throw new AppError(`User does not exist`, HttpStatus.UNAUTHORIZED);
-    }else{
+  return await userRepository.findByProperty(email).then(async(user:UserInfoLogin[]) => {
+    if (user.length === 0 ) {
+      return {
+        token: null,
+        user,
+      };
+    }else if(!user){
+      throw new AppError(`an error occured while login.please try again after refreshing the page..!`, HttpStatus.UNAUTHORIZED);
+    }else if ( user[0].accountDeactive) {
+          return await userRepository
+            .activateAccount(user[0].userName)
+            .then(async (active) => {
+              console.log("actieve status of activate account : ", active);
 
-      return user
-    }
-     
-  });
+              if (!active) {
+                throw new AppError(
+                  `Error occured while activating ${user[0].userName}'s account.try again!`,
+                  HttpStatus.UNAUTHORIZED
+                );
+              }else {
+                return {
+                  token: await authService.generateToken({id:user[0]._id,role:"user"}),
+                  user,
+                };
+              }
+            });
+        } else {
+          return {
+            token: await authService.generateToken({id:user[0]._id,role:"user"}),
+            user,
+          };
+        }
+      });
 };
 
 

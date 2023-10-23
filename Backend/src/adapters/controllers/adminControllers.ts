@@ -4,7 +4,7 @@ import { authServiceInterfaceType } from "../../application/services/authService
 import { authServiceType } from "../../framework/services/authServices";
 import { adminTypeDbRepository } from "../../application/repositories/adminDbRepository";
 import { adminTypeRepositoryMongoDB } from "../../framework/database/mongoDb/repositories/adminRepository";
-import { adminDashboard, handleBlockUser, handleUserRegperWeek, handlegetAges, handlegetGenders, handlegetPostListDetails, handlegetReportsOfPost, handlegetReportsOfUser, handlegetallReportedCommets, handlegetusersListDetails, handlemanageCommentStatus, handlemanagePostStatus, loginAdmin } from "../../application/useCases/admin/adminAuths";
+import { adminDashboard, handleBlockUser, handleUserRegperWeek, handlegetAges, handlegetGenders, handlegetPostListDetails, handlegetReportsOfPost, handlegetReportsOfUser, handlegetallReportedCommets, handlegetallReportedReplies, handlegetusersListDetails, handlemanageCommentStatus, handlemanagePostStatus, loginAdmin } from "../../application/useCases/admin/adminAuths";
 import AppError from "../../utilities/appError";
 import { HttpStatus } from "../../types/httpStatus";
 
@@ -226,6 +226,21 @@ const getAdminLogin = asyncHandler(async(req:Request,res:Response)=>{
   
     })
 
+     //to get all reported replies
+
+  const getAllRepliesReport = asyncHandler(async(req:Request,res:Response)=>{
+    
+    await handlegetallReportedReplies(adminRepoDb).then((allReportedReplies)=>{
+      console.log("response",allReportedReplies);
+      res.json({
+        status: "success",
+        message: "get all genders successfully",
+        allReportedReplies: allReportedReplies
+      });
+    })
+
+  })
+
 
   return {
     getAdminLogin,
@@ -240,6 +255,7 @@ const getAdminLogin = asyncHandler(async(req:Request,res:Response)=>{
     managePostStatus,
     getReportsOfPost,
     getReportedComments,
-    manageCommnetStatus
+    manageCommnetStatus,
+    getAllRepliesReport
   };
 };

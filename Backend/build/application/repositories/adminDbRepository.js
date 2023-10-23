@@ -15,6 +15,7 @@ const adminDbRepository = (repository) => {
     const getPostReports = async (postId) => await repository.getPostAllReports(postId);
     const getallReportedComments = async () => await repository.getallCommentReports();
     const toBlokUnblockComment = async (commentId) => await repository.handleBlockUnblockComment(commentId);
+    const getallReportedReplies = async () => await repository.getallReplyReports();
     return {
         findByProperty,
         getDashboard,
@@ -28,7 +29,8 @@ const adminDbRepository = (repository) => {
         toBlokUnblockPost,
         getPostReports,
         getallReportedComments,
-        toBlokUnblockComment
+        toBlokUnblockComment,
+        getallReportedReplies
     };
 };
 exports.adminDbRepository = adminDbRepository;

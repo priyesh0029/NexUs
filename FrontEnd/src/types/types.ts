@@ -23,8 +23,8 @@ interface UserInfo {
 }
 
 interface IgoogleLoginResponse {
-  name :string
-  email:string
+  name: string;
+  email: string;
 }
 
 interface IAdminUserLise {
@@ -114,6 +114,7 @@ interface Comment {
   postId: string;
   userName: string;
   comment: string;
+  isBlocked: boolean;
   liked: [
     {
       userName: string;
@@ -213,4 +214,37 @@ interface IcommentReport {
   postedUserUname: string;
   isBlocked: boolean;
   reports: ICommentReportDetails[];
+}
+
+interface IreplyReports {
+  reportedUserUname: string;
+  reportedUserName: string;
+  dp: string;
+  reason: string;
+  createdAt: string;
+}
+
+interface IReportedReplies {
+  _id: string;
+  comment: string;
+  commetedUserDp: string;
+  commetedUserName: string;
+  commetedUserUname: string;
+  isBlocked: boolean;
+  post: string[];
+  postedUserDp: string;
+  postedUserName: string;
+  postedUserUname: string;
+  repliedUserDp: string;
+  repliedUserEmail: string;
+  repliedUserName: string;
+  repliedUserUname: string;
+  replyComment : string;
+  replyCreatedAt: string;
+  reports: IreplyReports[]
+}
+
+interface IreplyDetails{
+  comment:string
+  replyComment : string
 }

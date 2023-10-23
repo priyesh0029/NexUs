@@ -21,6 +21,7 @@ import { useState } from "react";
 import { POST_URL } from "../../../constants/constants";
 import { auth, provider } from "../../../constants/firebaseAuth";
 import { signInWithPopup } from "firebase/auth";
+import UnameModal from "./UnameModal";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -29,9 +30,11 @@ const LoginForm = () => {
     name: "",
     email: "",
   });
-  const [notify, setnotify] = useState(false)
 
-  const [accountExist, setaccountExist] = useState<{name:string,userName:string}>({name:'',userName:""})
+  const [gmailUnameModal, setgmailUnameModal] = useState<boolean>(false)
+
+
+
 
   const submitHandler = async (userData: any) => {
     let response = await login(userData);
@@ -90,11 +93,19 @@ const LoginForm = () => {
 
   const handleLoginThroughEmail = async (email:string) => {
     const response = await loginThroughEmailCheck(email);
-    if(response !== null){
-      setnotify(!notify)
-      setaccountExist({name:response.name,userName:response.userName})
-    }else{
-      
+    console.log("data of user login = ", response);
+    if (response.status === "newUser"){
+        console.log("response.status : ",response.status);
+        setgmailUnameModal(!gmailUnameModal)
+    }else if (response.status === "success") {
+      const token = response.userInfo.token;
+      const user = response.userInfo.user;
+      console.log(token);
+      dispatch(setToken(token));
+      dispatch(SetUserInfo(user));
+      navigate("/");
+    } else {
+      console.log("signUp failed");
     }
   };
 
@@ -123,10 +134,6 @@ const LoginForm = () => {
             <Typography variant="h3" color="blue" className="text-center ">
               Login
             </Typography>
-
-            {notify && (<>
-              <p className="text-blue-700 text-md mt-4">Hi {accountExist.name},enter your password to login..</p>
-            </>)}
 
             <CardBody className="flex flex-col gap-2">
               <Input
@@ -178,7 +185,7 @@ const LoginForm = () => {
                   onClick={handleGoogleSignIn}
                 >
                   <img
-                    src="https://www.material-tailwind.com/icons/google.svg"
+                    src="https://static-00.iconduck.com/assets.00/google-icon-2048x2048-czn3g8x8.png"
                     alt="metamask"
                     className="h-6 w-6"
                   />
@@ -201,6 +208,7 @@ const LoginForm = () => {
           </form>
         </div>
       </div>
+      {gmailUnameModal && <UnameModal  open={gmailUnameModal} setOpen ={setgmailUnameModal} userData={userData}/>}
     </div>
   );
 };

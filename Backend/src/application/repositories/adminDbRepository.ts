@@ -44,6 +44,9 @@ export const adminDbRepository = (
     const toBlokUnblockComment = async (commentId:string) =>
     await repository.handleBlockUnblockComment(commentId);
 
+    const getallReportedReplies = async () =>
+    await repository.getallReplyReports();
+
 
 
   return {
@@ -59,7 +62,8 @@ export const adminDbRepository = (
     toBlokUnblockPost,
     getPostReports,
     getallReportedComments,
-    toBlokUnblockComment
+    toBlokUnblockComment,
+    getallReportedReplies
   };
 };
 

@@ -168,6 +168,17 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             });
         });
     });
+    //to get all reported replies
+    const getAllRepliesReport = (0, express_async_handler_1.default)(async (req, res) => {
+        await (0, adminAuths_1.handlegetallReportedReplies)(adminRepoDb).then((allReportedReplies) => {
+            console.log("response", allReportedReplies);
+            res.json({
+                status: "success",
+                message: "get all genders successfully",
+                allReportedReplies: allReportedReplies
+            });
+        });
+    });
     return {
         getAdminLogin,
         getAdminDashboard,
@@ -181,7 +192,8 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
         managePostStatus,
         getReportsOfPost,
         getReportedComments,
-        manageCommnetStatus
+        manageCommnetStatus,
+        getAllRepliesReport
     };
 };
 exports.adminAuthControllers = adminAuthControllers;

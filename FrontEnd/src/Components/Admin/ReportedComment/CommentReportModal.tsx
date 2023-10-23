@@ -8,24 +8,25 @@ interface IPostReportModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   reports: ICommentReportDetails[];
+  replyDetails ?: IreplyDetails;
 }
 
 const CommentReportModal: React.FC<IPostReportModal> = ({
   open,
   setOpen,
   reports,
+  replyDetails,
 }) => {
-
   const handleOpen = () => setOpen(!open);
-  const TABLE_HEAD = ["Reported by", "Reason","Reported Time"];
+  const TABLE_HEAD = replyDetails !== undefined ?["Reported by", "Reason","replied to","reply comment[reported]", "Reported Time"]:["Reported by", "Reason","Reported Time"]
 
   const TABLE_ROWS = reports;
 
   return (
     <>
-      <Dialog open={open} handler={handleOpen}>
-        <DialogHeader>Post Reports</DialogHeader>
-          <table className="w-full min-w-max table-auto text-left">
+      <Dialog open={open} handler={handleOpen} size={replyDetails !== undefined ?"lg":"md"}>
+        <DialogHeader>Comment Reports</DialogHeader>
+        <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
@@ -47,7 +48,7 @@ const CommentReportModal: React.FC<IPostReportModal> = ({
           <tbody>
             {TABLE_ROWS.map(
               (
-                { reportedUserName, reportedUserUname,createdAt, dp, reason },
+                { reportedUserName, reportedUserUname, createdAt, dp, reason },
                 index
               ) => {
                 const isLast = index === TABLE_ROWS.length - 1;
@@ -91,15 +92,43 @@ const CommentReportModal: React.FC<IPostReportModal> = ({
                         {reason}
                       </Typography>
                     </td>
+                    {replyDetails ? (
+                      <>
+                        <td className = {classes}>
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {replyDetails.comment}
+                            </Typography>
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {replyDetails.replyComment}
+                            </Typography>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <></>
+                    )}
                     <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {moment(createdAt).format('MMMM Do YYYY')}
-                    </Typography>
-                  </td>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {moment(createdAt).format("MMMM Do YYYY")}
+                      </Typography>
+                    </td>
                   </tr>
                 );
               }

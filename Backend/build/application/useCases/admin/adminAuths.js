@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handlemanageCommentStatus = exports.handlegetallReportedCommets = exports.handlegetReportsOfPost = exports.handlemanagePostStatus = exports.handlegetPostListDetails = exports.handlegetReportsOfUser = exports.handleBlockUser = exports.handlegetusersListDetails = exports.handlegetAges = exports.handlegetGenders = exports.handleUserRegperWeek = exports.adminDashboard = exports.loginAdmin = void 0;
+exports.handlegetallReportedReplies = exports.handlemanageCommentStatus = exports.handlegetallReportedCommets = exports.handlegetReportsOfPost = exports.handlemanagePostStatus = exports.handlegetPostListDetails = exports.handlegetReportsOfUser = exports.handleBlockUser = exports.handlegetusersListDetails = exports.handlegetAges = exports.handlegetGenders = exports.handleUserRegperWeek = exports.adminDashboard = exports.loginAdmin = void 0;
 const httpStatus_1 = require("../../../types/httpStatus");
 const appError_1 = __importDefault(require("../../../utilities/appError"));
 const loginAdmin = async (adminData, adminRepository, authService) => {
@@ -147,3 +147,13 @@ const handlemanageCommentStatus = async (commentId, adminRepository) => {
     });
 };
 exports.handlemanageCommentStatus = handlemanageCommentStatus;
+//to get all reported replies
+const handlegetallReportedReplies = async (adminRepository) => {
+    return await adminRepository.getallReportedReplies().then((allReportedReplies) => {
+        if (!allReportedReplies) {
+            throw new appError_1.default("Error occured fetching all posts.try again..!", httpStatus_1.HttpStatus.BAD_REQUEST);
+        }
+        return allReportedReplies;
+    });
+};
+exports.handlegetallReportedReplies = handlegetallReportedReplies;

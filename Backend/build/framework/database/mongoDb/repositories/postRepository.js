@@ -30,6 +30,7 @@ const postRepositoryMongoDb = () => {
             {
                 $match: {
                     postDeleted: false,
+                    isBlocked: false,
                 },
             },
             {
@@ -212,6 +213,7 @@ const postRepositoryMongoDb = () => {
                 $match: {
                     postId: postID,
                     delete: false,
+                    isBlocked: false,
                 },
             },
             {

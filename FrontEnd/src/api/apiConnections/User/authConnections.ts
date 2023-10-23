@@ -7,26 +7,27 @@ interface RegisterResponse {
   userInfo?: {
     token: string;
     user: {
-      _id: string
+      _id: string;
       name: string;
       userName: string;
-      dp : string;
-      savedPost : string[];
-      following : string[];
-      followers : string[];
+      dp: string;
+      savedPost: string[];
+      following: string[];
+      followers: string[];
     };
   };
 }
 
 interface RegisterFormValues {
   name: string;
-  userName: string;
+  username: string;
   number: string;
   email: string;
-  password: string;
+  password ?: string;
 }
 
 export const register = async (userData: RegisterFormValues): Promise<any> => {
+  console.log("userData : ",userData);
   try {
     const response: any = await baseURL.post<RegisterResponse>(
       "/auth/register",
@@ -43,10 +44,10 @@ export const register = async (userData: RegisterFormValues): Promise<any> => {
             _id: response.data.token.user._id,
             name: response.data.token.user.name,
             userName: response.data.token.user.userName,
-            dp : response.data.token.user.dp,
-            savedPost:response.data.token.user.savedPost,
-            following:response.data.token.user.following,
-            followers:response.data.token.user.followers
+            dp: response.data.token.user.dp,
+            savedPost: response.data.token.user.savedPost,
+            following: response.data.token.user.following,
+            followers: response.data.token.user.followers,
           },
         },
       };
@@ -83,15 +84,86 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
             _id: response.data.token.user[0]._id,
             name: response.data.token.user[0].name,
             userName: response.data.token.user[0].userName,
-            dp :  response.data.token.user[0].dp,
-            savedPost:response.data.token.user[0].savedPost,
-            following:response.data.token.user[0].following,
-            followers:response.data.token.user[0].followers
+            dp: response.data.token.user[0].dp,
+            savedPost: response.data.token.user[0].savedPost,
+            following: response.data.token.user[0].following,
+            followers: response.data.token.user[0].followers,
           },
         },
       };
 
-      toast.success("Registration successful");
+      toast.success("login successful");
+      return loginResponse;
+    } else {
+      toast.error("login failed");
+      return false;
+    }
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};
+
+//login Through Email Check
+// export const loginThroughEmailCheck = async (email: string): Promise<any> => {
+//   try {
+//     const response: any = await baseURL.post<RegisterResponse>(
+//       "/auth/checkEmail",
+//       {email}
+//     );
+
+//     console.log("response checkEmail : ", response);
+//     if (response.data.status === "success") {
+//         return response.data.user[0]
+//     } else {
+//       toast.error("failed to login.. try again");
+//       return false;
+//     }
+//   } catch (error) {
+//     const errorMessage =
+//       (error as any)?.response?.data?.message ||
+//       "something went wrong! try again.";
+//     console.log("response error : ", errorMessage);
+//     toast.error(errorMessage);
+//     throw new Error(errorMessage); // Throw the error to be caught by the caller
+//   }
+// };
+
+export const loginThroughEmailCheck = async (email: string): Promise<any> => {
+  try {
+    const response: any = await baseURL.post<RegisterResponse>(
+      "/auth/checkEmail",
+      { email }
+    );
+
+    console.log("response first : ", response);
+    if(response.data.token.token === null && response.data.token.user.length === 0){
+      let loginResponse ={
+        status: 'newUser'
+      }
+      return loginResponse;
+    }else if (response.data.status === "success") {
+      let loginResponse: RegisterResponse = {
+        status: response.data.status,
+        userInfo: {
+          token: response.data.token.token,
+          user: {
+            _id: response.data.token.user[0]._id,
+            name: response.data.token.user[0].name,
+            userName: response.data.token.user[0].userName,
+            dp: response.data.token.user[0].dp,
+            savedPost: response.data.token.user[0].savedPost,
+            following: response.data.token.user[0].following,
+            followers: response.data.token.user[0].followers,
+          },
+        },
+      };
+
+      toast.success("login successful");
       return loginResponse;
     } else {
       toast.error("Registration failed");
@@ -109,27 +181,3 @@ export const login = async (userData: RegisterFormValues): Promise<any> => {
 
 
 
-//login Through Email Check
-export const loginThroughEmailCheck = async (email: string): Promise<any> => {
-  try {
-    const response: any = await baseURL.post<RegisterResponse>(
-      "/auth/checkEmail",
-      {email}
-    );
-
-    console.log("response checkEmail : ", response);
-    if (response.data.status === "success") {
-        return response.data.user[0]
-    } else {
-      toast.error("failed to login.. try again");
-      return false;
-    }
-  } catch (error) {
-    const errorMessage =
-      (error as any)?.response?.data?.message ||
-      "something went wrong! try again.";
-    console.log("response error : ", errorMessage);
-    toast.error(errorMessage);
-    throw new Error(errorMessage); // Throw the error to be caught by the caller
-  }
-};
