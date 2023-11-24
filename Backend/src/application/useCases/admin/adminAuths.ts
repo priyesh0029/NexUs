@@ -260,3 +260,56 @@ export const loginAdmin = async (
       return allReportedReplies;
     });
   };
+
+    //to manage reply  active inactive status
+
+    export const handlemanageReplyStatus = async (
+      commentId:string,
+      replyId:string,
+      adminRepository: ReturnType<adminTypeDbRepository>,
+    ) => {
+    
+      return await adminRepository.toBlokUnblockReply(commentId,replyId).then((blockResponse) => {
+        if (!blockResponse) {
+          throw new AppError(
+            "Error occured while block or unblock post.try again..!",
+            HttpStatus.BAD_REQUEST
+          );
+        }
+        return blockResponse;
+      });
+    };
+
+    // to get all user count for the yearly chart in admin dashboard
+
+  export const handleGetUserCount = async (
+    adminRepository: ReturnType<adminTypeDbRepository>,
+  ) => {
+  
+    return await adminRepository.getyearlyUserCount().then((allUserDetails) => {
+      if (!allUserDetails) {
+        throw new AppError(
+          "Error occured fetching new user's yearly count.try again..!",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return allUserDetails;
+    });
+  };
+
+     // to get all user count for the yearly chart in admin dashboard
+
+     export const handleGetPostCount = async (
+      adminRepository: ReturnType<adminTypeDbRepository>,
+    ) => {
+    
+      return await adminRepository.getyearlyPostCount().then((allPostsDetails) => {
+        if (!allPostsDetails) {
+          throw new AppError(
+            "Error occured fetching yearly post count.try again..!",
+            HttpStatus.BAD_REQUEST
+          );
+        }
+        return allPostsDetails;
+      });
+    };

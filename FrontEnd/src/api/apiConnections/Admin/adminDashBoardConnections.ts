@@ -287,3 +287,72 @@ export const getAllRepliesReport = async (): Promise<any> => {
     throw new Error(errorMessage); // Throw the error to be caught by the caller
   }
 };
+
+//to block and unblock a reply from admin side
+
+export const manageReplyStatus = async (commentId: string,replyId: string): Promise<any> => {
+  console.log("postId : ",commentId);
+
+  try {
+    const response: any = await adminBaseURL.patch("/admin/manageReplyStatus",{commentId,replyId});
+
+    console.log("response manage Reply Status : ", response);
+    if (response.data.status === "success") {
+      const replyStatus = response.data.replyStatus;
+
+      return replyStatus;
+    } 
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};
+
+//to get user count for yeat for user yearly chart on admin dashboard
+
+export const getUserCount = async (): Promise<any> => {
+  try {
+    const response: any = await adminBaseURL.get("/admin/getUserCount");
+
+    console.log("response getusersListDetails : ", response);
+    if (response.data.status === "success") {
+      const userCount = response.data.userCount;
+
+      return userCount;
+    } 
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};
+
+
+//to get user count for yeat for user yearly chart on admin dashboard
+
+export const getPostCount = async (): Promise<any> => {
+  try {
+    const response: any = await adminBaseURL.get("/admin/getPostCount");
+
+    console.log("response getusersListDetails : ", response);
+    if (response.data.status === "success") {
+      const postCount = response.data.postCount;
+
+      return postCount;
+    } 
+  } catch (error) {
+    const errorMessage =
+      (error as any)?.response?.data?.message ||
+      "something went wrong! try again.";
+    console.log("response error : ", errorMessage);
+    toast.error(errorMessage);
+    throw new Error(errorMessage); // Throw the error to be caught by the caller
+  }
+};

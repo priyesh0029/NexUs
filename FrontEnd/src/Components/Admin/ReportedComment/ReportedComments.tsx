@@ -372,7 +372,7 @@ const ReportedComments: React.FC<ReportedComments> = ({ selectedTab }) => {
             </CardFooter>
           </>
         ) : (
-          <ReportedReplies replyReports={replyReports}/>
+          <ReportedReplies replyReports={replyReports} setreplyReports={setreplyReports}/>
         )}
       </Card>
       {reportModal && (

@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { VideoCameraIcon } from "@heroicons/react/20/solid";
 import ChatboxTextarea from "./ChatTextArea";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import ChatSearch from "./chatSearch";
 import {
@@ -24,7 +24,6 @@ import {
 } from "../../../constants/chatLogics";
 import { io, Socket } from "socket.io-client";
 import {
-  SetNewMessage,
   SetNotification,
 } from "../../../features/redux/slices/user/chatSlice";
 import Lottie from "react-lottie";
@@ -42,7 +41,7 @@ interface ImessageProps {
   createOrAccessGroupChatToChatList: (users: string[]) => void;
 }
 
-let ENDPOINT = process.env.SERVER_URL;
+const ENDPOINT = process.env.SERVER_URL;
 
 let socket: Socket, selectedChatCompare: IuserChatList;
 
@@ -201,12 +200,12 @@ const Message: React.FC<ImessageProps> = ({
       setTyping(true);
       socket.emit("typing", selectedChat._id);
     }
-    let lastTypingTime = new Date().getTime();
-    let timerLength = 3000;
+    const lastTypingTime = new Date().getTime();
+    const timerLength = 3000;
 
     setTimeout(() => {
-      let timeNow = new Date().getTime();
-      let timeDiff = timeNow - lastTypingTime;
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
 
       if (timeDiff >= timerLength && typing) {
         socket.emit("stop typing", selectedChat._id);

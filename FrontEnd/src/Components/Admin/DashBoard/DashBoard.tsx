@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import BarGraphReg from "./BarGraphReg";
 import GenderGraphPie from "./GenderGraphPie";
-import KarasjokWeatherChart from "./newGraph";
 import { dashBoardDetails } from "../../../api/apiConnections/Admin/adminDashBoardConnections";
 import AgeGraph from "./AgeGraph";
+import YearlyGraph from "./YearlyGraph";
 
 interface IdashBoardInfo {
   totalUsers: number;
@@ -52,7 +52,7 @@ const DashBoardComponent:React.FC<IDashBoardComponent> = ({selectedTab}) => {
         <AgeGraph/>
       </div>
       <div className="mb-16">
-        <KarasjokWeatherChart />
+        <YearlyGraph />
       </div>
     </div>
   );

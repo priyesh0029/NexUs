@@ -20,7 +20,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "admin loggedin successfully",
-                adminDetails: adminDetails
+                adminDetails: adminDetails,
             });
         });
     });
@@ -30,7 +30,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "admin loggedin successfully",
-                dashBoardInfos: dashBoardInfos
+                dashBoardInfos: dashBoardInfos,
             });
         });
     });
@@ -40,7 +40,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "got user registation per week successfully",
-                userRegperWeek: userRegperWeek
+                userRegperWeek: userRegperWeek,
             });
         });
     });
@@ -50,7 +50,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                genders: genders
+                genders: genders,
             });
         });
     });
@@ -61,7 +61,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                ageData: ageData
+                ageData: ageData,
             });
         });
     });
@@ -72,11 +72,11 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                allUsersList: allUsersList
+                allUsersList: allUsersList,
             });
         });
     });
-    //to block aad unblock user 
+    //to block aad unblock user
     const blocUnblockUser = (0, express_async_handler_1.default)(async (req, res) => {
         const { userId } = req.body;
         await (0, adminAuths_1.handleBlockUser)(userId, adminRepoDb).then((blockStatus) => {
@@ -84,20 +84,20 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "block/unblock successfull",
-                blockStatus: blockStatus
+                blockStatus: blockStatus,
             });
         });
     });
-    //to get all reports of a user 
+    //to get all reports of a user
     const getReportsOfUser = (0, express_async_handler_1.default)(async (req, res) => {
         const { userId } = req.query;
-        if (typeof userId === 'string') {
+        if (typeof userId === "string") {
             await (0, adminAuths_1.handlegetReportsOfUser)(userId, adminRepoDb).then((allReports) => {
                 console.log("response", allReports);
                 res.json({
                     status: "success",
                     message: "block/unblock successfull",
-                    allReports: allReports
+                    allReports: allReports,
                 });
             });
         }
@@ -112,11 +112,11 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                allPostsList: allPostsList
+                allPostsList: allPostsList,
             });
         });
     });
-    //to block and unblock post 
+    //to block and unblock post
     const managePostStatus = (0, express_async_handler_1.default)(async (req, res) => {
         const { postId } = req.body;
         await (0, adminAuths_1.handlemanagePostStatus)(postId, adminRepoDb).then((postStatus) => {
@@ -124,20 +124,20 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "block/unblock successfull",
-                postStatus: postStatus
+                postStatus: postStatus,
             });
         });
     });
-    //to get all reports of a post 
+    //to get all reports of a post
     const getReportsOfPost = (0, express_async_handler_1.default)(async (req, res) => {
         const { postId } = req.query;
-        if (typeof postId === 'string') {
+        if (typeof postId === "string") {
             await (0, adminAuths_1.handlegetReportsOfPost)(postId, adminRepoDb).then((allReports) => {
                 console.log("response", allReports);
                 res.json({
                     status: "success",
                     message: "block/unblock successfull",
-                    allReports: allReports
+                    allReports: allReports,
                 });
             });
         }
@@ -152,11 +152,11 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                allReportedCommets: allReportedCommets
+                allReportedCommets: allReportedCommets,
             });
         });
     });
-    //to block and unblock commnet 
+    //to block and unblock commnet
     const manageCommnetStatus = (0, express_async_handler_1.default)(async (req, res) => {
         const { commentId } = req.body;
         await (0, adminAuths_1.handlemanageCommentStatus)(commentId, adminRepoDb).then((commentStatus) => {
@@ -164,7 +164,7 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "block/unblock successfull",
-                commentStatus: commentStatus
+                commentStatus: commentStatus,
             });
         });
     });
@@ -175,7 +175,41 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
             res.json({
                 status: "success",
                 message: "get all genders successfully",
-                allReportedReplies: allReportedReplies
+                allReportedReplies: allReportedReplies,
+            });
+        });
+    });
+    //to block and unblock reply
+    const manageReplyStatus = (0, express_async_handler_1.default)(async (req, res) => {
+        const { commentId, replyId } = req.body;
+        await (0, adminAuths_1.handlemanageReplyStatus)(commentId, replyId, adminRepoDb).then((replyStatus) => {
+            console.log("response", replyStatus);
+            res.json({
+                status: "success",
+                message: "block/unblock successfull",
+                replyStatus: replyStatus,
+            });
+        });
+    });
+    // to get all user count for the yearly chart in admin dashboard
+    const getUserCount = (0, express_async_handler_1.default)(async (req, res) => {
+        await (0, adminAuths_1.handleGetUserCount)(adminRepoDb).then((userCount) => {
+            console.log("response", userCount);
+            res.json({
+                status: "success",
+                message: "get all genders successfully",
+                userCount: userCount,
+            });
+        });
+    });
+    // to get all post count for the yearly chart in admin dashboard
+    const getPostCount = (0, express_async_handler_1.default)(async (req, res) => {
+        await (0, adminAuths_1.handleGetPostCount)(adminRepoDb).then((postCount) => {
+            console.log("response", postCount);
+            res.json({
+                status: "success",
+                message: "get all genders successfully",
+                postCount: postCount,
             });
         });
     });
@@ -193,7 +227,10 @@ const adminAuthControllers = (authServiceInterfaceApp, authService, adminDbRepo,
         getReportsOfPost,
         getReportedComments,
         manageCommnetStatus,
-        getAllRepliesReport
+        getAllRepliesReport,
+        manageReplyStatus,
+        getUserCount,
+        getPostCount,
     };
 };
 exports.adminAuthControllers = adminAuthControllers;

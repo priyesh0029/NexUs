@@ -7,7 +7,7 @@ import {
   createOrAccessGroupChat,
   getUserChats,
 } from "../../../api/apiConnections/User/chatConnections";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearSelectedChat, setSelectedChat } from "../../../features/redux/slices/user/chatSlice";
 
 const Inbox = () => {
@@ -15,7 +15,7 @@ const Inbox = () => {
   const dispatch = useDispatch();
   const [fetchAgain, setFetchAgain] = useState(false);
 
-  dispatch(clearSelectedChat());
+  // dispatch(clearSelectedChat());
 
   // const newMessageReceived = useSelector((store:{chat:{newMessage:string}})=>store.chat.newMessage)
 

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handlegetallReportedReplies = exports.handlemanageCommentStatus = exports.handlegetallReportedCommets = exports.handlegetReportsOfPost = exports.handlemanagePostStatus = exports.handlegetPostListDetails = exports.handlegetReportsOfUser = exports.handleBlockUser = exports.handlegetusersListDetails = exports.handlegetAges = exports.handlegetGenders = exports.handleUserRegperWeek = exports.adminDashboard = exports.loginAdmin = void 0;
+exports.handleGetPostCount = exports.handleGetUserCount = exports.handlemanageReplyStatus = exports.handlegetallReportedReplies = exports.handlemanageCommentStatus = exports.handlegetallReportedCommets = exports.handlegetReportsOfPost = exports.handlemanagePostStatus = exports.handlegetPostListDetails = exports.handlegetReportsOfUser = exports.handleBlockUser = exports.handlegetusersListDetails = exports.handlegetAges = exports.handlegetGenders = exports.handleUserRegperWeek = exports.adminDashboard = exports.loginAdmin = void 0;
 const httpStatus_1 = require("../../../types/httpStatus");
 const appError_1 = __importDefault(require("../../../utilities/appError"));
 const loginAdmin = async (adminData, adminRepository, authService) => {
@@ -157,3 +157,33 @@ const handlegetallReportedReplies = async (adminRepository) => {
     });
 };
 exports.handlegetallReportedReplies = handlegetallReportedReplies;
+//to manage reply  active inactive status
+const handlemanageReplyStatus = async (commentId, replyId, adminRepository) => {
+    return await adminRepository.toBlokUnblockReply(commentId, replyId).then((blockResponse) => {
+        if (!blockResponse) {
+            throw new appError_1.default("Error occured while block or unblock post.try again..!", httpStatus_1.HttpStatus.BAD_REQUEST);
+        }
+        return blockResponse;
+    });
+};
+exports.handlemanageReplyStatus = handlemanageReplyStatus;
+// to get all user count for the yearly chart in admin dashboard
+const handleGetUserCount = async (adminRepository) => {
+    return await adminRepository.getyearlyUserCount().then((allUserDetails) => {
+        if (!allUserDetails) {
+            throw new appError_1.default("Error occured fetching new user's yearly count.try again..!", httpStatus_1.HttpStatus.BAD_REQUEST);
+        }
+        return allUserDetails;
+    });
+};
+exports.handleGetUserCount = handleGetUserCount;
+// to get all user count for the yearly chart in admin dashboard
+const handleGetPostCount = async (adminRepository) => {
+    return await adminRepository.getyearlyPostCount().then((allPostsDetails) => {
+        if (!allPostsDetails) {
+            throw new appError_1.default("Error occured fetching yearly post count.try again..!", httpStatus_1.HttpStatus.BAD_REQUEST);
+        }
+        return allPostsDetails;
+    });
+};
+exports.handleGetPostCount = handleGetPostCount;

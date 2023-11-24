@@ -235,6 +235,7 @@ interface IReportedReplies {
   postedUserDp: string;
   postedUserName: string;
   postedUserUname: string;
+  replyId : string;
   repliedUserDp: string;
   repliedUserEmail: string;
   repliedUserName: string;

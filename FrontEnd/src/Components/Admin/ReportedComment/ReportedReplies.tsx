@@ -18,6 +18,7 @@ import { POST_URL } from "../../../constants/constants";
 import moment from "moment";
 import CommentReportModal from "./CommentReportModal";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { manageReplyStatus } from "../../../api/apiConnections/Admin/adminDashBoardConnections";
 
 const TABLE_HEAD = [
   "Post content",
@@ -31,45 +32,45 @@ const TABLE_HEAD = [
 
 interface ReportedRepliesProps {
   replyReports: IReportedReplies[];
+  setreplyReports : React.Dispatch<React.SetStateAction<IReportedReplies[]>>;
 }
 
-const ReportedReplies: React.FC<ReportedRepliesProps> = ({ replyReports }) => {
-  const [TABLE_ROWS, setTABLE_ROWS] =
-    useState<IReportedReplies[]>(replyReports);
+const ReportedReplies: React.FC<ReportedRepliesProps> = ({ replyReports,setreplyReports }) => {
+  const [TABLE_ROWS, setTABLE_ROWS] = useState<IReportedReplies[]>(replyReports);
   const [reportModal, setreportModal] = useState<boolean>(false);
   const [reports, setReports] = useState<ICommentReportDetails[]>([]);
 
-  //to handle active or inactive state of a post
+  //to handle active or inactive state of a reply
 
-  //   const handleBlockUnblock = async (commentId: string) => {
-  //     const response = await manageCommnetStatus(commentId);
-  //     console.log("response : ", response);
-  //     if (response.status) {
-  //       if (response.state === "blocked") {
-  //         const updatedState = commentReport?.map((comment) => {
-  //           if (comment._id == commentId) {
-  //             return { ...comment, isBlocked: true };
-  //           }
-  //           return comment;
-  //         });
-  //         if (updatedState !== undefined) {
-  //           setcommentReport(updatedState);
-  //           setTABLE_ROWS(updatedState);
-  //         }
-  //       } else if (response.state === "unblocked") {
-  //         const updatedState = commentReport?.map((comment) => {
-  //           if (comment._id == commentId) {
-  //             return { ...comment, isBlocked: false };
-  //           }
-  //           return comment;
-  //         });
-  //         if (updatedState !== undefined) {
-  //           setcommentReport(updatedState);
-  //           setTABLE_ROWS(updatedState);
-  //         }
-  //       }
-  //     }
-  //   };
+    const handleBlockUnblock = async (commentId: string,replyId:string) => {
+      const response = await manageReplyStatus(commentId,replyId);
+      console.log("response : ", response);
+      if (response.status) {
+        if (response.state === "blocked") {
+          const updatedState = replyReports?.map((reply) => {
+            if (reply.replyId == replyId) {
+              return { ...reply, isBlocked: true };
+            }
+            return reply;
+          });
+          if (updatedState !== undefined) {
+            setreplyReports(updatedState);
+            setTABLE_ROWS(updatedState);
+          }
+        } else if (response.state === "unblocked") {
+          const updatedState = replyReports?.map((reply) => {
+            if (reply.replyId == replyId) {
+              return { ...reply, isBlocked: false };
+            }
+            return reply;
+          });
+          if (updatedState !== undefined) {
+            setreplyReports(updatedState);
+            setTABLE_ROWS(updatedState);
+          }
+        }
+      }
+    };
 
   // to search the user
   const [searchText, setSearchText] = useState("");
@@ -128,6 +129,7 @@ const ReportedReplies: React.FC<ReportedRepliesProps> = ({ replyReports }) => {
                   postedUserDp,
                   postedUserName,
                   postedUserUname,
+                  replyId,
                   repliedUserDp,
                   repliedUserEmail,
                   repliedUserName,
@@ -304,7 +306,7 @@ const ReportedReplies: React.FC<ReportedRepliesProps> = ({ replyReports }) => {
                         content={isBlocked ? "tap to unblock" : "tap to block"}
                       >
                         <Switch
-                          // onChange={() => handleBlockUnblock(_id)}
+                           onChange={() => handleBlockUnblock(_id,replyId)}
                           checked={isBlocked}
                           label={isBlocked ? "Inactive" : "Active"}
                         />

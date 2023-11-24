@@ -638,6 +638,7 @@ const adminRepositoryMongoDB = () => {
             return false;
         }
     };
+    //to handle block or unblock a comment
     const handleBlockUnblockComment = async (commentId) => {
         console.log("commentId : ", commentId);
         try {
@@ -670,23 +671,12 @@ const adminRepositoryMongoDB = () => {
         try {
             const allReportedReplies = await commentModel_1.default.aggregate([
                 {
-                    $unwind: 
-                    /**
-                     * path: Path to the array field.
-                     * includeArrayIndex: Optional name for index.
-                     * preserveNullAndEmptyArrays: Optional
-                     *   toggle to unwind null and empty values.
-                     */
-                    {
+                    $unwind: {
                         path: "$reply",
                     },
                 },
                 {
-                    $match: 
-                    /**
-                     * query: The query in MQL.
-                     */
-                    {
+                    $match: {
                         $expr: {
                             $gt: [
                                 {
@@ -731,11 +721,6 @@ const adminRepositoryMongoDB = () => {
                         path: "$posts",
                     },
                 },
-                // {
-                //   $unwind: {
-                //     path: "$reports",
-                //   },
-                // }
                 {
                     $lookup: {
                         from: "users",
@@ -755,14 +740,7 @@ const adminRepositoryMongoDB = () => {
                     },
                 },
                 {
-                    $unwind: 
-                    /**
-                     * path: Path to the array field.
-                     * includeArrayIndex: Optional name for index.
-                     * preserveNullAndEmptyArrays: Optional
-                     *   toggle to unwind null and empty values.
-                     */
-                    {
+                    $unwind: {
                         path: "$reply.reports",
                     },
                 },
@@ -775,14 +753,7 @@ const adminRepositoryMongoDB = () => {
                     },
                 },
                 {
-                    $unwind: 
-                    /**
-                     * path: Path to the array field.
-                     * includeArrayIndex: Optional name for index.
-                     * preserveNullAndEmptyArrays: Optional
-                     *   toggle to unwind null and empty values.
-                     */
-                    {
+                    $unwind: {
                         path: "$replyReportedUsers",
                     },
                 },
@@ -794,6 +765,7 @@ const adminRepositoryMongoDB = () => {
                         replyReportedUsers: 1,
                         repliedUsers: 1,
                         comment: 1,
+                        "reply._id": 1,
                         "reply.isBlocked": 1,
                         "reply.comment": 1,
                         "reply.reports.report": 1,
@@ -826,6 +798,9 @@ const adminRepositoryMongoDB = () => {
                         },
                         commetedUserDp: {
                             $first: "$commenteUsers.dp",
+                        },
+                        replyId: {
+                            $first: "$reply._id",
                         },
                         repliedUserName: {
                             $first: "$repliedUsers.name",
@@ -867,6 +842,118 @@ const adminRepositoryMongoDB = () => {
             return false;
         }
     };
+    //to handle block or unblock a reply
+    const handleBlockUnblockReply = async (commentId, replyId) => {
+        console.log("commentId, replyId : ", commentId, replyId);
+        try {
+            const replyDetails = await commentModel_1.default.findOne({
+                _id: commentId,
+                "reply._id": replyId,
+            }, {
+                "reply.$": 1,
+                _id: 0,
+            });
+            console.log("replyDetails :", replyDetails);
+            if (replyDetails !== null && replyDetails.reply[0].isBlocked) {
+                const unblock = await commentModel_1.default.updateOne({ _id: commentId, "reply._id": replyId }, { $set: { "reply.$.isBlocked": false } });
+                console.log("unblock 1:", unblock);
+                if (unblock.modifiedCount === 1) {
+                    return { status: true, state: "unblocked" };
+                }
+            }
+            else {
+                const blocked = await commentModel_1.default.updateOne({ _id: commentId, "reply._id": replyId }, { $set: { "reply.$.isBlocked": true } });
+                console.log("blocked :", blocked);
+                if (blocked.modifiedCount === 1) {
+                    return { status: true, state: "blocked" };
+                }
+            }
+        }
+        catch (error) {
+            console.log(error);
+            return false;
+        }
+    };
+    // to get all user count for the yearly chart in admin dashboard
+    const getyearlyUserCountInfo = async () => {
+        try {
+            const monthsOfYear = Array.from({ length: 12 }, (_, i) => i + 1); // Array representing months 1 to 12
+            const aggregationPipeline = await userModel_1.default.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(new Date().getFullYear(), 0, 1),
+                            $lt: new Date(new Date().getFullYear() + 1, 0, 1), // Start of the next year
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$createdAt" },
+                            month: { $month: "$createdAt" }, // Extract the month
+                        },
+                        count: { $sum: 1 }, // Count the number of users in each group
+                    },
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 }, // Sort the results by year and month
+                },
+            ]);
+            const resultWithZeroCounts = monthsOfYear.map((month) => {
+                const matchingMonth = aggregationPipeline.find((item) => item._id.month === month);
+                return matchingMonth ? matchingMonth.count : 0;
+            });
+            console.log("Newly joined users per month in the current year:", 
+            // groupedResults,
+            resultWithZeroCounts);
+            return resultWithZeroCounts;
+        }
+        catch (error) {
+            console.log(error);
+            return false;
+        }
+    };
+    // to get all post count for the yearly chart in admin dashboard
+    const getyearlyPostCountInfo = async () => {
+        try {
+            const monthsOfYear = Array.from({ length: 12 }, (_, i) => i + 1); // Array representing months 1 to 12
+            const aggregationPipeline = await postModel_1.default.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(new Date().getFullYear(), 0, 1),
+                            $lt: new Date(new Date().getFullYear() + 1, 0, 1), // Start of the next year
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$createdAt" },
+                            month: { $month: "$createdAt" }, // Extract the month
+                        },
+                        count: { $sum: 1 }, // Count the number of users in each group
+                    },
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 }, // Sort the results by year and month
+                },
+            ]);
+            const resultWithZeroCounts = monthsOfYear.map((month) => {
+                const matchingMonth = aggregationPipeline.find((item) => item._id.month === month);
+                return matchingMonth ? matchingMonth.count : 0;
+            });
+            console.log("Newly added post per month in the current year:", 
+            // groupedResults,
+            resultWithZeroCounts);
+            return resultWithZeroCounts;
+        }
+        catch (error) {
+            console.log(error);
+            return false;
+        }
+    };
     return {
         findByProperty,
         adminDashBoardDetails,
@@ -881,7 +968,10 @@ const adminRepositoryMongoDB = () => {
         getPostAllReports,
         getallCommentReports,
         handleBlockUnblockComment,
-        getallReplyReports
+        getallReplyReports,
+        handleBlockUnblockReply,
+        getyearlyUserCountInfo,
+        getyearlyPostCountInfo,
     };
 };
 exports.adminRepositoryMongoDB = adminRepositoryMongoDB;

@@ -340,6 +340,7 @@ const postRepositoryMongoDb = () => {
                 $match: {
                     _id: commentID,
                     delete: false,
+                    isBlocked: false,
                 },
             },
             {
@@ -351,6 +352,7 @@ const postRepositoryMongoDb = () => {
             {
                 $match: {
                     "reply.delete": false,
+                    "reply.isBlocked": false,
                 },
             },
             {

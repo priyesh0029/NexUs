@@ -16,6 +16,9 @@ const adminDbRepository = (repository) => {
     const getallReportedComments = async () => await repository.getallCommentReports();
     const toBlokUnblockComment = async (commentId) => await repository.handleBlockUnblockComment(commentId);
     const getallReportedReplies = async () => await repository.getallReplyReports();
+    const toBlokUnblockReply = async (commentId, replyId) => await repository.handleBlockUnblockReply(commentId, replyId);
+    const getyearlyUserCount = async () => await repository.getyearlyUserCountInfo();
+    const getyearlyPostCount = async () => await repository.getyearlyPostCountInfo();
     return {
         findByProperty,
         getDashboard,
@@ -30,7 +33,10 @@ const adminDbRepository = (repository) => {
         getPostReports,
         getallReportedComments,
         toBlokUnblockComment,
-        getallReportedReplies
+        getallReportedReplies,
+        toBlokUnblockReply,
+        getyearlyUserCount,
+        getyearlyPostCount
     };
 };
 exports.adminDbRepository = adminDbRepository;

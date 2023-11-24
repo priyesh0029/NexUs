@@ -28,6 +28,11 @@ const adminRouter = (router:Router)=>{
     router.get('/getReportedComments',controllers.getReportedComments)
     router.patch('/manageCommnetStatus',controllers.manageCommnetStatus)
     router.get('/getAllRepliesReport',controllers.getAllRepliesReport)
+    router.patch('/manageReplyStatus',controllers.manageReplyStatus)
+    router.get('/getUserCount',controllers.getUserCount)
+    router.get('/getPostCount',controllers.getPostCount)
+    
+
 
 
 

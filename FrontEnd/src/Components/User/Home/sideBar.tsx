@@ -1,6 +1,5 @@
 import {
   Card,
-  Typography,
   List,
   ListItem,
   ListItemPrefix,
@@ -9,7 +8,6 @@ import {
   Avatar,
   Tooltip,
   Badge,
-  IconButton,
 } from "@material-tailwind/react";
 import {
   HomeIcon,
@@ -61,7 +59,6 @@ const DefaultSidebar = () => {
   useEffect(() => {
     getNotifications();
   }, []);
-
   const getNotifications = async () => {
     const response = await handleGetNofications();
     console.log(

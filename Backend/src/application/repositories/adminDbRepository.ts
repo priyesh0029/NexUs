@@ -47,6 +47,14 @@ export const adminDbRepository = (
     const getallReportedReplies = async () =>
     await repository.getallReplyReports();
 
+    const toBlokUnblockReply = async (commentId:string,replyId:string) =>
+    await repository.handleBlockUnblockReply(commentId,replyId);
+
+    const getyearlyUserCount = async () =>
+    await repository.getyearlyUserCountInfo();
+
+    const getyearlyPostCount = async () =>
+    await repository.getyearlyPostCountInfo();
 
 
   return {
@@ -63,7 +71,10 @@ export const adminDbRepository = (
     getPostReports,
     getallReportedComments,
     toBlokUnblockComment,
-    getallReportedReplies
+    getallReportedReplies,
+    toBlokUnblockReply,
+    getyearlyUserCount,
+    getyearlyPostCount
   };
 };
 

@@ -362,6 +362,7 @@ export const postRepositoryMongoDb = () => {
         $match: {
           _id: commentID,
           delete: false,
+          isBlocked: false,
         },
       },
       {
@@ -373,6 +374,7 @@ export const postRepositoryMongoDb = () => {
       {
         $match: {
           "reply.delete": false,
+          "reply.isBlocked": false,
         },
       },
       {
@@ -433,7 +435,8 @@ export const postRepositoryMongoDb = () => {
             $push: {
               userName: "$replyLikedUser.userName",
               dp: "$replyLikedUser.dp",
-              deactive: "$replyLikedUser.accountDeactive",
+              deactive:
+                "$replyLikedUser.accountDeactive",
             },
           },
           createdAt: {
